@@ -10,6 +10,15 @@
 **C/C++** [Makefile](https://www.gnu.org/software/make/) template for
  applications and libraries.
 
+## Download ##
+
+Download the Makefile from the [latest release][latest_release] and move it into
+ your project directory.
+
+You can also use `wget` to quickly get it from my **GitHub Pages** site.
+
+	wget https://mfederczuk.github.io/makefile-template/Makefile
+
 ## Contributing ##
 
 Read through the [C/C++ Makefile Template Contribution Guidelines](./CONTRIBUTING.md)
