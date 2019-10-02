@@ -80,6 +80,133 @@ Open it up and you will see various variable definitions under the
 Several variables will already have a value written in them. This is what *I*
  perceive to be best practice. Feel free to change them however you like.
 
+## Usage ##
+
+The usage is just like any other standard Makefile.  
+The Makefile contains the rules `all`, `install`, `uninstall`, `clean` as well
+ as the names of the targets and object files to build.  
+For a full list of rules and what they do, see [Makefile Rules](#makefile-rules).
+
+Compliant with **GNU** conventions, you can define the `DESTDIR` variable, to
+ change the directory any files will be installed to.  
+Setting it to `/tmp` will install any files to `/tmp/usr/local/...`. Just make
+ sure that the subdirectories exist, the Makefile will not try to create them.
+
+Change where targets and headers are installed with the `prefix` and
+ `exec_prefix` variables. By default, `prefix` will be `/usr/local` and
+ `exec_prefix` will be `$(prefix)`.  
+`bindir` is defined as `$(exec_prefix)/bin` and will be used to install
+ executables.  
+`includedir` is set to `$(prefix)/include` and is used to install the library
+ headers.  
+`libdir`'s default value is `$(exec_prefix)/lib` and is the location for the
+ installed libraries.
+
+Any of these variables can either be set/changed inside the Makefile or on the
+ command line.
+
+### Makefile Rules ###
+
+The Makefile has a bunch of rules that you can target.  
+You can build the object files and the targets, install and uninstall the
+ targets and clean the object files and the targets.
+
+Most of the time `make` and `make clean` will be enough for testing your
+ software. When installing the software, using `sudo make install` is enough
+
+* `all` (executable & library)  
+  Default rule; builds the executable or the libraries
+
+**building object files:**
+
+* `objects` (executable & library)  
+  When building an executable: Builds the static object files and stores them
+   inside the `BIN` directory.  
+  When building a library: Builds the shared and static object files and stores
+   them inside the `BIN` directory
+* `objects/shared` (library)  
+  Builds the shared object files and stores them inside the `BIN` directory
+* `objects/static` (library)  
+  Builds the static object files and stores them inside the `BIN` directory
+* `$(BIN)/`*&lt;object file&gt;* (executable & library)  
+  Builds the specified object file individually and stores it inside the `BIN`
+   directory.
+
+**building targets:**
+
+* `targets` (library)  
+  Builds the shared & static object files and both the shared & static libraries.  
+  The binaries are saved next to the Makefile.
+* *&lt;executable target&gt;*  (executable)  
+  Builds the static object files and the executable.  
+  The binary is saved next to the Makefile
+* *&lt;shared library target&gt;* (library)  
+  Builds the shared object files and the shared library individually.  
+  The binary is saved next to the Makefile
+* *&lt;static library target&gt;* (library)  
+  Builds the static object files and the static library individually.  
+  The binary is saved next to the Makefile
+
+**installing targets & headers:**
+
+* `install` (executable & library)  
+  When building an executable: Builds the static object files and the executable
+  and installs the binary into `$(DESTDIR)$(bindir)`.  
+  When building a library: Builds the shared & static object files and the
+   shared & static libraries and installs the binaries into `$(DESTDIR)$(libdir)`
+   and the header directory into `$(DESTDIR)$(includedir)`
+* `install/targets` (library)  
+  Builds the shared & static object files and the shared & static libraries and
+   installs the binaries into `$(DESTDIR)$(libdir)`
+* `install/`*&lt;shared library target&gt;* (library)  
+  Builds the shared object files and the shared library and installs the binary
+   into `$(DESTDIR)$(libdir)`
+* `install/`*&lt;static library target&gt;* (library)  
+  Builds the static object files and the static library and installs the binary
+   into `$(DESTDIR)$(libdir)`
+* `install/headers` (library)  
+  Installs the header directory into `$(DESTDIR)$(includedir)`
+
+**uninstalling targets & headers:**
+
+* `uninstall` (executable & library)  
+  When building an executable: Removes the executable binary from
+   `$(DESTDIR)$(bindir)`.  
+  When building a library: Removes the shared and static library binaries from
+   `$(DESTDIR)$(includedir)` and the header directory from `$(DESTDIR)$(includedir)`
+* `uninstall/targets` (library)  
+  Removes the shared and static library binaries from `$(DESTDIR)$(libdir)`
+* `uninstall/`*&lt;shared library target&gt;* (library)  
+  Removes the shared library binary from `$(DESTDIR)$(libdir)`
+* `uninstall/`*&lt;static library target&gt;* (library)  
+  Removes the static library binary from `$(DESTDIR)$(libdir)`
+* `uninstall/headers` (library)  
+  Removes the header directory from `$(DESTDIR)$(includedir)`
+
+**cleaning object files & targets:**
+
+* `clean` (executable & library)  
+  Removes all object files and the executable or the libraries
+* `clean/objects` (executable & library)  
+  Removes the `BIN` directory with all object files in it
+* `clean/objects/shared` (library)  
+  Removes the shared object files in the `BIN` directory and `BIN` or any
+   subdirectories if they became empty
+* `clean/objects/static` (library)  
+  Removes the static object files in the `BIN` directory and `BIN` or any
+   subdirectories if they became empty
+* `clean/$(BIN)/`*&lt;object file&gt;* (executable & library)  
+  Removes the specific object file in the `BIN` directory and `BIN` or any
+   subdirectories if they became empty
+* `clean/targets` (library)  
+  Removes both the shared and static library binary
+* `clean/`*&lt;executable target&gt;* (executable)  
+  Removes the executable binary
+* `clean/`*&lt;shared library target&gt;* (library)  
+  Removes the shared library binary
+* `clean/`*&lt;static library target&gt;* (library)  
+  Removes the static library binary
+
 ## Contributing ##
 
 Read through the [C/C++ Makefile Template Contribution Guidelines](./CONTRIBUTING.md)
