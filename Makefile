@@ -214,3 +214,31 @@ else
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
  .PHONY: objects objects/shared objects/static
 endif
+
+# === building targets ======================================================= #
+
+# exe: $(EXE_TARGET)
+# lib: targets $(SHARED_LIB_TARGET) $(STATIC_LIB_TARGET)
+
+ifeq "$(SOFTWARE)" "exe"
+ $(EXE_TARGET): objects
+	$(info Building target '$(EXE_TARGET)'...)
+  ifeq "$(CXX_SOURCES)" ""
+	@$(CC)  $(CCFLAGS)  $(STATIC_OBJECTS) -o '  $(EXE_TARGET)' $(LINK_FLAGS)
+  else
+	@$(CXX) $(CXXFLAGS) $(STATIC_OBJECTS) -o '$(EXE_TARGET)' $(LINK_FLAGS)
+  endif
+else
+ targets: $(SHARED_LIB_TARGET) $(STATIC_LIB_TARGET)
+ $(SHARED_LIB_TARGET): objects/shared
+	$(info Building target '$(SHARED_LIB_TARGET)'...)
+  ifeq "$(CXX_SOURCES)" ""
+	@$(CC)  $(CCFLAGS)  $(SHARED_OBJECTS) -o '$(SHARED_LIB_TARGET)' -shared
+  else
+	@$(CXX) $(CXXFLAGS) $(SHARED_OBJECTS) -o '$(SHARED_LIB_TARGET)' -shared
+  endif
+ $(STATIC_LIB_TARGET): objects/static
+	$(info Building target '$(STATIC_LIB_TARGET)'...)
+	@$(AR) rs '$(STATIC_LIB_TARGET)' $(STATIC_OBJECTS) 2>/dev/null
+ .PHONY: targets
+endif
