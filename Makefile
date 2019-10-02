@@ -242,3 +242,29 @@ else
 	@$(AR) rs '$(STATIC_LIB_TARGET)' $(STATIC_OBJECTS) 2>/dev/null
  .PHONY: targets
 endif
+
+# === installing ============================================================= #
+
+# exe: install
+# lib: install install/targets
+#      install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET)
+#      install/headers
+
+ifeq "$(SOFTWARE)" "exe"
+ install: $(EXE_TARGET)
+	$(info Installing target '$(EXE_TARGET)' to '$(DESTDIR)$(bindir)'...)
+	@$(INSTALL) -m755 '$(EXE_TARGET)' '$(DESTDIR)$(bindir)'
+ .PHONY: install
+else
+ install: install/targets install/headers
+ install/targets: install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET)
+ install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET): install/%: %
+	$(info Installing target '$(@:install/%=%)' to '$(DESTDIR)$(libdir)'...)
+	@$(INSTALL) -m644 '$(@:install/%=%)' '$(DESTDIR)$(libdir)'
+ install/headers:
+	$(info Installing headers to '$(DESTDIR)$(includedir)'...)
+	@cp -r '$(INC)' '$(DESTDIR)$(includedir)'
+ .PHONY: install install/targets \
+         install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET) \
+         install/headers
+endif
