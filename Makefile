@@ -176,6 +176,19 @@ override SHARED_LIB_TARGET := $(shared_lib_prefix)$(TARGET)$(shared_lib_suffix)
 override STATIC_LIB_TARGET := $(static_lib_prefix)$(TARGET)$(static_lib_suffix)
 override EXE_TARGET        := $(exe_prefix)$(TARGET)$(exe_suffix)
 
+# === default rule =========================================================== #
+
+# exe: all
+# lib: all
+
+ifeq "$(SOFTWARE)" "exe"
+ all: $(EXE_TARGET)
+ .PHONY: all
+else
+ all: targets
+ .PHONY: all
+endif
+
 # === building object files ================================================== #
 
 # exe: objects $(STATIC_OBJECTS)
