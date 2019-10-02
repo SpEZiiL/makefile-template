@@ -29,3 +29,60 @@ LINKS =
 CCFLAGS  = -Iinclude -std=c17   -Wall -Wextra
 CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
 
+# === preconditions ========================================================== #
+
+-include _debug.mk
+
+ifndef SOFTWARE
+ $(error SOFTWARE not defined)
+endif
+override SOFTWARE := $(strip $(SOFTWARE))
+ifeq "$(SOFTWARE)" "exe|lib"
+ $(error It appears that you forgot to configure the Makefile)
+endif
+ifneq "$(SOFTWARE)" "exe"
+ ifneq "$(SOFTWARE)" "lib"
+  $(error Unknown software type "$(SOFTWARE)")
+ endif
+endif
+
+ifndef TARGET
+ $(error TARGET not defined)
+endif
+override TARGET := $(strip $(TARGET))
+
+ifndef SRC
+ $(warning W: SRC not defined, defaulting to "src")
+ override SRC := src
+endif
+override SRC := $(strip $(SRC))
+
+ifndef BIN
+ $(warning W: BIN not defined, defaulting to "bin")
+ override BIN := bin
+endif
+override BIN := $(strip $(BIN))
+
+ifneq "$(SOFTWARE)" "exe"
+ ifndef INC
+  $(warning W: INC not defined, defaulting to "include/$(TARGET)")
+  override INC := include/$(TARGET)
+ endif
+ override INC := $(strip $(INC))
+endif
+
+# warnings/errors about LINKS and LINK_DIR
+ifeq "$(SOFTWARE)" "exe"
+ ifdef LINK_DIRS
+  ifndef LINKS
+   $(warning W: LINK_DIRS defined, but no libaries to link with specified)
+  endif
+ endif
+else
+ ifdef LINKS
+  $(error Can only link libaries to an executable)
+ endif
+ ifdef LINK_DIRS
+  $(warning W: LINK_DIRS is defined but we're building a library; consider removing LINK_DIRS)
+ endif
+endif
