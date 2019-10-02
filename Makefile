@@ -268,3 +268,26 @@ else
          install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET) \
          install/headers
 endif
+
+# === uninstalling =========================================================== #
+
+# exe: uninstall
+# lib: uninstall uninstall/targets
+#      uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET)
+#      uninstall/headers
+
+ifeq "$(SOFTWARE)" "exe"
+ uninstall:
+	@rm -f '$(DESTDIR)$(bindir)/$(EXE_TARGET)'
+ .PHONY: uninstall
+else
+ uninstall: uninstall/targets uninstall/headers
+ uninstall/targets: uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET)
+ uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET): %:
+	@rm -fv '$(DESTDIR)$(libdir)/$(@:uninstall/%=%)'
+ uninstall/headers:
+	@rm -rfv '$(DESTDIR)$(includedir)/$(notdir $(INC))'
+ .PHONY: uninstall uninstall/targets \
+         uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET) \
+         uninstall/headers
+endif
