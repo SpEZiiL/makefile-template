@@ -354,3 +354,9 @@ else
 	@rm -fv '$(@:clean/%=%)'
  .PHONY: clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
 endif
+
+# === version ================================================================ #
+
+_version:
+	@echo 1.0.0
+.PHONY: _version
