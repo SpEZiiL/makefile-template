@@ -117,3 +117,61 @@ CC      ?= cc
 CXX     ?= c++
 AR      ?= ar
 INSTALL ?= install
+
+# === constants ============================================================== #
+
+override LINK_FLAGS := $(addprefix -L,$(LINK_DIRS)) $(addprefix -l,$(LINKS))
+
+override C_SOURCES   := $(foreach \
+		__file, \
+		$(shell find '$(SRC)' \
+				-type f \
+				-name '*.[ci]' \
+		), \
+		$(__file:$(SRC)/%=%) \
+)
+override CXX_SOURCES := $(foreach \
+		__file, \
+		$(shell find '$(SRC)' \
+				-type f \
+				'(' \
+						-name '*.C'   -o \
+						-name '*.cc'  -o \
+						-name '*.cp'  -o \
+						-name '*.ii'  -o \
+						-name '*.c++' -o \
+						-name '*.cpp' -o \
+						-name '*.CPP' -o \
+						-name '*.cxx'    \
+				')' \
+		), \
+		$(__file:$(SRC)/%=%) \
+)
+
+# checking if source files were found
+ifeq "$(C_SOURCES)$(CXX_SOURCES)" ""
+ $(error No source files found)
+endif
+
+# shared objects
+override SHARED_C_OBJECTS   := $(foreach __source_file,$(C_SOURCES), \
+	$(BIN)/$(__source_file).$(shared_object_ext) \
+)
+override SHARED_CXX_OBJECTS := $(foreach __source_file,$(CXX_SOURCES), \
+	$(BIN)/$(__source_file).$(shared_object_ext) \
+)
+override SHARED_OBJECTS     := $(SHARED_C_OBJECTS) $(SHARED_CXX_OBJECTS)
+
+# static objects
+override STATIC_C_OBJECTS   := $(foreach __source_file,$(C_SOURCES), \
+	$(BIN)/$(__source_file).$(static_object_ext) \
+)
+override STATIC_CXX_OBJECTS := $(foreach __source_file,$(CXX_SOURCES), \
+	$(BIN)/$(__source_file).$(static_object_ext) \
+)
+override STATIC_OBJECTS     := $(STATIC_C_OBJECTS) $(STATIC_CXX_OBJECTS)
+
+# targets
+override SHARED_LIB_TARGET := $(shared_lib_prefix)$(TARGET)$(shared_lib_suffix)
+override STATIC_LIB_TARGET := $(static_lib_prefix)$(TARGET)$(static_lib_suffix)
+override EXE_TARGET        := $(exe_prefix)$(TARGET)$(exe_suffix)
