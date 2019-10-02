@@ -291,3 +291,53 @@ else
          uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET) \
          uninstall/headers
 endif
+
+# === cleaning =============================================================== #
+
+# exe: clean
+#      clean/objects $(addprefix clean/,$(STATIC_OBJECTS))
+#      clean/$(EXE_TARGET)
+# lib: clean
+#      clean/objects clean/objects/shared clean/objects/static
+#      clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
+
+override _clean_empty_bin_dirs := if [ -d '$(BIN)' ]; then \
+	find '$(BIN)' -depth -type d -exec rm -dfv '{}' ';' 2>/dev/null ; \
+fi
+
+ifeq "$(SOFTWARE)" "exe"
+ clean: clean/objects clean/$(EXE_TARGET)
+ .PHONY: clean
+
+ clean/objects:
+	@rm -rfv '$(BIN)'
+ $(addprefix clean/,$(STATIC_OBJECTS)): %:
+	@rm -fv '$(@:clean/%=%)'
+	@$(_clean_empty_bin_dirs)
+ .PHONY: clean/objects $(addprefix clean/,$(STATIC_OBJECTS))
+
+ clean/$(EXE_TARGET):
+	@rm -fv '$(EXE_TARGET)'
+ .PHONY: clean/$(EXE_TARGET)
+else
+ clean: clean/objects clean/targets
+ .PHONY: clean
+
+ clean/objects:
+	@rm -rfv '$(BIN)'
+ clean/objects/shared:
+	@rm -fv $(SHARED_OBJECTS)
+	@$(_clean_empty_bin_dirs)
+ clean/objects/static:
+	@rm -fv $(STATIC_OBJECTS)
+	@$(_clean_empty_bin_dirs)
+ $(addprefix clean/,$(SHARED_OBJECTS) $(STATIC_OBJECTS)): %:
+	@rm -fv '$(@:clean/%=%)'
+	@$(_clean_empty_bin_dirs)
+ .PHONY: clean/objects clean/objects/shared clean/objects/static
+
+ clean/targets: clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
+ clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET): %:
+	@rm -fv '$(@:clean/%=%)'
+ .PHONY: clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
+endif
