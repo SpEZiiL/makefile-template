@@ -175,3 +175,42 @@ override STATIC_OBJECTS     := $(STATIC_C_OBJECTS) $(STATIC_CXX_OBJECTS)
 override SHARED_LIB_TARGET := $(shared_lib_prefix)$(TARGET)$(shared_lib_suffix)
 override STATIC_LIB_TARGET := $(static_lib_prefix)$(TARGET)$(static_lib_suffix)
 override EXE_TARGET        := $(exe_prefix)$(TARGET)$(exe_suffix)
+
+# === building object files ================================================== #
+
+# exe: objects $(STATIC_OBJECTS)
+# lib: objects objects/shared objects/static $(SHARED_OBJECTS) $(STATIC_OBJECTS)
+
+ifeq "$(SOFTWARE)" "exe"
+ objects: $(STATIC_OBJECTS)
+ $(STATIC_C_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+	@mkdir -p '$(dir $@)'
+	$(info Building file '$@'...)
+	@$(CC) $(CCFLAGS) -c '$<' -o '$@'
+ $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+	@mkdir -p '$(dir $@)'
+	$(info Building file '$@'...)
+	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
+ .PHONY: objects
+else
+ objects: objects/shared objects/static
+ objects/shared: $(SHARED_OBJECTS)
+ objects/static: $(STATIC_OBJECTS)
+ $(SHARED_C_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC)/%
+	@mkdir -p '$(dir $@)'
+	$(info Building file '$@'...)
+	@$(CC) $(CCFLAGS) -c '$<' -o '$@' -fPIC
+ $(SHARED_CXX_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC)/%
+	@mkdir -p '$(dir $@)'
+	$(info Building file '$@'...)
+	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@' -fPIC
+ $(STATIC_C_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+	@mkdir -p '$(dir $@)'
+	$(info Building file '$@'...)
+	@$(CC) $(CCFLAGS) -c '$<' -o '$@'
+ $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+	@mkdir -p '$(dir $@)'
+	$(info Building file '$@'...)
+	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
+ .PHONY: objects objects/shared objects/static
+endif
