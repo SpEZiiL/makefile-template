@@ -88,3 +88,23 @@ Read through the [C/C++ Makefile Template Contribution Guidelines](./CONTRIBUTIN
 ## License ##
 
 [GNU GPLv3+](./LICENSE)
+
+## Appendix A: File Extensions ##
+
+These file extensions were taken from the **GCC** man page.
+
+**C:**
+
+* `c`
+* `ii`
+
+**C++:**
+
+* `C`
+* `cc`
+* `cp`
+* `ii`
+* `c++`
+* `cpp`
+* `CPP`
+* `cxx`
