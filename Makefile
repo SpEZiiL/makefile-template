@@ -38,7 +38,7 @@ ifndef SOFTWARE
 endif
 override SOFTWARE := $(strip $(SOFTWARE))
 ifeq "$(SOFTWARE)" "exe|lib"
- $(error It appears that you forgot to configure the Makefile)
+ $(error Makefile is not configured)
 endif
 ifneq "$(SOFTWARE)" "exe"
  ifneq "$(SOFTWARE)" "lib"
