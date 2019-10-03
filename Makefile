@@ -37,7 +37,8 @@ ifndef SOFTWARE
  $(error SOFTWARE is not defined)
 endif
 override SOFTWARE := $(strip $(SOFTWARE))
-ifeq "$(SOFTWARE)" "exe|lib"
+ifeq "$(SOFTWARE),$(TARGET),$(SRC),$(BIN),$(INC),$(LINKS),$(LINK_DIRS),$(CCFLAGS),$(CXXFLAGS)" \
+     "exe|lib,,src,bin,include/$(TARGET),,,-Iinclude -std=c17   -Wall -Wextra,-Iinclude -std=c++17 -Wall -Wextra"
  $(error Makefile is not configured)
 endif
 ifneq "$(SOFTWARE)" "exe"
