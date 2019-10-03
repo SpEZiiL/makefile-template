@@ -72,7 +72,7 @@ endif
 ifeq "$(SOFTWARE)" "exe"
  ifdef LINK_DIRS
   ifndef LINKS
-   $(warning W: LINK_DIRS defined, but no libaries to link with specified)
+   $(warning LINK_DIRS defined, but no libaries to link with specified)
   endif
  endif
 else
@@ -80,7 +80,7 @@ else
   $(error Can only link libaries to an executable)
  endif
  ifdef LINK_DIRS
-  $(warning W: LINK_DIRS is defined but we're building a library; consider removing LINK_DIRS)
+  $(warning LINK_DIRS is defined but we're building a library; consider removing LINK_DIRS)
  endif
 endif
 
