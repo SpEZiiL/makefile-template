@@ -73,15 +73,19 @@ endif
 ifeq "$(SOFTWARE)" "exe"
  ifdef LINK_DIRS
   ifndef LINKS
-   $(warning LINK_DIRS defined, but no libaries to link with specified)
+   $(warning LINK_DIRS is defined, but LINKS isn't. \
+             Specifying link directories without links doesn't do anything. \
+             Consider either removing LINK_DIRS or defining LINKS)
   endif
  endif
 else
  ifdef LINKS
-  $(warning Can only link libaries to an executable)
+  $(warning LINKS is defined, but is ignored when building a library. \
+            Consider removing LINKS)
  endif
  ifdef LINK_DIRS
-  $(warning LINK_DIRS is defined but we're building a library; consider removing LINK_DIRS)
+  $(warning LINK_DIRS is defined, but is ignored when building a library. \
+            Consider removing LINK_DIRS)
  endif
 endif
 
