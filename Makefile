@@ -52,21 +52,18 @@ endif
 override TARGET := $(strip $(TARGET))
 
 ifndef SRC
- $(warning W: SRC not defined, defaulting to "src")
- override SRC := src
+ $(error SRC not defined)
 endif
 override SRC := $(strip $(SRC))
 
 ifndef BIN
- $(warning W: BIN not defined, defaulting to "bin")
- override BIN := bin
+ $(error BIN not defined)
 endif
 override BIN := $(strip $(BIN))
 
 ifneq "$(SOFTWARE)" "exe"
  ifndef INC
-  $(warning W: INC not defined, defaulting to "include/$(TARGET)")
-  override INC := include/$(TARGET)
+  $(error INC not defined)
  endif
  override INC := $(strip $(INC))
 endif
