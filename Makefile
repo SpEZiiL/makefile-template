@@ -42,7 +42,7 @@ ifeq "$(SOFTWARE)" "exe|lib"
 endif
 ifneq "$(SOFTWARE)" "exe"
  ifneq "$(SOFTWARE)" "lib"
-  $(error Unknown software type "$(SOFTWARE)")
+  $(error Software type ("$(SOFTWARE)") is unknown)
  endif
 endif
 
