@@ -34,7 +34,7 @@ CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
 -include _debug.mk
 
 ifndef SOFTWARE
- $(error SOFTWARE not defined)
+ $(error SOFTWARE is not defined)
 endif
 override SOFTWARE := $(strip $(SOFTWARE))
 ifeq "$(SOFTWARE)" "exe|lib"
@@ -47,23 +47,23 @@ ifneq "$(SOFTWARE)" "exe"
 endif
 
 ifndef TARGET
- $(error TARGET not defined)
+ $(error TARGET is not defined)
 endif
 override TARGET := $(strip $(TARGET))
 
 ifndef SRC
- $(error SRC not defined)
+ $(error SRC is not defined)
 endif
 override SRC := $(strip $(SRC))
 
 ifndef BIN
- $(error BIN not defined)
+ $(error BIN is not defined)
 endif
 override BIN := $(strip $(BIN))
 
 ifneq "$(SOFTWARE)" "exe"
  ifndef INC
-  $(error INC not defined)
+  $(error INC is not defined)
  endif
  override INC := $(strip $(INC))
 endif
