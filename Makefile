@@ -77,7 +77,7 @@ ifeq "$(SOFTWARE)" "exe"
  endif
 else
  ifdef LINKS
-  $(error Can only link libaries to an executable)
+  $(warning Can only link libaries to an executable)
  endif
  ifdef LINK_DIRS
   $(warning LINK_DIRS is defined but we're building a library; consider removing LINK_DIRS)
