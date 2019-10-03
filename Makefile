@@ -68,7 +68,7 @@ ifneq "$(SOFTWARE)" "exe"
  override INC := $(strip $(INC))
 endif
 
-# warnings/errors about LINKS and LINK_DIR
+# warnings/errors about LINKS and LINK_DIRS
 ifeq "$(SOFTWARE)" "exe"
  ifdef LINK_DIRS
   ifndef LINKS
