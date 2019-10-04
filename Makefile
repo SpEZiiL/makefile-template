@@ -29,42 +29,67 @@ LINKS =
 CCFLAGS  = -Iinclude -std=c17   -Wall -Wextra
 CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
 
+# === colors ================================================================= #
+
+# reset:     0
+# bold:      1
+# italic:    3
+# underline: 4
+# black:    30  |  bright black:   90
+# red:      31  |  bright red:     91
+# yellow:   33  |  bright yellow:  93
+# green:    32  |  bright green:   92
+# cyan:     36  |  bright cyan:    96
+# blue:     34  |  bright blue:    94
+# magenta:  35  |  bright magenta: 95
+# white:    37  |  bright white:   97
+_ascii_esc = $(shell printf '\033[$(1)m')
+
+reset_fx  := $(call _ascii_esc,0)
+error_fx := $(call _ascii_esc,91;1)
+warning_fx := $(call _ascii_esc,33)
+object_build_fx := $(call _ascii_esc,34)
+target_build_fx := $(call _ascii_esc,34;1)
+install_fx := $(call _ascii_esc,32)
+uninstall_fx := $(call _ascii_esc,91)
+clean_fx := $(call _ascii_esc,91)
+
 # === preconditions ========================================================== #
 
 -include _debug.mk
 
 ifndef SOFTWARE
- $(error SOFTWARE is not defined)
+ $(error $(error_fx)SOFTWARE is not defined$(reset_fx))
 endif
 override SOFTWARE := $(strip $(SOFTWARE))
 ifeq "$(SOFTWARE),$(TARGET),$(SRC),$(BIN),$(INC),$(LINKS),$(LINK_DIRS),$(CCFLAGS),$(CXXFLAGS)" \
      "exe|lib,,src,bin,include/$(TARGET),,,-Iinclude -std=c17   -Wall -Wextra,-Iinclude -std=c++17 -Wall -Wextra"
- $(error Makefile is not configured)
+ $(error $(error_fx)Makefile is not configured$(reset_fx))
 endif
 ifneq "$(SOFTWARE)" "exe"
  ifneq "$(SOFTWARE)" "lib"
-  $(error Software type ("$(SOFTWARE)") is unknown)
+  $(error $(error_fx)Software type ("$(SOFTWARE)") is unknown$(reset_fx))
  endif
 endif
 
 ifndef TARGET
- $(error TARGET is not defined)
+ $(error $(error_fx)TARGET is not defined$(reset_fx))
 endif
 override TARGET := $(strip $(TARGET))
 
 ifndef SRC
- $(error SRC is not defined)
+ $(error $(error_fx)SRC is not defined$(reset_fx))
 endif
 override SRC := $(strip $(SRC))
 
 ifndef BIN
- $(error BIN is not defined)
+ $(error $(error_fx)BIN is not defined$(reset_fx))
 endif
 override BIN := $(strip $(BIN))
 
 ifneq "$(SOFTWARE)" "exe"
  ifndef INC
-  $(error INC is not defined)
+  $(error $(error_fx)INC is not defined$(reset_fx))
  endif
  override INC := $(strip $(INC))
 endif
@@ -73,19 +98,19 @@ endif
 ifeq "$(SOFTWARE)" "exe"
  ifdef LINK_DIRS
   ifndef LINKS
-   $(warning LINK_DIRS is defined, but LINKS isn't. \
+   $(warning $(warning_fx)LINK_DIRS is defined, but LINKS isn't. \
              Specifying link directories without links doesn't do anything. \
-             Consider either removing LINK_DIRS or defining LINKS)
+             Consider either removing LINK_DIRS or defining LINKS$(reset_fx))
   endif
  endif
 else
  ifdef LINKS
-  $(warning LINKS is defined, but is ignored when building a library. \
-            Consider removing LINKS)
+  $(warning $(warning_fx)LINKS is defined, but is ignored when building a \
+            library. Consider removing LINKS$(reset_fx))
  endif
  ifdef LINK_DIRS
-  $(warning LINK_DIRS is defined, but is ignored when building a library. \
-            Consider removing LINK_DIRS)
+  $(warning $(warning_fx)LINK_DIRS is defined, but is ignored when building a \
+            library. Consider removing LINK_DIRS$(reset_fx))
  endif
 endif
 
@@ -152,7 +177,7 @@ override CXX_SOURCES := $(foreach \
 
 # checking if source files were found
 ifeq "$(C_SOURCES)$(CXX_SOURCES)" ""
- $(error No source files found)
+ $(error $(error_fx)No source files found$(reset_fx))
 endif
 
 # shared objects
@@ -200,11 +225,11 @@ ifeq "$(SOFTWARE)" "exe"
  objects: $(STATIC_OBJECTS)
  $(STATIC_C_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
 	@mkdir -p '$(dir $@)'
-	$(info Building file '$@'...)
+	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CC) $(CCFLAGS) -c '$<' -o '$@'
  $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
 	@mkdir -p '$(dir $@)'
-	$(info Building file '$@'...)
+	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
  .PHONY: objects
 else
@@ -213,21 +238,22 @@ else
  objects/static: $(STATIC_OBJECTS)
  $(SHARED_C_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC)/%
 	@mkdir -p '$(dir $@)'
-	$(info Building file '$@'...)
+	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CC) $(CCFLAGS) -c '$<' -o '$@' -fPIC
  $(SHARED_CXX_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC)/%
 	@mkdir -p '$(dir $@)'
-	$(info Building file '$@'...)
+	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@' -fPIC
  $(STATIC_C_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
 	@mkdir -p '$(dir $@)'
-	$(info Building file '$@'...)
+	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CC) $(CCFLAGS) -c '$<' -o '$@'
  $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
 	@mkdir -p '$(dir $@)'
-	$(info Building file '$@'...)
+	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
  .PHONY: objects objects/shared objects/static
+	@printf '$(clean_fx)'
 endif
 
 # === building targets ======================================================= #
@@ -237,7 +263,7 @@ endif
 
 ifeq "$(SOFTWARE)" "exe"
  $(EXE_TARGET): objects
-	$(info Building target '$(EXE_TARGET)'...)
+	$(info $(target_build_fx)Building target '$(EXE_TARGET)'...$(reset_fx))
   ifeq "$(CXX_SOURCES)" ""
 	@$(CC)  $(CCFLAGS)  $(STATIC_OBJECTS) -o '  $(EXE_TARGET)' $(LINK_FLAGS)
   else
@@ -246,14 +272,14 @@ ifeq "$(SOFTWARE)" "exe"
 else
  targets: $(SHARED_LIB_TARGET) $(STATIC_LIB_TARGET)
  $(SHARED_LIB_TARGET): objects/shared
-	$(info Building target '$(SHARED_LIB_TARGET)'...)
+	$(info $(target_build_fx)Building target '$(SHARED_LIB_TARGET)'...$(reset_fx))
   ifeq "$(CXX_SOURCES)" ""
 	@$(CC)  $(CCFLAGS)  $(SHARED_OBJECTS) -o '$(SHARED_LIB_TARGET)' -shared
   else
 	@$(CXX) $(CXXFLAGS) $(SHARED_OBJECTS) -o '$(SHARED_LIB_TARGET)' -shared
   endif
  $(STATIC_LIB_TARGET): objects/static
-	$(info Building target '$(STATIC_LIB_TARGET)'...)
+	$(info $(target_build_fx)Building target '$(STATIC_LIB_TARGET)'...$(reset_fx))
 	@$(AR) rs '$(STATIC_LIB_TARGET)' $(STATIC_OBJECTS) 2>/dev/null
  .PHONY: targets
 endif
@@ -267,17 +293,17 @@ endif
 
 ifeq "$(SOFTWARE)" "exe"
  install: $(EXE_TARGET)
-	$(info Installing target '$(EXE_TARGET)' to '$(DESTDIR)$(bindir)'...)
+	$(info $(install_fx)Installing target '$(EXE_TARGET)' to '$(DESTDIR)$(bindir)'...$(reset_fx))
 	@$(INSTALL) -m755 '$(EXE_TARGET)' '$(DESTDIR)$(bindir)'
  .PHONY: install
 else
  install: install/targets install/headers
  install/targets: install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET)
  install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET): install/%: %
-	$(info Installing target '$(@:install/%=%)' to '$(DESTDIR)$(libdir)'...)
+	$(info $(install_fx)Installing target '$(@:install/%=%)' to '$(DESTDIR)$(libdir)'...$(reset_fx))
 	@$(INSTALL) -m644 '$(@:install/%=%)' '$(DESTDIR)$(libdir)'
  install/headers:
-	$(info Installing headers to '$(DESTDIR)$(includedir)'...)
+	$(info $(install_fx)Installing headers to '$(DESTDIR)$(includedir)'...$(reset_fx))
 	@cp -r '$(INC)' '$(DESTDIR)$(includedir)'
  .PHONY: install install/targets \
          install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET) \
@@ -293,15 +319,18 @@ endif
 
 ifeq "$(SOFTWARE)" "exe"
  uninstall:
-	@rm -f '$(DESTDIR)$(bindir)/$(EXE_TARGET)'
+	@rm -f '$(DESTDIR)$(bindir)/$(EXE_TARGET)' | \
+		sed -E s/'(.*)'/'$(uninstall_fx)\1$(reset_fx)'/g
  .PHONY: uninstall
 else
  uninstall: uninstall/targets uninstall/headers
  uninstall/targets: uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET)
  uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET): %:
-	@rm -fv '$(DESTDIR)$(libdir)/$(@:uninstall/%=%)'
+	@rm -fv '$(DESTDIR)$(libdir)/$(@:uninstall/%=%)' | \
+		sed -E s/'(.*)'/'$(uninstall_fx)\1$(reset_fx)'/g
  uninstall/headers:
-	@rm -rfv '$(DESTDIR)$(includedir)/$(notdir $(INC))'
+	@rm -rfv '$(DESTDIR)$(includedir)/$(notdir $(INC))' | \
+		sed -E s/'(.*)'/'$(uninstall_fx)\1$(reset_fx)'/g
  .PHONY: uninstall uninstall/targets \
          uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET) \
          uninstall/headers
@@ -317,7 +346,8 @@ endif
 #      clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
 
 override _clean_empty_bin_dirs := if [ -d '$(BIN)' ]; then \
-	find '$(BIN)' -depth -type d -exec rm -dfv '{}' ';' 2>/dev/null ; \
+	find '$(BIN)' -depth -type d -exec rm -dfv '{}' ';' 2>/dev/null \
+		| sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g ; \
 fi
 
 ifeq "$(SOFTWARE)" "exe"
@@ -325,35 +355,35 @@ ifeq "$(SOFTWARE)" "exe"
  .PHONY: clean
 
  clean/objects:
-	@rm -rfv '$(BIN)'
+	@rm -rfv '$(BIN)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  $(addprefix clean/,$(STATIC_OBJECTS)): %:
-	@rm -fv '$(@:clean/%=%)'
+	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
 	@$(_clean_empty_bin_dirs)
  .PHONY: clean/objects $(addprefix clean/,$(STATIC_OBJECTS))
 
  clean/$(EXE_TARGET):
-	@rm -fv '$(EXE_TARGET)'
+	@rm -fv '$(EXE_TARGET)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  .PHONY: clean/$(EXE_TARGET)
 else
  clean: clean/objects clean/targets
  .PHONY: clean
 
  clean/objects:
-	@rm -rfv '$(BIN)'
+	@rm -rfv '$(BIN)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  clean/objects/shared:
-	@rm -fv $(SHARED_OBJECTS)
+	@rm -fv $(SHARED_OBJECTS) | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
 	@$(_clean_empty_bin_dirs)
  clean/objects/static:
-	@rm -fv $(STATIC_OBJECTS)
+	@rm -fv $(STATIC_OBJECTS) | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
 	@$(_clean_empty_bin_dirs)
  $(addprefix clean/,$(SHARED_OBJECTS) $(STATIC_OBJECTS)): %:
-	@rm -fv '$(@:clean/%=%)'
+	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
 	@$(_clean_empty_bin_dirs)
  .PHONY: clean/objects clean/objects/shared clean/objects/static
 
  clean/targets: clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
  clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET): %:
-	@rm -fv '$(@:clean/%=%)'
+	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  .PHONY: clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
 endif
 

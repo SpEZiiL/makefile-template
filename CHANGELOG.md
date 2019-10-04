@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   execution
 * Defining `LINKS` when building a library will only display a warning instead
   of throwing an error
+* The output is now colored
 
 ## [1.0.0] - 2019-10-02 ##
 
