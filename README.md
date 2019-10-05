@@ -1,8 +1,8 @@
 # C/C++ Makefile Template #
 
-[version_shield]: https://img.shields.io/badge/version-v1.0.0-blue.svg
+[version_shield]: https://img.shields.io/badge/version-1.0.0-blue.svg
 [latest_release]: https://github.com/mfederczuk/makefile-template/releases/latest "Latest Release"
-[![version: v1.0.0][version_shield]][latest_release]
+[![version: 1.0.0][version_shield]][latest_release]
 [![Changelog](https://img.shields.io/badge/-Changelog-blue)](./CHANGELOG.md "Changelog")
 
 ## About ##
