@@ -237,7 +237,7 @@ ifeq "$(SOFTWARE)" "exe"
  $(EXE_TARGET): objects
 	$(info Building target '$(EXE_TARGET)'...)
   ifeq "$(CXX_SOURCES)" ""
-	@$(CC)  $(CCFLAGS)  $(STATIC_OBJECTS) -o '  $(EXE_TARGET)' $(LINK_FLAGS)
+	@$(CC)  $(CCFLAGS)  $(STATIC_OBJECTS) -o '$(EXE_TARGET)' $(LINK_FLAGS)
   else
 	@$(CXX) $(CXXFLAGS) $(STATIC_OBJECTS) -o '$(EXE_TARGET)' $(LINK_FLAGS)
   endif
@@ -358,5 +358,5 @@ endif
 # === version ================================================================ #
 
 _version:
-	@echo 1.0.0
+	@echo 1.0.1
 .PHONY: _version
