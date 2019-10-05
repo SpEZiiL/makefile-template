@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   of throwing an error
 * The output is now colored
 
+## Fixed ##
+
+* The executable and library targets are no longer being rebuild even when the
+  source files didn't change
+
 ## [1.0.0] - 2019-10-02 ##
 
 [1.0.0]: https://github.com/mfederczuk/makefile-template/releases/tag/v1.0.0

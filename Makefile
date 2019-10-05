@@ -262,7 +262,7 @@ endif
 # lib: targets $(SHARED_LIB_TARGET) $(STATIC_LIB_TARGET)
 
 ifeq "$(SOFTWARE)" "exe"
- $(EXE_TARGET): objects
+ $(EXE_TARGET): $(STATIC_OBJECTS)
 	$(info $(target_build_fx)Building target '$(EXE_TARGET)'...$(reset_fx))
   ifeq "$(CXX_SOURCES)" ""
 	@$(CC)  $(CCFLAGS)  $(STATIC_OBJECTS) -o '  $(EXE_TARGET)' $(LINK_FLAGS)
@@ -271,14 +271,14 @@ ifeq "$(SOFTWARE)" "exe"
   endif
 else
  targets: $(SHARED_LIB_TARGET) $(STATIC_LIB_TARGET)
- $(SHARED_LIB_TARGET): objects/shared
+ $(SHARED_LIB_TARGET): $(SHARED_OBJECTS)
 	$(info $(target_build_fx)Building target '$(SHARED_LIB_TARGET)'...$(reset_fx))
   ifeq "$(CXX_SOURCES)" ""
 	@$(CC)  $(CCFLAGS)  $(SHARED_OBJECTS) -o '$(SHARED_LIB_TARGET)' -shared
   else
 	@$(CXX) $(CXXFLAGS) $(SHARED_OBJECTS) -o '$(SHARED_LIB_TARGET)' -shared
   endif
- $(STATIC_LIB_TARGET): objects/static
+ $(STATIC_LIB_TARGET): $(STATIC_OBJECTS)
 	$(info $(target_build_fx)Building target '$(STATIC_LIB_TARGET)'...$(reset_fx))
 	@$(AR) rs '$(STATIC_LIB_TARGET)' $(STATIC_OBJECTS) 2>/dev/null
  .PHONY: targets
