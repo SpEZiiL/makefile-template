@@ -12,8 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Changed ##
 
-* When `SRC`, `BIN` or `INC`, the Makefile will now throw an error and stop
-  execution
+* When the `SRC`, `BIN` or `INC` variables are not defined the Makefile will now
+  throw an error and stop execution instead of just displaying a warning
 * Defining `LINKS` when building a library will only display a warning instead
   of throwing an error
 * The output is now colored
