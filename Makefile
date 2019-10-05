@@ -223,11 +223,11 @@ endif
 
 ifeq "$(SOFTWARE)" "exe"
  objects: $(STATIC_OBJECTS)
- $(STATIC_C_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+ $(STATIC_C_OBJECTS):   $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
-	@$(CC) $(CCFLAGS) -c '$<' -o '$@'
- $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+	@$(CC)  $(CCFLAGS) -c '$<' -o '$@'
+ $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
@@ -236,19 +236,19 @@ else
  objects: objects/shared objects/static
  objects/shared: $(SHARED_OBJECTS)
  objects/static: $(STATIC_OBJECTS)
- $(SHARED_C_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC)/%
+ $(SHARED_C_OBJECTS):   $(BIN)/%.$(shared_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
-	@$(CC) $(CCFLAGS) -c '$<' -o '$@' -fPIC
- $(SHARED_CXX_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC)/%
+	@$(CC)  $(CCFLAGS) -c '$<' -o '$@' -fPIC
+ $(SHARED_CXX_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@' -fPIC
- $(STATIC_C_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+ $(STATIC_C_OBJECTS):   $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
-	@$(CC) $(CCFLAGS) -c '$<' -o '$@'
- $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+	@$(CC)  $(CCFLAGS) -c '$<' -o '$@'
+ $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
