@@ -20,7 +20,8 @@ SOFTWARE = exe|lib
 
 TARGET =
 
-SRC_MAIN = src
+SRC_MAIN = src/main
+SRC_TEST = src/test
 BIN = bin
 INC = include/$(TARGET)
 
@@ -64,8 +65,8 @@ ifndef SOFTWARE
  $(error $(error_fx)SOFTWARE is not defined$(reset_fx))
 endif
 override SOFTWARE := $(strip $(SOFTWARE))
-ifeq "$(SOFTWARE),$(TARGET),$(SRC_MAIN),$(BIN),$(INC),$(LINKS),$(LINK_DIRS),$(TEST),$(CCFLAGS),$(CXXFLAGS)" \
-     "exe|lib,,src,bin,include/$(TARGET),,,,-Iinclude -std=c17   -Wall -Wextra,-Iinclude -std=c++17 -Wall -Wextra"
+ifeq "$(SOFTWARE),$(TARGET),$(SRC_MAIN),$(SRC_TEST),$(BIN),$(INC),$(LINKS),$(LINK_DIRS),$(TEST),$(CCFLAGS),$(CXXFLAGS)" \
+     "exe|lib,,src/main,src/test,bin,include/$(TARGET),,,,-Iinclude -std=c17   -Wall -Wextra,-Iinclude -std=c++17 -Wall -Wextra"
  $(error $(error_fx)Makefile is not configured$(reset_fx))
 endif
 ifneq "$(SOFTWARE)" "exe"
@@ -83,6 +84,12 @@ ifndef SRC_MAIN
  $(error $(error_fx)SRC_MAIN is not defined$(reset_fx))
 endif
 override SRC_MAIN := $(strip $(SRC_MAIN))
+
+ifndef SRC_TEST
+ $(error $(error_fx)SRC_TEST is not defined. \
+         If you don't have any tests, define it as '/dev/null'$(reset_fx))
+endif
+override SRC_TEST := $(strip $(SRC_TEST))
 
 ifndef BIN
  $(error $(error_fx)BIN is not defined$(reset_fx))
