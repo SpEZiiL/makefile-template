@@ -26,6 +26,8 @@ INC = include/$(TARGET)
 
 LINKS =
 
+TEST =
+
 CCFLAGS  = -Iinclude -std=c17   -Wall -Wextra
 CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
 
@@ -62,8 +64,8 @@ ifndef SOFTWARE
  $(error $(error_fx)SOFTWARE is not defined$(reset_fx))
 endif
 override SOFTWARE := $(strip $(SOFTWARE))
-ifeq "$(SOFTWARE),$(TARGET),$(SRC),$(BIN),$(INC),$(LINKS),$(LINK_DIRS),$(CCFLAGS),$(CXXFLAGS)" \
-     "exe|lib,,src,bin,include/$(TARGET),,,-Iinclude -std=c17   -Wall -Wextra,-Iinclude -std=c++17 -Wall -Wextra"
+ifeq "$(SOFTWARE),$(TARGET),$(SRC),$(BIN),$(INC),$(LINKS),$(LINK_DIRS),$(TEST),$(CCFLAGS),$(CXXFLAGS)" \
+     "exe|lib,,src,bin,include/$(TARGET),,,,-Iinclude -std=c17   -Wall -Wextra,-Iinclude -std=c++17 -Wall -Wextra"
  $(error $(error_fx)Makefile is not configured$(reset_fx))
 endif
 ifneq "$(SOFTWARE)" "exe"
@@ -113,6 +115,12 @@ else
             library. Consider removing LINK_DIRS$(reset_fx))
  endif
 endif
+
+ifndef TEST
+ $(error $(error_fx)TEST is not defined. \
+         If you don't have any tests, define it as ':'$(reset_fx))
+endif
+override TEST := $(strip $(TEST))
 
 # === variables ============================================================== #
 
