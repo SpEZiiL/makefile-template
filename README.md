@@ -112,7 +112,7 @@ You can build the object files and the targets, install and uninstall the
  targets and clean the object files and the targets.
 
 Most of the time `make` and `make clean` will be enough for testing your
- software. When installing the software, using `sudo make install` is enough
+ software. When installing the software, use `make` and `sudo make install`.
 
 * `all` (executable & library)  
   Default rule; builds the executable or the libraries
