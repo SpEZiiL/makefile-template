@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Changed ##
 
-* When `SRC`, `BIN` or `INC`, the Makefile will now throw an error and stop
+* Renamed `SRC` to `SRC_MAIN`
+* When `SRC_MAIN`, `BIN` or `INC`, the Makefile will now throw an error and stop
   execution
 * Defining `LINKS` when building a library will only display a warning instead
   of throwing an error

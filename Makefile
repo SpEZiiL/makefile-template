@@ -20,7 +20,7 @@ SOFTWARE = exe|lib
 
 TARGET =
 
-SRC = src
+SRC_MAIN = src
 BIN = bin
 INC = include/$(TARGET)
 
@@ -64,7 +64,7 @@ ifndef SOFTWARE
  $(error $(error_fx)SOFTWARE is not defined$(reset_fx))
 endif
 override SOFTWARE := $(strip $(SOFTWARE))
-ifeq "$(SOFTWARE),$(TARGET),$(SRC),$(BIN),$(INC),$(LINKS),$(LINK_DIRS),$(TEST),$(CCFLAGS),$(CXXFLAGS)" \
+ifeq "$(SOFTWARE),$(TARGET),$(SRC_MAIN),$(BIN),$(INC),$(LINKS),$(LINK_DIRS),$(TEST),$(CCFLAGS),$(CXXFLAGS)" \
      "exe|lib,,src,bin,include/$(TARGET),,,,-Iinclude -std=c17   -Wall -Wextra,-Iinclude -std=c++17 -Wall -Wextra"
  $(error $(error_fx)Makefile is not configured$(reset_fx))
 endif
@@ -79,10 +79,10 @@ ifndef TARGET
 endif
 override TARGET := $(strip $(TARGET))
 
-ifndef SRC
- $(error $(error_fx)SRC is not defined$(reset_fx))
+ifndef SRC_MAIN
+ $(error $(error_fx)SRC_MAIN is not defined$(reset_fx))
 endif
-override SRC := $(strip $(SRC))
+override SRC_MAIN := $(strip $(SRC_MAIN))
 
 ifndef BIN
  $(error $(error_fx)BIN is not defined$(reset_fx))
@@ -186,8 +186,8 @@ override _find_cxx_files = $(foreach \
 		$(__file:$(1)/%=%) \
 )
 
-override C_SOURCES   := $(call _find_c_files,$(SRC))
-override CXX_SOURCES := $(call _find_cxx_files,$(SRC))
+override C_SOURCES   := $(call _find_c_files,$(SRC_MAIN))
+override CXX_SOURCES := $(call _find_cxx_files,$(SRC_MAIN))
 
 # checking if source files were found
 ifeq "$(C_SOURCES)$(CXX_SOURCES)" ""
@@ -237,11 +237,11 @@ endif
 
 ifeq "$(SOFTWARE)" "exe"
  objects: $(STATIC_OBJECTS)
- $(STATIC_C_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+ $(STATIC_C_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CC) $(CCFLAGS) -c '$<' -o '$@'
- $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+ $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
@@ -250,19 +250,19 @@ else
  objects: objects/shared objects/static
  objects/shared: $(SHARED_OBJECTS)
  objects/static: $(STATIC_OBJECTS)
- $(SHARED_C_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC)/%
+ $(SHARED_C_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CC) $(CCFLAGS) -c '$<' -o '$@' -fPIC
- $(SHARED_CXX_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC)/%
+ $(SHARED_CXX_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@' -fPIC
- $(STATIC_C_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+ $(STATIC_C_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CC) $(CCFLAGS) -c '$<' -o '$@'
- $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+ $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'

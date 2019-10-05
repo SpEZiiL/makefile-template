@@ -39,7 +39,7 @@ Open it up and you will see various variable definitions under the
   If you want to change any prefix or suffixes you can do so by changing the
    `exe_prefix`, `exe_suffix`, `shared_lib_prefix`, `shared_lib_suffix`,
    `static_lib_prefix` and `static_lib_suffix` variables.
-* `SRC`  
+* `SRC_MAIN`  
   The directory in which the source files are stored.  
   The Makefile will search this directory for any source files and will
    automatically add them.  
@@ -56,11 +56,11 @@ Open it up and you will see various variable definitions under the
    since we only need to know this directory so we can install it.  
   **Note:** This Makefile does *not* support having both the header and the
    source files mixed up (at least for libraries). You need to put your headers
-   into a separate directory. This directory *may* be inside the `SRC`
+   into a separate directory. This directory *may* be inside the `SRC_MAIN`
    directory.  
-  It's always good practice to have an `include` directory next to your `SRC`
-   directory, have you headers in a subdirectory of this `include` directory and
-   then add `-Iinclude` to your compiler flags.
+  It's always good practice to have an `include` directory next to your
+   `SRC_MAIN` directory, have you headers in a subdirectory of this `include`
+   directory and then add `-Iinclude` to your compiler flags.
 * `LINK_DIRS`  
   A list of directories to search for when linking libraries.  
   (this option will not be already written in this section like the others,
