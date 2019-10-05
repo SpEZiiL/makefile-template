@@ -149,17 +149,17 @@ INSTALL ?= install
 
 override LINK_FLAGS := $(addprefix -L,$(LINK_DIRS)) $(addprefix -l,$(LINKS))
 
-override C_SOURCES   := $(foreach \
+override _find_c_files   = $(foreach \
 		__file, \
-		$(shell find '$(SRC)' \
+		$(shell find '$(1)' \
 				-type f \
 				-name '*.[ci]' \
 		), \
-		$(__file:$(SRC)/%=%) \
+		$(__file:$(1)/%=%) \
 )
-override CXX_SOURCES := $(foreach \
+override _find_cxx_files = $(foreach \
 		__file, \
-		$(shell find '$(SRC)' \
+		$(shell find '$(1)' \
 				-type f \
 				'(' \
 						-name '*.C'   -o \
@@ -172,8 +172,11 @@ override CXX_SOURCES := $(foreach \
 						-name '*.cxx'    \
 				')' \
 		), \
-		$(__file:$(SRC)/%=%) \
+		$(__file:$(1)/%=%) \
 )
+
+override C_SOURCES   := $(call _find_c_files,$(SRC))
+override CXX_SOURCES := $(call _find_cxx_files,$(SRC))
 
 # checking if source files were found
 ifeq "$(C_SOURCES)$(CXX_SOURCES)" ""

@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] ##
 
-[Unreleased]: https://github.com/mfederczuk/makefile-template/compare/v1.0.0...develop
+[Unreleased]: https://github.com/mfederczuk/makefile-template/compare/v1.0.0...feature/tests
 
 ## Changed ##
 
