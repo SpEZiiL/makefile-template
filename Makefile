@@ -201,6 +201,9 @@ ifeq "$(C_SOURCES)$(CXX_SOURCES)" ""
  $(error $(error_fx)No source files found$(reset_fx))
 endif
 
+override TEST_C_SOURCES   := $(call _find_c_files,$(SRC_TEST))
+override TEST_CXX_SOURCES := $(call _find_cxx_files,$(SRC_TEST))
+
 # shared objects
 override SHARED_C_OBJECTS   := $(foreach __source_file,$(C_SOURCES), \
 	$(BIN)/$(__source_file).$(shared_object_ext) \
