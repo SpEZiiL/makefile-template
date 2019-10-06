@@ -165,6 +165,8 @@ INSTALL ?= install
 
 # === custom functions ======================================================= #
 
+override _eq = $(and $(findstring $(1),$(2)),$(findstring $(2),$(1)))
+
 override _test_target = $(word 1,$(subst :, ,$(1)))
 override _test_source = $(word 2,$(subst :, ,$(1)))
 
