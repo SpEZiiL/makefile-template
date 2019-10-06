@@ -425,9 +425,11 @@ endif
 # exe: clean
 #      clean/objects $(addprefix clean/,$(STATIC_OBJECTS))
 #      clean/$(EXE_TARGET)
+#      clean/tests $(addprefix clean/,$(TEST_TARGETS))
 # lib: clean
 #      clean/objects clean/objects/shared clean/objects/static
 #      clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
+#      clean/tests $(addprefix clean/,$(TEST_TARGETS))
 
 override _clean_empty_bin_dirs := if [ -d '$(BIN)' ]; then \
 	find '$(BIN)' -depth -type d -exec rm -dfv '{}' ';' 2>/dev/null \
@@ -435,7 +437,7 @@ override _clean_empty_bin_dirs := if [ -d '$(BIN)' ]; then \
 fi
 
 ifeq "$(SOFTWARE)" "exe"
- clean: clean/objects clean/$(EXE_TARGET)
+ clean: clean/objects clean/$(EXE_TARGET) clean/tests
  .PHONY: clean
 
  clean/objects:
@@ -448,8 +450,14 @@ ifeq "$(SOFTWARE)" "exe"
  clean/$(EXE_TARGET):
 	@rm -fv '$(EXE_TARGET)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  .PHONY: clean/$(EXE_TARGET)
+
+ clean/tests:
+	@rm -fv $(TEST_TARGETS) | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+ $(addprefix clean/,$(TEST_TARGETS)): %:
+	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+ .PHONY: clean/tests $(addprefix clean/,$(TEST_TARGETS))
 else
- clean: clean/objects clean/targets
+ clean: clean/objects clean/targets clean/tests
  .PHONY: clean
 
  clean/objects:
@@ -469,6 +477,12 @@ else
  clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET): %:
 	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  .PHONY: clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
+
+ clean/tests:
+	@rm -fv $(TEST_TARGETS) | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+ $(addprefix clean/,$(TEST_TARGETS)): %:
+	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+ .PHONY: clean/tests $(addprefix clean/,$(TEST_TARGETS))
 endif
 
 # === version ================================================================ #
