@@ -48,15 +48,15 @@ CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
 # white:    37  |  bright white:   97
 _ascii_esc = $(shell printf '\033[$(1)m')
 
-reset_fx  := $(call _ascii_esc,0)
-error_fx := $(call _ascii_esc,91;1)
-warning_fx := $(call _ascii_esc,33)
+reset_fx        := $(call _ascii_esc,0)
+error_fx        := $(call _ascii_esc,91;1)
+warning_fx      := $(call _ascii_esc,33)
 object_build_fx := $(call _ascii_esc,34)
 target_build_fx := $(call _ascii_esc,34;1)
-test_build_fx := $(call _ascii_esc,35;1)
-install_fx := $(call _ascii_esc,32)
-uninstall_fx := $(call _ascii_esc,91)
-clean_fx := $(call _ascii_esc,91)
+test_build_fx   := $(call _ascii_esc,35;1)
+install_fx      := $(call _ascii_esc,32)
+uninstall_fx    := $(call _ascii_esc,91)
+clean_fx        := $(call _ascii_esc,91)
 
 # === preconditions ========================================================== #
 
