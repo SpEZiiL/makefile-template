@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added ###
 
+* The output is now colored
 * An `other.mk` file can be put in the same directory as the Makefile for other
   user defined targets (it is included at the end of the Makefile)
 * Automatic test detection from source files inside the new `SRC_TEST` variable
@@ -24,7 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   warning
 * Defining `LINKS` when building a library will only display a warning instead
   of throwing an error
-* The output is now colored
 
 ### Fixed ###
 
