@@ -14,11 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * An `other.mk` file can be put in the same directory as the Makefile for other
   user defined targets (it is included at the end of the Makefile)
+* Automatic test detection from source files inside the new `SRC_TEST` variable
 
 ## Changed ##
 
-* When the `SRC`, `BIN` or `INC` variables are not defined the Makefile will now
-  throw an error and stop execution instead of just displaying a warning
+* Renamed `SRC` to `SRC_MAIN`
+* When the `SRC_MAIN`, `BIN` or `INC` variables are not defined the Makefile
+  will now throw an error and stop execution instead of just displaying a
+  warning
 * Defining `LINKS` when building a library will only display a warning instead
   of throwing an error
 * The output is now colored
