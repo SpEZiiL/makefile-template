@@ -239,6 +239,14 @@ override CXX_TESTS := $(foreach __source_file,$(TEST_CXX_SOURCES), \
 	$(test_prefix)$(basename $(__source_file))$(test_suffix):$(__source_file) \
 )
 
+override TEST_C_TARGETS   := $(foreach __test,$(C_TESTS), \
+	$(call _test_target,$(__test)) \
+)
+override TEST_CXX_TARGETS := $(foreach __test,$(CXX_TESTS), \
+	$(call _test_target,$(__test)) \
+)
+override TEST_TARGETS     := $(TEST_C_TARGETS) $(TEST_CXX_TARGETS)
+
 # === default rule =========================================================== #
 
 # exe: all
