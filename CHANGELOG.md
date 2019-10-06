@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]: https://github.com/mfederczuk/makefile-template/compare/v1.0.0...develop
 
+## Added ##
+
+* An `other.mk` file can be put in the same directory as the Makefile for other
+  user defined targets (it is included at the end of the Makefile)
+
 ## Changed ##
 
 * When the `SRC`, `BIN` or `INC` variables are not defined the Makefile will now

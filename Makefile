@@ -392,3 +392,7 @@ endif
 _version:
 	@echo 1.0.0
 .PHONY: _version
+
+# = other.mk ================================================================= #
+
+-include other.mk
