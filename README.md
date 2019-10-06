@@ -136,7 +136,7 @@ Most of the time `make` and `make clean` will be enough for testing your
 
 * `targets` (library)  
   Builds the shared & static object files and both the shared & static libraries.  
-  The binaries are saved next to the Makefile.
+  The binaries are saved next to the Makefile
 * *&lt;executable target&gt;*  (executable)  
   Builds the static object files and the executable.  
   The binary is saved next to the Makefile
