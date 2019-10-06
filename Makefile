@@ -236,10 +236,10 @@ override STATIC_LIB_TARGET := $(static_lib_prefix)$(TARGET)$(static_lib_suffix)
 override EXE_TARGET        := $(exe_prefix)$(TARGET)$(exe_suffix)
 
 override C_TESTS   := $(foreach __source_file,$(TEST_C_SOURCES), \
-	$(test_prefix)$(basename $(__source_file))$(test_suffix):$(__source_file) \
+	$(test_prefix)$(basename $(notdir $(__source_file)))$(test_suffix):$(__source_file) \
 )
 override CXX_TESTS := $(foreach __source_file,$(TEST_CXX_SOURCES), \
-	$(test_prefix)$(basename $(__source_file))$(test_suffix):$(__source_file) \
+	$(test_prefix)$(basename $(notdir $(__source_file)))$(test_suffix):$(__source_file) \
 )
 
 override TEST_C_TARGETS   := $(foreach __test,$(C_TESTS), \
