@@ -163,6 +163,11 @@ CXX     ?= c++
 AR      ?= ar
 INSTALL ?= install
 
+# === custom functions ======================================================= #
+
+override _test_target = $(word 1,$(subst :, ,$(1)))
+override _test_source = $(word 2,$(subst :, ,$(1)))
+
 # === constants ============================================================== #
 
 override LINK_FLAGS := $(addprefix -L,$(LINK_DIRS)) $(addprefix -l,$(LINKS))
