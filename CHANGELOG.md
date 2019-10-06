@@ -10,13 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]: https://github.com/mfederczuk/makefile-template/compare/v1.0.0...develop
 
-## Added ##
+### Added ###
 
 * An `other.mk` file can be put in the same directory as the Makefile for other
   user defined targets (it is included at the end of the Makefile)
 * Automatic test detection from source files inside the new `SRC_TEST` variable
 
-## Changed ##
+### Changed ###
 
 * Renamed `SRC` to `SRC_MAIN`
 * When the `SRC_MAIN`, `BIN` or `INC` variables are not defined the Makefile
@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   of throwing an error
 * The output is now colored
 
-## Fixed ##
+### Fixed ###
 
 * The executable and library targets are no longer being rebuild even when the
   source files didn't change
