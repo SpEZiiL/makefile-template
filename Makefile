@@ -20,72 +20,115 @@ SOFTWARE = exe|lib
 
 TARGET =
 
-SRC = src
+SRC_MAIN = src/main
+SRC_TEST = src/test
 BIN = bin
 INC = include/$(TARGET)
 
 LINKS =
 
+TEST =
+
 CCFLAGS  = -Iinclude -std=c17   -Wall -Wextra
 CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
+
+# === colors ================================================================= #
+
+# reset:     0
+# bold:      1
+# italic:    3
+# underline: 4
+# black:    30  |  bright black:   90
+# red:      31  |  bright red:     91
+# yellow:   33  |  bright yellow:  93
+# green:    32  |  bright green:   92
+# cyan:     36  |  bright cyan:    96
+# blue:     34  |  bright blue:    94
+# magenta:  35  |  bright magenta: 95
+# white:    37  |  bright white:   97
+_ascii_esc = $(shell printf '\033[$(1)m')
+
+reset_fx        := $(call _ascii_esc,0)
+error_fx        := $(call _ascii_esc,91;1)
+warning_fx      := $(call _ascii_esc,33)
+object_build_fx := $(call _ascii_esc,34)
+target_build_fx := $(call _ascii_esc,34;1)
+test_build_fx   := $(call _ascii_esc,35;1)
+install_fx      := $(call _ascii_esc,32)
+uninstall_fx    := $(call _ascii_esc,91)
+clean_fx        := $(call _ascii_esc,91)
 
 # === preconditions ========================================================== #
 
 -include _debug.mk
 
 ifndef SOFTWARE
- $(error SOFTWARE not defined)
+ $(error $(error_fx)SOFTWARE is not defined$(reset_fx))
 endif
 override SOFTWARE := $(strip $(SOFTWARE))
-ifeq "$(SOFTWARE)" "exe|lib"
- $(error It appears that you forgot to configure the Makefile)
+ifeq "$(SOFTWARE),$(TARGET),$(SRC_MAIN),$(SRC_TEST),$(BIN),$(INC),$(LINKS),$(LINK_DIRS),$(TEST),$(CCFLAGS),$(CXXFLAGS)" \
+     "exe|lib,,src/main,src/test,bin,include/$(TARGET),,,,-Iinclude -std=c17   -Wall -Wextra,-Iinclude -std=c++17 -Wall -Wextra"
+ $(error $(error_fx)Makefile is not configured$(reset_fx))
 endif
 ifneq "$(SOFTWARE)" "exe"
  ifneq "$(SOFTWARE)" "lib"
-  $(error Unknown software type "$(SOFTWARE)")
+  $(error $(error_fx)Software type ("$(SOFTWARE)") is unknown$(reset_fx))
  endif
 endif
 
 ifndef TARGET
- $(error TARGET not defined)
+ $(error $(error_fx)TARGET is not defined$(reset_fx))
 endif
 override TARGET := $(strip $(TARGET))
 
-ifndef SRC
- $(warning W: SRC not defined, defaulting to "src")
- override SRC := src
+ifndef SRC_MAIN
+ $(error $(error_fx)SRC_MAIN is not defined$(reset_fx))
 endif
-override SRC := $(strip $(SRC))
+override SRC_MAIN := $(strip $(SRC_MAIN))
+
+ifndef SRC_TEST
+ $(error $(error_fx)SRC_TEST is not defined. \
+         If you don't have any tests, define it as '/dev/null'$(reset_fx))
+endif
+override SRC_TEST := $(strip $(SRC_TEST))
 
 ifndef BIN
- $(warning W: BIN not defined, defaulting to "bin")
- override BIN := bin
+ $(error $(error_fx)BIN is not defined$(reset_fx))
 endif
 override BIN := $(strip $(BIN))
 
 ifneq "$(SOFTWARE)" "exe"
  ifndef INC
-  $(warning W: INC not defined, defaulting to "include/$(TARGET)")
-  override INC := include/$(TARGET)
+  $(error $(error_fx)INC is not defined$(reset_fx))
  endif
  override INC := $(strip $(INC))
 endif
 
-# warnings/errors about LINKS and LINK_DIR
+# warnings/errors about LINKS and LINK_DIRS
 ifeq "$(SOFTWARE)" "exe"
  ifdef LINK_DIRS
   ifndef LINKS
-   $(warning W: LINK_DIRS defined, but no libaries to link with specified)
+   $(warning $(warning_fx)LINK_DIRS is defined, but LINKS isn't. \
+             Specifying link directories without links doesn't do anything. \
+             Consider either removing LINK_DIRS or defining LINKS$(reset_fx))
   endif
  endif
 else
  ifdef LINKS
-  $(error Can only link libaries to an executable)
+  $(warning $(warning_fx)LINKS is defined, but is ignored when building a \
+            library. Consider removing LINKS$(reset_fx))
  endif
  ifdef LINK_DIRS
-  $(warning W: LINK_DIRS is defined but we're building a library; consider removing LINK_DIRS)
+  $(warning $(warning_fx)LINK_DIRS is defined, but is ignored when building a \
+            library. Consider removing LINK_DIRS$(reset_fx))
  endif
 endif
+
+ifndef TEST
+ $(error $(error_fx)TEST is not defined. \
+         If you don't have any tests, define it as ':'$(reset_fx))
+endif
+override TEST := $(strip $(TEST))
 
 # === variables ============================================================== #
 
@@ -112,27 +155,37 @@ static_lib_suffix = .a
 exe_prefix =
 exe_suffix =
 
+test_prefix = $(exe_prefix)
+test_suffix = _test$(exe_suffix)
+
 # in case these are not defined for some reason
 CC      ?= cc
 CXX     ?= c++
 AR      ?= ar
 INSTALL ?= install
 
+# === custom functions ======================================================= #
+
+override _eq = $(and $(findstring $(1),$(2)),$(findstring $(2),$(1)))
+
+override _test_target = $(word 1,$(subst :, ,$(1)))
+override _test_source = $(word 2,$(subst :, ,$(1)))
+
 # === constants ============================================================== #
 
 override LINK_FLAGS := $(addprefix -L,$(LINK_DIRS)) $(addprefix -l,$(LINKS))
 
-override C_SOURCES   := $(foreach \
+override _find_c_files   = $(foreach \
 		__file, \
-		$(shell find '$(SRC)' \
+		$(shell find '$(1)' \
 				-type f \
 				-name '*.[ci]' \
 		), \
-		$(__file:$(SRC)/%=%) \
+		$(__file:$(1)/%=%) \
 )
-override CXX_SOURCES := $(foreach \
+override _find_cxx_files = $(foreach \
 		__file, \
-		$(shell find '$(SRC)' \
+		$(shell find '$(1)' \
 				-type f \
 				'(' \
 						-name '*.C'   -o \
@@ -145,13 +198,19 @@ override CXX_SOURCES := $(foreach \
 						-name '*.cxx'    \
 				')' \
 		), \
-		$(__file:$(SRC)/%=%) \
+		$(__file:$(1)/%=%) \
 )
+
+override C_SOURCES   := $(call _find_c_files,$(SRC_MAIN))
+override CXX_SOURCES := $(call _find_cxx_files,$(SRC_MAIN))
 
 # checking if source files were found
 ifeq "$(C_SOURCES)$(CXX_SOURCES)" ""
- $(error No source files found)
+ $(error $(error_fx)No source files found$(reset_fx))
 endif
+
+override TEST_C_SOURCES   := $(call _find_c_files,$(SRC_TEST))
+override TEST_CXX_SOURCES := $(call _find_cxx_files,$(SRC_TEST))
 
 # shared objects
 override SHARED_C_OBJECTS   := $(foreach __source_file,$(C_SOURCES), \
@@ -176,6 +235,21 @@ override SHARED_LIB_TARGET := $(shared_lib_prefix)$(TARGET)$(shared_lib_suffix)
 override STATIC_LIB_TARGET := $(static_lib_prefix)$(TARGET)$(static_lib_suffix)
 override EXE_TARGET        := $(exe_prefix)$(TARGET)$(exe_suffix)
 
+override C_TESTS   := $(foreach __source_file,$(TEST_C_SOURCES), \
+	$(test_prefix)$(basename $(notdir $(__source_file)))$(test_suffix):$(__source_file) \
+)
+override CXX_TESTS := $(foreach __source_file,$(TEST_CXX_SOURCES), \
+	$(test_prefix)$(basename $(notdir $(__source_file)))$(test_suffix):$(__source_file) \
+)
+
+override TEST_C_TARGETS   := $(foreach __test,$(C_TESTS), \
+	$(call _test_target,$(__test)) \
+)
+override TEST_CXX_TARGETS := $(foreach __test,$(CXX_TESTS), \
+	$(call _test_target,$(__test)) \
+)
+override TEST_TARGETS     := $(TEST_C_TARGETS) $(TEST_CXX_TARGETS)
+
 # === default rule =========================================================== #
 
 # exe: all
@@ -189,6 +263,19 @@ else
  .PHONY: all
 endif
 
+# === universe rule ========================================================== #
+
+# exe: universe
+# lib: universe
+
+ifeq "$(SOFTWARE)" "exe"
+ _universe: $(EXE_TARGET) tests
+ .PHONY: _universe
+else
+ _universe: targets tests
+ .PHONY: _universe
+endif
+
 # === building object files ================================================== #
 
 # exe: objects $(STATIC_OBJECTS)
@@ -196,36 +283,37 @@ endif
 
 ifeq "$(SOFTWARE)" "exe"
  objects: $(STATIC_OBJECTS)
- $(STATIC_C_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+ $(STATIC_C_OBJECTS):   $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
-	$(info Building file '$@'...)
-	@$(CC) $(CCFLAGS) -c '$<' -o '$@'
- $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
+	@$(CC)  $(CCFLAGS) -c '$<' -o '$@'
+ $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
-	$(info Building file '$@'...)
+	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
  .PHONY: objects
 else
  objects: objects/shared objects/static
  objects/shared: $(SHARED_OBJECTS)
  objects/static: $(STATIC_OBJECTS)
- $(SHARED_C_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC)/%
+ $(SHARED_C_OBJECTS):   $(BIN)/%.$(shared_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
-	$(info Building file '$@'...)
-	@$(CC) $(CCFLAGS) -c '$<' -o '$@' -fPIC
- $(SHARED_CXX_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC)/%
+	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
+	@$(CC)  $(CCFLAGS) -c '$<' -o '$@' -fPIC
+ $(SHARED_CXX_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
-	$(info Building file '$@'...)
+	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@' -fPIC
- $(STATIC_C_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+ $(STATIC_C_OBJECTS):   $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
-	$(info Building file '$@'...)
-	@$(CC) $(CCFLAGS) -c '$<' -o '$@'
- $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC)/%
+	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
+	@$(CC)  $(CCFLAGS) -c '$<' -o '$@'
+ $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
-	$(info Building file '$@'...)
+	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
  .PHONY: objects objects/shared objects/static
+	@printf '$(clean_fx)'
 endif
 
 # === building targets ======================================================= #
@@ -234,8 +322,8 @@ endif
 # lib: targets $(SHARED_LIB_TARGET) $(STATIC_LIB_TARGET)
 
 ifeq "$(SOFTWARE)" "exe"
- $(EXE_TARGET): objects
-	$(info Building target '$(EXE_TARGET)'...)
+ $(EXE_TARGET): $(STATIC_OBJECTS)
+	$(info $(target_build_fx)Building target '$(EXE_TARGET)'...$(reset_fx))
   ifeq "$(CXX_SOURCES)" ""
 	@$(CC)  $(CCFLAGS)  $(STATIC_OBJECTS) -o '$(EXE_TARGET)' $(LINK_FLAGS)
   else
@@ -243,18 +331,42 @@ ifeq "$(SOFTWARE)" "exe"
   endif
 else
  targets: $(SHARED_LIB_TARGET) $(STATIC_LIB_TARGET)
- $(SHARED_LIB_TARGET): objects/shared
-	$(info Building target '$(SHARED_LIB_TARGET)'...)
+ $(SHARED_LIB_TARGET): $(SHARED_OBJECTS)
+	$(info $(target_build_fx)Building target '$(SHARED_LIB_TARGET)'...$(reset_fx))
   ifeq "$(CXX_SOURCES)" ""
 	@$(CC)  $(CCFLAGS)  $(SHARED_OBJECTS) -o '$(SHARED_LIB_TARGET)' -shared
   else
 	@$(CXX) $(CXXFLAGS) $(SHARED_OBJECTS) -o '$(SHARED_LIB_TARGET)' -shared
   endif
- $(STATIC_LIB_TARGET): objects/static
-	$(info Building target '$(STATIC_LIB_TARGET)'...)
+ $(STATIC_LIB_TARGET): $(STATIC_OBJECTS)
+	$(info $(target_build_fx)Building target '$(STATIC_LIB_TARGET)'...$(reset_fx))
 	@$(AR) rs '$(STATIC_LIB_TARGET)' $(STATIC_OBJECTS) 2>/dev/null
  .PHONY: targets
 endif
+
+# === testing ================================================================ #
+
+# exe|lib: tests $(TEST_C_TARGETS) $(TEST_CXX_TARGETS) test
+
+override _find_test_source = $(foreach __test,$(C_TESTS) $(CXX_TESTS), \
+	$(if \
+		$(call _eq,$(1),$(call _test_target,$(__test))), \
+		$(call _test_source,$(__test)) \
+	) \
+)
+
+tests: $(TEST_TARGETS)
+.SECONDEXPANSION:
+$(TEST_C_TARGETS): %:   $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
+	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
+	@$(CC)  $(CCFLAGS)  '$<' -o '$@'
+.SECONDEXPANSION:
+$(TEST_CXX_TARGETS): %: $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
+	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
+	@$(CXX) $(CXXFLAGS) '$<' -o '$@'
+test: $(TEST_TARGETS)
+	@$(TEST) $(addprefix ./,$(TEST_TARGETS))
+.PHONY: tests test
 
 # === installing ============================================================= #
 
@@ -265,17 +377,17 @@ endif
 
 ifeq "$(SOFTWARE)" "exe"
  install: $(EXE_TARGET)
-	$(info Installing target '$(EXE_TARGET)' to '$(DESTDIR)$(bindir)'...)
+	$(info $(install_fx)Installing target '$(EXE_TARGET)' to '$(DESTDIR)$(bindir)'...$(reset_fx))
 	@$(INSTALL) -m755 '$(EXE_TARGET)' '$(DESTDIR)$(bindir)'
  .PHONY: install
 else
  install: install/targets install/headers
  install/targets: install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET)
  install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET): install/%: %
-	$(info Installing target '$(@:install/%=%)' to '$(DESTDIR)$(libdir)'...)
+	$(info $(install_fx)Installing target '$(@:install/%=%)' to '$(DESTDIR)$(libdir)'...$(reset_fx))
 	@$(INSTALL) -m644 '$(@:install/%=%)' '$(DESTDIR)$(libdir)'
  install/headers:
-	$(info Installing headers to '$(DESTDIR)$(includedir)'...)
+	$(info $(install_fx)Installing headers to '$(DESTDIR)$(includedir)'...$(reset_fx))
 	@cp -r '$(INC)' '$(DESTDIR)$(includedir)'
  .PHONY: install install/targets \
          install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET) \
@@ -291,15 +403,18 @@ endif
 
 ifeq "$(SOFTWARE)" "exe"
  uninstall:
-	@rm -f '$(DESTDIR)$(bindir)/$(EXE_TARGET)'
+	@rm -f '$(DESTDIR)$(bindir)/$(EXE_TARGET)' | \
+		sed -E s/'(.*)'/'$(uninstall_fx)\1$(reset_fx)'/g
  .PHONY: uninstall
 else
  uninstall: uninstall/targets uninstall/headers
  uninstall/targets: uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET)
  uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET): %:
-	@rm -fv '$(DESTDIR)$(libdir)/$(@:uninstall/%=%)'
+	@rm -fv '$(DESTDIR)$(libdir)/$(@:uninstall/%=%)' | \
+		sed -E s/'(.*)'/'$(uninstall_fx)\1$(reset_fx)'/g
  uninstall/headers:
-	@rm -rfv '$(DESTDIR)$(includedir)/$(notdir $(INC))'
+	@rm -rfv '$(DESTDIR)$(includedir)/$(notdir $(INC))' | \
+		sed -E s/'(.*)'/'$(uninstall_fx)\1$(reset_fx)'/g
  .PHONY: uninstall uninstall/targets \
          uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET) \
          uninstall/headers
@@ -310,53 +425,72 @@ endif
 # exe: clean
 #      clean/objects $(addprefix clean/,$(STATIC_OBJECTS))
 #      clean/$(EXE_TARGET)
+#      clean/tests $(addprefix clean/,$(TEST_TARGETS))
 # lib: clean
 #      clean/objects clean/objects/shared clean/objects/static
 #      clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
+#      clean/tests $(addprefix clean/,$(TEST_TARGETS))
 
 override _clean_empty_bin_dirs := if [ -d '$(BIN)' ]; then \
-	find '$(BIN)' -depth -type d -exec rm -dfv '{}' ';' 2>/dev/null ; \
+	find '$(BIN)' -depth -type d -exec rm -dfv '{}' ';' 2>/dev/null \
+		| sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g ; \
 fi
 
 ifeq "$(SOFTWARE)" "exe"
- clean: clean/objects clean/$(EXE_TARGET)
+ clean: clean/objects clean/$(EXE_TARGET) clean/tests
  .PHONY: clean
 
  clean/objects:
-	@rm -rfv '$(BIN)'
+	@rm -rfv '$(BIN)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  $(addprefix clean/,$(STATIC_OBJECTS)): %:
-	@rm -fv '$(@:clean/%=%)'
+	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
 	@$(_clean_empty_bin_dirs)
  .PHONY: clean/objects $(addprefix clean/,$(STATIC_OBJECTS))
 
  clean/$(EXE_TARGET):
-	@rm -fv '$(EXE_TARGET)'
+	@rm -fv '$(EXE_TARGET)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  .PHONY: clean/$(EXE_TARGET)
+
+ clean/tests:
+	@rm -fv $(TEST_TARGETS) | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+ $(addprefix clean/,$(TEST_TARGETS)): %:
+	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+ .PHONY: clean/tests $(addprefix clean/,$(TEST_TARGETS))
 else
- clean: clean/objects clean/targets
+ clean: clean/objects clean/targets clean/tests
  .PHONY: clean
 
  clean/objects:
-	@rm -rfv '$(BIN)'
+	@rm -rfv '$(BIN)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  clean/objects/shared:
-	@rm -fv $(SHARED_OBJECTS)
+	@rm -fv $(SHARED_OBJECTS) | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
 	@$(_clean_empty_bin_dirs)
  clean/objects/static:
-	@rm -fv $(STATIC_OBJECTS)
+	@rm -fv $(STATIC_OBJECTS) | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
 	@$(_clean_empty_bin_dirs)
  $(addprefix clean/,$(SHARED_OBJECTS) $(STATIC_OBJECTS)): %:
-	@rm -fv '$(@:clean/%=%)'
+	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
 	@$(_clean_empty_bin_dirs)
  .PHONY: clean/objects clean/objects/shared clean/objects/static
 
  clean/targets: clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
  clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET): %:
-	@rm -fv '$(@:clean/%=%)'
+	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  .PHONY: clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
+
+ clean/tests:
+	@rm -fv $(TEST_TARGETS) | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+ $(addprefix clean/,$(TEST_TARGETS)): %:
+	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+ .PHONY: clean/tests $(addprefix clean/,$(TEST_TARGETS))
 endif
 
 # === version ================================================================ #
 
 _version:
-	@echo 1.0.1
+	@echo 2.0.0
 .PHONY: _version
+
+# = other.mk ================================================================= #
+
+-include other.mk
