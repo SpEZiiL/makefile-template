@@ -333,7 +333,7 @@ endif
 
 # === testing ================================================================ #
 
-# exe|lib: tests $(TEST_C_TARGETS) $(TEST_CXX_TARGETS)
+# exe|lib: tests $(TEST_C_TARGETS) $(TEST_CXX_TARGETS) test
 
 override _find_test_source = $(foreach __test,$(C_TESTS) $(CXX_TESTS), \
 	$(if \
@@ -351,7 +351,9 @@ $(TEST_C_TARGETS): %:   $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
 $(TEST_CXX_TARGETS): %: $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
 	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) '$<' -o '$@'
-.PHONY: tests
+test: $(TEST_TARGETS)
+	@$(TEST) $(addprefix ./,$(TEST_TARGETS))
+.PHONY: tests test
 
 # === installing ============================================================= #
 
