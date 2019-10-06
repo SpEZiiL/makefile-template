@@ -331,6 +331,15 @@ else
  .PHONY: targets
 endif
 
+# === testing ================================================================ #
+
+override _find_test_source = $(foreach __test,$(C_TESTS) $(CXX_TESTS), \
+	$(if \
+		$(call _eq,$(1),$(call _test_target,$(__test))), \
+		$(call _test_source,$(__test)) \
+	) \
+)
+
 # === installing ============================================================= #
 
 # exe: install
