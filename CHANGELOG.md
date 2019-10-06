@@ -28,6 +28,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * The executable and library targets are no longer being rebuild even when the
   source files didn't change
 
+## [1.0.1] - 2019-10-05 ##
+
+[1.0.1]: https://github.com/mfederczuk/makefile-template/compare/v1.0.0...v1.0.1
+
+### Fixed ###
+
+* Built **C** executables will no longer have two spaces in front of them
+
 ## [1.0.0] - 2019-10-02 ##
 
 [1.0.0]: https://github.com/mfederczuk/makefile-template/releases/tag/v1.0.0
