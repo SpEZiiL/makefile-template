@@ -263,6 +263,19 @@ else
  .PHONY: all
 endif
 
+# === universe rule ========================================================== #
+
+# exe: universe
+# lib: universe
+
+ifeq "$(SOFTWARE)" "exe"
+ _universe: $(EXE_TARGET) tests
+ .PHONY: _universe
+else
+ _universe: targets tests
+ .PHONY: _universe
+endif
+
 # === building object files ================================================== #
 
 # exe: objects $(STATIC_OBJECTS)
