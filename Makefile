@@ -313,7 +313,6 @@ else
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
  .PHONY: objects objects/shared objects/static
-	@printf '$(clean_fx)'
 endif
 
 # === building targets ======================================================= #
