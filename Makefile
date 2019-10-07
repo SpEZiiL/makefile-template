@@ -322,24 +322,24 @@ endif
 
 ifeq "$(SOFTWARE)" "exe"
  $(EXE_TARGET): $(STATIC_OBJECTS)
-	$(info $(target_build_fx)Building target '$(EXE_TARGET)'...$(reset_fx))
+	$(info $(target_build_fx)Building target '$@'...$(reset_fx))
   ifeq "$(CXX_SOURCES)" ""
-	@$(CC)  $(CCFLAGS)  $(STATIC_OBJECTS) -o '$(EXE_TARGET)' $(LINK_FLAGS)
+	@$(CC)  $(CCFLAGS)  $^ -o '$@' $(LINK_FLAGS)
   else
-	@$(CXX) $(CXXFLAGS) $(STATIC_OBJECTS) -o '$(EXE_TARGET)' $(LINK_FLAGS)
+	@$(CXX) $(CXXFLAGS) $^ -o '$@' $(LINK_FLAGS)
   endif
 else
  targets: $(SHARED_LIB_TARGET) $(STATIC_LIB_TARGET)
  $(SHARED_LIB_TARGET): $(SHARED_OBJECTS)
-	$(info $(target_build_fx)Building target '$(SHARED_LIB_TARGET)'...$(reset_fx))
+	$(info $(target_build_fx)Building target '$@'...$(reset_fx))
   ifeq "$(CXX_SOURCES)" ""
-	@$(CC)  $(CCFLAGS)  $(SHARED_OBJECTS) -o '$(SHARED_LIB_TARGET)' -shared
+	@$(CC)  $(CCFLAGS)  $^ -o '$@' -shared
   else
-	@$(CXX) $(CXXFLAGS) $(SHARED_OBJECTS) -o '$(SHARED_LIB_TARGET)' -shared
+	@$(CXX) $(CXXFLAGS) $^ -o '$@' -shared
   endif
  $(STATIC_LIB_TARGET): $(STATIC_OBJECTS)
-	$(info $(target_build_fx)Building target '$(STATIC_LIB_TARGET)'...$(reset_fx))
-	@$(AR) rs '$(STATIC_LIB_TARGET)' $(STATIC_OBJECTS) 2>/dev/null
+	$(info $(target_build_fx)Building target '$@'...$(reset_fx))
+	@$(AR) rs '$@' $^ 2>/dev/null
  .PHONY: targets
 endif
 
@@ -364,7 +364,7 @@ $(TEST_CXX_TARGETS): %: $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
 	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) '$<' -o '$@'
 test: $(TEST_TARGETS)
-	@$(TEST) $(addprefix ./,$(TEST_TARGETS))
+	@$(TEST) $(addprefix ./,$^)
 .PHONY: tests test
 
 # === installing ============================================================= #
@@ -376,8 +376,8 @@ test: $(TEST_TARGETS)
 
 ifeq "$(SOFTWARE)" "exe"
  install: $(EXE_TARGET)
-	$(info $(install_fx)Installing target '$(EXE_TARGET)' to '$(DESTDIR)$(bindir)'...$(reset_fx))
-	@$(INSTALL) -m755 '$(EXE_TARGET)' '$(DESTDIR)$(bindir)'
+	$(info $(install_fx)Installing target '$@' to '$(DESTDIR)$(bindir)'...$(reset_fx))
+	@$(INSTALL) -m755 '$@' '$(DESTDIR)$(bindir)'
  .PHONY: install
 else
  install: install/targets install/headers
@@ -447,7 +447,7 @@ ifeq "$(SOFTWARE)" "exe"
  .PHONY: clean/objects $(addprefix clean/,$(STATIC_OBJECTS))
 
  clean/$(EXE_TARGET):
-	@rm -fv '$(EXE_TARGET)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+	@rm -fv '$@' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  .PHONY: clean/$(EXE_TARGET)
 
  clean/tests:
