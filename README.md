@@ -119,6 +119,22 @@ Change where targets and headers are installed with the `prefix` and
 Any of these variables can either be set/changed inside the Makefile or on the
  command line.
 
+### Testing ###
+
+Every file in the directory saved in the `SRC_TEST` variable will be built to
+ a test executable.  
+The name of the executable will be the base name of the file (directory and
+ extensions removed), plus pre- & suffixes.  
+By default the prefix will be `$(exe_prefix)` and the suffix will be
+ `_test$(exe_suffix)`. The value is saved inside the variables `test_prefix` and
+ `test_suffix`.
+
+The `test` rule will try to invoke every test by passing every executable, with
+ a `./` prefix, to the `TEST` variable.  
+As previously mentioned, [utest-script](https://github.com/mfederczuk/utest-script)
+ is a good choice as a testing software as it is literally created for something
+ like this.
+
 ### Makefile Rules ###
 
 The Makefile has a bunch of rules that you can target.  
