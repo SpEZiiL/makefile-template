@@ -13,9 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added ###
 
 * When building a library, the test executables will now be linked with the
-  static object files
+   static object files
 * The `SRC` variable can now be used instead of `SRC_MAIN` and `SRC_TEST` if you
-  don't want to use tests
+   don't want to use tests
 
 ## [2.0.0] - 2019-10-06 ##
 
@@ -25,22 +25,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * The output is now colored
 * An `other.mk` file can be put in the same directory as the Makefile for other
-  user defined targets (it is included at the end of the Makefile)
+   user defined targets (it is included at the end of the Makefile)
 * Automatic test detection from source files inside the new `SRC_TEST` variable
 
 ### Changed ###
 
 * Renamed `SRC` to `SRC_MAIN`
 * When the `SRC_MAIN`, `BIN` or `INC` variables are not defined the Makefile
-  will now throw an error and stop execution instead of just displaying a
-  warning
+   will now throw an error and stop execution instead of just displaying a
+   warning
 * Defining `LINKS` when building a library will only display a warning instead
-  of throwing an error
+   of throwing an error
 
 ### Fixed ###
 
 * The executable and library targets are no longer being rebuild even when the
-  source files didn't change
+   source files didn't change
 
 ## [1.0.1] - 2019-10-05 ##
 

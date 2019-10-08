@@ -81,7 +81,7 @@ Open it up and you will see various variable definitions under the
   A list of libraries to link with.  
   **Note:** We *cannot* link any libraries when building a library ourself. The
    Makefile will throw an error if this variable is defined and `SOFTWARE` is
-    set to `lib`
+   set to `lib`
 * `TEST`  
   The program to use to test all built test targets. Every test will be passed
    to this command, each with a `./` prefix added onto them.  
