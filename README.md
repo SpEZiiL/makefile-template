@@ -10,6 +10,20 @@
 **C/C++** [Makefile](https://www.gnu.org/software/make/) template for
  applications and libraries.
 
+Writing a good Makefile is tedious and takes time. Time, that you could've spent
+ writing your software.  
+Not to mention, most Makefiles are build up in a way, where you need to list all
+ of the object files that you want to create by hand.  
+You then spend minutes trying to figure out why your program is not compiling
+ just to figure out that it's never even building that file that you wrote an
+ hour ago.
+
+After an initial configuration, the Makefile will automatically detect any
+ source files in a specified directory and it's subdirectories.  
+Building object files, building executables or shared and static libraries,
+ building test executables, installing, uninstalling and cleaning is all covered
+ by this template.
+
 ## Download ##
 
 Download the Makefile from the [latest release][latest_release] and move it into
