@@ -437,46 +437,53 @@ override _clean_empty_dir = if [ -d '$(1)' ]; then \
 		| $(call _color_pipe,$(clean_fx)) ; \
 fi
 
+override CLEANING_STATIC_OBJECTS := $(addprefix clean/,$(STATIC_OBJECTS))
+override CLEANING_SHARED_OBJECTS := $(addprefix clean/,$(SHARED_OBJECTS))
+override CLEANING_OBJECTS        := $(CLEANING_SHARED_OBJECTS) \
+                                    $(CLEANING_STATIC_OBJECTS)
+
+override CLEANING_TEST_TARGETS := $(addprefix clean/,$(TEST_TARGETS))
+
 ifeq "$(SOFTWARE)" "exe"
  clean: clean/objects clean/$(EXE_TARGET) clean/tests
  .PHONY: clean
 
- clean/objects: $(addprefix clean/,$(STATIC_OBJECTS))
- $(addprefix clean/,$(STATIC_OBJECTS)): %:
+ clean/objects: $(CLEANING_STATIC_OBJECTS)
+ $(CLEANING_STATIC_OBJECTS): %:
 	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
 	@$(call _clean_empty_dir,$(BIN))
- .PHONY: clean/objects $(addprefix clean/,$(STATIC_OBJECTS))
+ .PHONY: clean/objects $(CLEANING_STATIC_OBJECTS)
 
  clean/$(EXE_TARGET):
 	@rm -fv '$@' | $(call _color_pipe,$(clean_fx))
  .PHONY: clean/$(EXE_TARGET)
 
- clean/tests: $(addprefix clean/,$(TEST_TARGETS))
- $(addprefix clean/,$(TEST_TARGETS)): %:
+ clean/tests: $(CLEANING_TEST_TARGETS)
+ $(CLEANING_TEST_TARGETS): %:
 	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
- .PHONY: clean/tests $(addprefix clean/,$(TEST_TARGETS))
+ .PHONY: clean/tests $(CLEANING_TEST_TARGETS)
 else
  clean: clean/objects clean/targets clean/tests
  .PHONY: clean
 
  clean/objects: clean/objects/shared clean/objects/static
- clean/objects/shared: $(addprefix clean/,$(SHARED_OBJECTS))
- clean/objects/static: $(addprefix clean/,$(STATIC_OBJECTS))
- $(addprefix clean/,$(SHARED_OBJECTS) $(STATIC_OBJECTS)): %:
+ clean/objects/shared: $(CLEANING_SHARED_OBJECTS)
+ clean/objects/static: $(CLEANING_STATIC_OBJECTS)
+ $(CLEANING_OBJECTS): %:
 	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
 	@$(call _clean_empty_dir,$(BIN))
  .PHONY: clean/objects clean/objects/shared clean/objects/static \
-         $(addprefix clean/,$(SHARED_OBJECTS) $(STATIC_OBJECTS))
+         $(CLEANING_OBJECTS)
 
  clean/targets: clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
  clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET): %:
 	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
  .PHONY: clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
 
- clean/tests: $(addprefix clean/,$(TEST_TARGETS))
- $(addprefix clean/,$(TEST_TARGETS)): %:
+ clean/tests: $(CLEANING_TEST_TARGETS)
+ $(CLEANING_TEST_TARGETS): %:
 	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
- .PHONY: clean/tests $(addprefix clean/,$(TEST_TARGETS))
+ .PHONY: clean/tests $(CLEANING_TEST_TARGETS)
 endif
 
 # === version ================================================================ #
