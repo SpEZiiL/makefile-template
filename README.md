@@ -157,6 +157,9 @@ Most of the time `make` and `make clean` will be enough for testing your
 
 * `all` (executable & library)  
   Default rule; builds the executable or the libraries
+* `_universe` (executable & library)  
+  Builds the executable or the libraries and the tests (if tests are disabled,
+   this is identical to `all`)
 
 **building object files:**
 
