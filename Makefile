@@ -254,9 +254,6 @@ override TEST_TARGETS     := $(TEST_C_TARGETS) $(TEST_CXX_TARGETS)
 
 # === default rule =========================================================== #
 
-# exe: all
-# lib: all
-
 ifeq "$(SOFTWARE)" "exe"
  all: $(EXE_TARGET)
  .PHONY: all
@@ -267,9 +264,6 @@ endif
 
 # === universe rule ========================================================== #
 
-# exe: universe
-# lib: universe
-
 ifeq "$(SOFTWARE)" "exe"
  _universe: $(EXE_TARGET) tests
  .PHONY: _universe
@@ -279,9 +273,6 @@ else
 endif
 
 # === building object files ================================================== #
-
-# exe: objects $(STATIC_OBJECTS)
-# lib: objects objects/shared objects/static $(SHARED_OBJECTS) $(STATIC_OBJECTS)
 
 ifeq "$(SOFTWARE)" "exe"
  objects: $(STATIC_OBJECTS)
@@ -319,9 +310,6 @@ endif
 
 # === building targets ======================================================= #
 
-# exe: $(EXE_TARGET)
-# lib: targets $(SHARED_LIB_TARGET) $(STATIC_LIB_TARGET)
-
 ifeq "$(SOFTWARE)" "exe"
  $(EXE_TARGET): $(STATIC_OBJECTS)
 	$(info $(target_build_fx)Building target '$@'...$(reset_fx))
@@ -347,8 +335,6 @@ endif
 
 # === testing ================================================================ #
 
-# exe|lib: tests $(TEST_C_TARGETS) $(TEST_CXX_TARGETS) test
-
 override _find_test_source = $(foreach __test,$(C_TESTS) $(CXX_TESTS), \
 	$(if \
 		$(call _eq,$(1),$(call _test_target,$(__test))), \
@@ -371,11 +357,6 @@ test: $(TEST_TARGETS)
 
 # === installing ============================================================= #
 
-# exe: install
-# lib: install install/targets
-#      install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET)
-#      install/headers
-
 ifeq "$(SOFTWARE)" "exe"
  install: $(EXE_TARGET)
 	$(info $(install_fx)Installing target '$@' to '$(DESTDIR)$(bindir)'...$(reset_fx))
@@ -397,11 +378,6 @@ endif
 
 # === uninstalling =========================================================== #
 
-# exe: uninstall
-# lib: uninstall uninstall/targets
-#      uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET)
-#      uninstall/headers
-
 ifeq "$(SOFTWARE)" "exe"
  uninstall:
 	@rm -f '$(DESTDIR)$(bindir)/$(EXE_TARGET)' | \
@@ -422,15 +398,6 @@ else
 endif
 
 # === cleaning =============================================================== #
-
-# exe: clean
-#      clean/objects $(addprefix clean/,$(STATIC_OBJECTS))
-#      clean/$(EXE_TARGET)
-#      clean/tests $(addprefix clean/,$(TEST_TARGETS))
-# lib: clean
-#      clean/objects clean/objects/shared clean/objects/static
-#      clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
-#      clean/tests $(addprefix clean/,$(TEST_TARGETS))
 
 override _clean_empty_dir = if [ -d '$(1)' ]; then \
 	find '$(BIN)' -depth -type d -exec rm -dfv '{}' ';' 2>/dev/null \
