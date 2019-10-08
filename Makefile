@@ -472,7 +472,8 @@ else
  $(CLEANING_OBJECTS): %:
 	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
 	@$(call _clean_empty_dir,$(BIN))
- .PHONY: clean/objects clean/objects/shared clean/objects/static \
+ .PHONY: clean/objects \
+         clean/objects/shared clean/objects/static \
          $(CLEANING_OBJECTS)
 
  clean/targets: clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
