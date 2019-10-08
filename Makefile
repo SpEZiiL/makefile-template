@@ -439,8 +439,7 @@ ifeq "$(SOFTWARE)" "exe"
  clean: clean/objects clean/$(EXE_TARGET) clean/tests
  .PHONY: clean
 
- clean/objects:
-	@rm -rfv '$(BIN)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+ clean/objects: $(addprefix clean/,$(STATIC_OBJECTS))
  $(addprefix clean/,$(STATIC_OBJECTS)): %:
 	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
 	@$(call _clean_empty_dir,$(BIN))
@@ -450,8 +449,7 @@ ifeq "$(SOFTWARE)" "exe"
 	@rm -fv '$@' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  .PHONY: clean/$(EXE_TARGET)
 
- clean/tests:
-	@rm -fv $(TEST_TARGETS) | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+ clean/tests: $(addprefix clean/,$(TEST_TARGETS))
  $(addprefix clean/,$(TEST_TARGETS)): %:
 	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  .PHONY: clean/tests $(addprefix clean/,$(TEST_TARGETS))
@@ -459,14 +457,9 @@ else
  clean: clean/objects clean/targets clean/tests
  .PHONY: clean
 
- clean/objects:
-	@rm -rfv '$(BIN)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
- clean/objects/shared:
-	@rm -fv $(SHARED_OBJECTS) | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
-	@$(call _clean_empty_dir,$(BIN))
- clean/objects/static:
-	@rm -fv $(STATIC_OBJECTS) | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
-	@$(call _clean_empty_dir,$(BIN))
+ clean/objects: clean/objects/shared clean/objects/static
+ clean/objects/shared: $(addprefix clean/,$(SHARED_OBJECTS))
+ clean/objects/static: $(addprefix clean/,$(STATIC_OBJECTS))
  $(addprefix clean/,$(SHARED_OBJECTS) $(STATIC_OBJECTS)): %:
 	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
 	@$(call _clean_empty_dir,$(BIN))
@@ -478,8 +471,7 @@ else
 	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  .PHONY: clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
 
- clean/tests:
-	@rm -fv $(TEST_TARGETS) | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+ clean/tests: $(addprefix clean/,$(TEST_TARGETS))
  $(addprefix clean/,$(TEST_TARGETS)): %:
 	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  .PHONY: clean/tests $(addprefix clean/,$(TEST_TARGETS))
