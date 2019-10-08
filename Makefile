@@ -171,6 +171,8 @@ override _eq = $(and $(findstring $(1),$(2)),$(findstring $(2),$(1)))
 override _test_target = $(word 1,$(subst :, ,$(1)))
 override _test_source = $(word 2,$(subst :, ,$(1)))
 
+override _color_pipe = sed -E s/'.*'/'$(1)\0$(reset_fx)'/g
+
 # === constants ============================================================== #
 
 override LINK_FLAGS := $(addprefix -L,$(LINK_DIRS)) $(addprefix -l,$(LINKS))
@@ -410,10 +412,10 @@ else
  uninstall/targets: uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET)
  uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET): %:
 	@rm -fv '$(DESTDIR)$(libdir)/$(@:uninstall/%=%)' | \
-		sed -E s/'(.*)'/'$(uninstall_fx)\1$(reset_fx)'/g
+		$(call _color_pipe,$(uninstall_fx))
  uninstall/headers:
 	@rm -rfv '$(DESTDIR)$(includedir)/$(notdir $(INC))' | \
-		sed -E s/'(.*)'/'$(uninstall_fx)\1$(reset_fx)'/g
+		$(call _color_pipe,$(uninstall_fx))
  .PHONY: uninstall uninstall/targets \
          uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET) \
          uninstall/headers
@@ -432,7 +434,7 @@ endif
 
 override _clean_empty_dir = if [ -d '$(1)' ]; then \
 	find '$(BIN)' -depth -type d -exec rm -dfv '{}' ';' 2>/dev/null \
-		| sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g ; \
+		| $(call _color_pipe,$(clean_fx)) ; \
 fi
 
 ifeq "$(SOFTWARE)" "exe"
@@ -441,17 +443,17 @@ ifeq "$(SOFTWARE)" "exe"
 
  clean/objects: $(addprefix clean/,$(STATIC_OBJECTS))
  $(addprefix clean/,$(STATIC_OBJECTS)): %:
-	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
 	@$(call _clean_empty_dir,$(BIN))
  .PHONY: clean/objects $(addprefix clean/,$(STATIC_OBJECTS))
 
  clean/$(EXE_TARGET):
-	@rm -fv '$@' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+	@rm -fv '$@' | $(call _color_pipe,$(clean_fx))
  .PHONY: clean/$(EXE_TARGET)
 
  clean/tests: $(addprefix clean/,$(TEST_TARGETS))
  $(addprefix clean/,$(TEST_TARGETS)): %:
-	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
  .PHONY: clean/tests $(addprefix clean/,$(TEST_TARGETS))
 else
  clean: clean/objects clean/targets clean/tests
@@ -461,19 +463,19 @@ else
  clean/objects/shared: $(addprefix clean/,$(SHARED_OBJECTS))
  clean/objects/static: $(addprefix clean/,$(STATIC_OBJECTS))
  $(addprefix clean/,$(SHARED_OBJECTS) $(STATIC_OBJECTS)): %:
-	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
 	@$(call _clean_empty_dir,$(BIN))
  .PHONY: clean/objects clean/objects/shared clean/objects/static \
          $(addprefix clean/,$(SHARED_OBJECTS) $(STATIC_OBJECTS))
 
  clean/targets: clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
  clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET): %:
-	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
  .PHONY: clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
 
  clean/tests: $(addprefix clean/,$(TEST_TARGETS))
  $(addprefix clean/,$(TEST_TARGETS)): %:
-	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
+	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
  .PHONY: clean/tests $(addprefix clean/,$(TEST_TARGETS))
 endif
 
