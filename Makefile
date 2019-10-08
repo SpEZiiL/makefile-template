@@ -430,7 +430,7 @@ endif
 #      clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
 #      clean/tests $(addprefix clean/,$(TEST_TARGETS))
 
-override _clean_empty_bin_dirs := if [ -d '$(BIN)' ]; then \
+override _clean_empty_dir = if [ -d '$(1)' ]; then \
 	find '$(BIN)' -depth -type d -exec rm -dfv '{}' ';' 2>/dev/null \
 		| sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g ; \
 fi
@@ -443,7 +443,7 @@ ifeq "$(SOFTWARE)" "exe"
 	@rm -rfv '$(BIN)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  $(addprefix clean/,$(STATIC_OBJECTS)): %:
 	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
-	@$(_clean_empty_bin_dirs)
+	@$(call _clean_empty_dir,$(BIN))
  .PHONY: clean/objects $(addprefix clean/,$(STATIC_OBJECTS))
 
  clean/$(EXE_TARGET):
@@ -463,13 +463,13 @@ else
 	@rm -rfv '$(BIN)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
  clean/objects/shared:
 	@rm -fv $(SHARED_OBJECTS) | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
-	@$(_clean_empty_bin_dirs)
+	@$(call _clean_empty_dir,$(BIN))
  clean/objects/static:
 	@rm -fv $(STATIC_OBJECTS) | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
-	@$(_clean_empty_bin_dirs)
+	@$(call _clean_empty_dir,$(BIN))
  $(addprefix clean/,$(SHARED_OBJECTS) $(STATIC_OBJECTS)): %:
 	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
-	@$(_clean_empty_bin_dirs)
+	@$(call _clean_empty_dir,$(BIN))
  .PHONY: clean/objects clean/objects/shared clean/objects/static
 
  clean/targets: clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
