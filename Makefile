@@ -342,18 +342,35 @@ override _find_test_source = $(foreach __test,$(C_TESTS) $(CXX_TESTS), \
 	) \
 )
 
-tests: $(TEST_TARGETS)
-.SECONDEXPANSION:
-$(TEST_C_TARGETS): %:   $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
+ifeq "$(SOFTWARE)" "exe"
+ tests: $(TEST_TARGETS)
+ .SECONDEXPANSION:
+ $(TEST_C_TARGETS): %:   $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
 	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
 	@$(CC)  $(CCFLAGS)  '$<' -o '$@'
-.SECONDEXPANSION:
-$(TEST_CXX_TARGETS): %: $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
+ .SECONDEXPANSION:
+ $(TEST_CXX_TARGETS): %: $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
 	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) '$<' -o '$@'
-test: $(TEST_TARGETS)
+ test: $(TEST_TARGETS)
 	@$(TEST) $(addprefix ./,$^)
-.PHONY: tests test
+ .PHONY: tests test
+else
+ tests: $(TEST_TARGETS)
+ .SECONDEXPANSION:
+ $(TEST_C_TARGETS): %:   $(STATIC_OBJECTS) \
+                         $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
+	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
+	@$(CC)  $(CCFLAGS)  $^ -o '$@'
+ .SECONDEXPANSION:
+ $(TEST_CXX_TARGETS): %: $(STATIC_OBJECTS) \
+                         $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
+	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
+	@$(CXX) $(CXXFLAGS) $^ -o '$@'
+ test: $(TEST_TARGETS)
+	@$(TEST) $(addprefix ./,$^)
+ .PHONY: tests test
+endif
 
 # === installing ============================================================= #
 

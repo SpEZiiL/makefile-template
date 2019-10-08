@@ -135,6 +135,9 @@ As previously mentioned, [utest-script](https://github.com/mfederczuk/utest-scri
  is a good choice as a testing software as it is literally created for something
  like this.
 
+If you're building a library, every test file will be linked with the static
+ object files, so that you can actually test the content in the library.
+
 ### Makefile Rules ###
 
 The Makefile has a bunch of rules that you can target.  
