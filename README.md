@@ -54,6 +54,10 @@ Open it up and you will see various variable definitions under the
   Any file that is not a **C** or **C++** file will be ignored.  
   To see what file extensions are mapped to which language, refer to
    [Appendix A](#appendix-a-file-extensions)
+* `SRC`  
+  The same as `SRC_MAIN` but without tests enabled.  
+  You must choose between using either only `SRC` or both `SRC_MAIN` and
+   `SRC_TEST`
 * `BIN`  
   The directory in which the built object files will be stored.  
   It's generally a good idea to add this directory to your `.gitignore` file.  
@@ -120,6 +124,10 @@ Any of these variables can either be set/changed inside the Makefile or on the
  command line.
 
 ### Testing ###
+
+*Tests are enabled by default, but are optional, if you don't want to use tests
+ use the `SRC` variable instead of `SRC_MAIN`. Make sure to also remove the
+ `SRC_TEST` variable.*
 
 Every file in the directory saved in the `SRC_TEST` variable will be built to
  a test executable.  

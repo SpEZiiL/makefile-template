@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * When building a library, the test executables will now be linked with the
   static object files
+* The `SRC` variable can now be used instead of `SRC_MAIN` and `SRC_TEST` if you
+  don't want to use tests
 
 ## [2.0.0] - 2019-10-06 ##
 

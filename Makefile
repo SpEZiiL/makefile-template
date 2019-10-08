@@ -81,16 +81,38 @@ ifndef TARGET
 endif
 override TARGET := $(strip $(TARGET))
 
-ifndef SRC_MAIN
- $(error $(error_fx)SRC_MAIN is not defined$(reset_fx))
-endif
-override SRC_MAIN := $(strip $(SRC_MAIN))
+ifdef SRC_MAIN
+ ifndef SRC_TEST
+  $(error $(error_fx)SRC_MAIN is defined but SRC_TEST is not defined. \
+          If you don't want to use tests, \
+          consider using SRC instead of SRC_MAIN$(reset_fx))
+ endif
+ override SRC_TEST := $(strip $(SRC_TEST))
 
-ifndef SRC_TEST
- $(error $(error_fx)SRC_TEST is not defined. \
-         If you don't have any tests, define it as '/dev/null'$(reset_fx))
+ ifeq "$(SRC_MAIN)" "$(SRC_TEST)"
+  $(error $(error_fx)SRC_MAIN and SRC_TEST are equal. \
+          If you don't want to use tests, \
+          consider using just SRC instead of SRC_MAIN and SRC_TEST$(reset_fx))
+ endif
+ override SRC_MAIN := $(strip $(SRC_MAIN))
+
+ ifdef SRC
+  $(warning $(warning_fx)SRC is ignored if SRC_MAIN is defined. \
+            Consider removing it$(reset_fx))
+ endif
+else
+ ifndef SRC
+  $(error $(error_fx)Neither SRC nor SRC_MAIN are defined$(reset_fx))
+ endif
+ override SRC_MAIN := $(strip $(SRC))
+
+ ifdef SRC_TEST
+  $(warning $(warning_fx)SRC_TEST is ignored if SRC_MAIN is not defined and \
+            SRC is defined. \
+            Consider removing it$(reset_fx))
+ endif
+ override SRC_TEST := /dev/null
 endif
-override SRC_TEST := $(strip $(SRC_TEST))
 
 ifndef BIN
  $(error $(error_fx)BIN is not defined$(reset_fx))
@@ -265,11 +287,21 @@ endif
 # === universe rule ========================================================== #
 
 ifeq "$(SOFTWARE)" "exe"
- _universe: $(EXE_TARGET) tests
- .PHONY: _universe
+ ifneq "$(SRC_TEST)" "/dev/null"
+  _universe: $(EXE_TARGET) tests
+  .PHONY: _universe
+ else
+  _universe: $(EXE_TARGET)
+  .PHONY: _universe
+ endif
 else
- _universe: targets tests
- .PHONY: _universe
+ ifneq "$(SRC_TEST)" "/dev/null"
+  _universe: targets tests
+  .PHONY: _universe
+ else
+  _universe: targets
+  .PHONY: _universe
+ endif
 endif
 
 # === building object files ================================================== #
@@ -335,41 +367,43 @@ endif
 
 # === testing ================================================================ #
 
-override _find_test_source = $(foreach __test,$(C_TESTS) $(CXX_TESTS), \
+ifneq "$(SRC_TEST)" "/dev/null"
+ override _find_test_source = $(foreach __test,$(C_TESTS) $(CXX_TESTS), \
 	$(if \
 		$(call _eq,$(1),$(call _test_target,$(__test))), \
 		$(call _test_source,$(__test)) \
 	) \
-)
+ )
 
-ifeq "$(SOFTWARE)" "exe"
- tests: $(TEST_TARGETS)
- .SECONDEXPANSION:
- $(TEST_C_TARGETS): %:   $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
+ ifeq "$(SOFTWARE)" "exe"
+  tests: $(TEST_TARGETS)
+  .SECONDEXPANSION:
+  $(TEST_C_TARGETS): %:   $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
 	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
 	@$(CC)  $(CCFLAGS)  '$<' -o '$@'
- .SECONDEXPANSION:
- $(TEST_CXX_TARGETS): %: $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
+  .SECONDEXPANSION:
+  $(TEST_CXX_TARGETS): %: $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
 	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) '$<' -o '$@'
- test: $(TEST_TARGETS)
+  test: $(TEST_TARGETS)
 	@$(TEST) $(addprefix ./,$^)
- .PHONY: tests test
-else
- tests: $(TEST_TARGETS)
- .SECONDEXPANSION:
- $(TEST_C_TARGETS): %:   $(STATIC_OBJECTS) \
-                         $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
+  .PHONY: tests test
+ else
+  tests: $(TEST_TARGETS)
+  .SECONDEXPANSION:
+  $(TEST_C_TARGETS): %:   $(STATIC_OBJECTS) \
+                          $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
 	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
 	@$(CC)  $(CCFLAGS)  $^ -o '$@'
- .SECONDEXPANSION:
- $(TEST_CXX_TARGETS): %: $(STATIC_OBJECTS) \
-                         $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
+  .SECONDEXPANSION:
+  $(TEST_CXX_TARGETS): %: $(STATIC_OBJECTS) \
+                          $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
 	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) $^ -o '$@'
- test: $(TEST_TARGETS)
+  test: $(TEST_TARGETS)
 	@$(TEST) $(addprefix ./,$^)
- .PHONY: tests test
+  .PHONY: tests test
+ endif
 endif
 
 # === installing ============================================================= #
@@ -429,8 +463,13 @@ override CLEANING_OBJECTS        := $(CLEANING_SHARED_OBJECTS) \
 override CLEANING_TEST_TARGETS := $(addprefix clean/,$(TEST_TARGETS))
 
 ifeq "$(SOFTWARE)" "exe"
- clean: clean/objects clean/$(EXE_TARGET) clean/tests
- .PHONY: clean
+ ifneq "$(SRC_TEST)" "/dev/null"
+  clean: clean/objects clean/$(EXE_TARGET) clean/tests
+  .PHONY: clean
+ else
+  clean: clean/objects clean/$(EXE_TARGET)
+  .PHONY: clean
+ endif
 
  clean/objects: $(CLEANING_STATIC_OBJECTS)
  $(CLEANING_STATIC_OBJECTS): %:
@@ -442,13 +481,20 @@ ifeq "$(SOFTWARE)" "exe"
 	@rm -fv '$@' | $(call _color_pipe,$(clean_fx))
  .PHONY: clean/$(EXE_TARGET)
 
- clean/tests: $(CLEANING_TEST_TARGETS)
- $(CLEANING_TEST_TARGETS): %:
+ ifneq "$(SRC_TEST)" "/dev/null"
+  clean/tests: $(CLEANING_TEST_TARGETS)
+  $(CLEANING_TEST_TARGETS): %:
 	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
- .PHONY: clean/tests $(CLEANING_TEST_TARGETS)
+  .PHONY: clean/tests $(CLEANING_TEST_TARGETS)
+ endif
 else
- clean: clean/objects clean/targets clean/tests
- .PHONY: clean
+ ifneq "$(SRC_TEST)" "/dev/null"
+  clean: clean/objects clean/targets clean/tests
+  .PHONY: clean
+ else
+  clean: clean/objects clean/targets
+  .PHONY: clean
+ endif
 
  clean/objects: clean/objects/shared clean/objects/static
  clean/objects/shared: $(CLEANING_SHARED_OBJECTS)
@@ -465,10 +511,12 @@ else
 	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
  .PHONY: clean/targets clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
 
- clean/tests: $(CLEANING_TEST_TARGETS)
- $(CLEANING_TEST_TARGETS): %:
+ ifneq "$(SRC_TEST)" "/dev/null"
+  clean/tests: $(CLEANING_TEST_TARGETS)
+  $(CLEANING_TEST_TARGETS): %:
 	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
- .PHONY: clean/tests $(CLEANING_TEST_TARGETS)
+  .PHONY: clean/tests $(CLEANING_TEST_TARGETS)
+ endif
 endif
 
 # === version ================================================================ #
