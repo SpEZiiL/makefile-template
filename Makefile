@@ -470,7 +470,8 @@ else
  $(addprefix clean/,$(SHARED_OBJECTS) $(STATIC_OBJECTS)): %:
 	@rm -fv '$(@:clean/%=%)' | sed -E s/'(.*)'/'$(clean_fx)\1$(reset_fx)'/g
 	@$(call _clean_empty_dir,$(BIN))
- .PHONY: clean/objects clean/objects/shared clean/objects/static
+ .PHONY: clean/objects clean/objects/shared clean/objects/static \
+         $(addprefix clean/,$(SHARED_OBJECTS) $(STATIC_OBJECTS))
 
  clean/targets: clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET)
  clean/$(SHARED_LIB_TARGET) clean/$(STATIC_LIB_TARGET): %:
