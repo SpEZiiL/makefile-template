@@ -1,14 +1,28 @@
 # C/C++ Makefile Template #
 
-[version_shield]: https://img.shields.io/badge/version-2.0.0-blue.svg
+[version_shield]: https://img.shields.io/badge/version-2.1.0-blue.svg
 [latest_release]: https://github.com/mfederczuk/makefile-template/releases/latest "Latest Release"
-[![version: 2.0.0][version_shield]][latest_release]
+[![version: 2.1.0][version_shield]][latest_release]
 [![Changelog](https://img.shields.io/badge/-Changelog-blue)](./CHANGELOG.md "Changelog")
 
 ## About ##
 
 **C/C++** [Makefile](https://www.gnu.org/software/make/) template for
  applications and libraries.
+
+Writing a good Makefile is tedious and takes time. Time, that you could've spent
+ writing your software.  
+Not to mention, most Makefiles are build up in a way, where you need to list all
+ of the object files that you want to create by hand.  
+You then spend minutes trying to figure out why your program is not compiling
+ just to figure out that it's never even building that file that you wrote an
+ hour ago.
+
+After an initial configuration, the Makefile will automatically detect any
+ source files in a specified directory and it's subdirectories.  
+Building object files, building executables or shared and static libraries,
+ building test executables, installing, uninstalling and cleaning is all covered
+ by this template.
 
 ## Download ##
 
@@ -54,6 +68,10 @@ Open it up and you will see various variable definitions under the
   Any file that is not a **C** or **C++** file will be ignored.  
   To see what file extensions are mapped to which language, refer to
    [Appendix A](#appendix-a-file-extensions)
+* `SRC`  
+  The same as `SRC_MAIN` but without tests enabled.  
+  You must choose between using either only `SRC` or both `SRC_MAIN` and
+   `SRC_TEST`
 * `BIN`  
   The directory in which the built object files will be stored.  
   It's generally a good idea to add this directory to your `.gitignore` file.  
@@ -77,7 +95,7 @@ Open it up and you will see various variable definitions under the
   A list of libraries to link with.  
   **Note:** We *cannot* link any libraries when building a library ourself. The
    Makefile will throw an error if this variable is defined and `SOFTWARE` is
-    set to `lib`
+   set to `lib`
 * `TEST`  
   The program to use to test all built test targets. Every test will be passed
    to this command, each with a `./` prefix added onto them.  
@@ -119,6 +137,29 @@ Change where targets and headers are installed with the `prefix` and
 Any of these variables can either be set/changed inside the Makefile or on the
  command line.
 
+### Testing ###
+
+*Tests are enabled by default, but are optional, if you don't want to use tests
+ use the `SRC` variable instead of `SRC_MAIN`. Make sure to also remove the
+ `SRC_TEST` variable.*
+
+Every file in the directory saved in the `SRC_TEST` variable will be built to
+ a test executable.  
+The name of the executable will be the base name of the file (directory and
+ extensions removed), plus pre- & suffixes.  
+By default the prefix will be `$(exe_prefix)` and the suffix will be
+ `_test$(exe_suffix)`. The value is saved inside the variables `test_prefix` and
+ `test_suffix`.
+
+The `test` rule will try to invoke every test by passing every executable, with
+ a `./` prefix, to the `TEST` variable.  
+As previously mentioned, [utest-script](https://github.com/mfederczuk/utest-script)
+ is a good choice as a testing software as it is literally created for something
+ like this.
+
+If you're building a library, every test file will be linked with the static
+ object files, so that you can actually test the content in the library.
+
 ### Makefile Rules ###
 
 The Makefile has a bunch of rules that you can target.  
@@ -130,6 +171,9 @@ Most of the time `make` and `make clean` will be enough for testing your
 
 * `all` (executable & library)  
   Default rule; builds the executable or the libraries
+* `_universe` (executable & library)  
+  Builds the executable or the libraries and the tests (if tests are disabled,
+   this is identical to `all`)
 
 **building object files:**
 
