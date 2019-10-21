@@ -61,6 +61,8 @@ clean_fx        := $(call _ascii_esc,91)
 
 # === preconditions ========================================================== #
 
+.SUFFIXES:
+
 -include _debug.mk
 
 ifndef SOFTWARE
