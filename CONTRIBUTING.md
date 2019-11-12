@@ -30,5 +30,5 @@ Follow both the [Code Style Guides] and the [Git Guides] of this project and
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html "Semantic Versioning v2.0.0"
 [Keep a Changelog]: https://keepachangelog.com/en/1.0.0/ "Keep a Changelog v1.0.0"
 [Creating a new issue]: https://github.com/mfederczuk/commoncodes/issues/new/choose "Create new Issue"
-[Code Style Guides]: https://mfederczuk.github.io/style-guides "Code Style Guides"
+[Code Style Guides]: https://mfederczuk.github.io/code-guides "Code Style Guides"
 [Git Guides]: https://mfederczuk.github.io/git-guides "Git Guides"
