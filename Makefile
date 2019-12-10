@@ -19,6 +19,7 @@
 SOFTWARE = exe|lib
 
 TARGET =
+PACKAGE = $(TARGET)
 
 SRC =
 SRC_MAIN = src/main
