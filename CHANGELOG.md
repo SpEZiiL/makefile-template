@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * `PACKAGE` variable (default value is the `TARGET` variable)
 
+### Changed ###
+
+* `INC` variable uses the `PACKAGE` variable instead of `TARGET`
+
 ## [2.1.0] - 2019-10-09 ##
 
 [2.1.0]: https://github.com/mfederczuk/makefile-template/compare/v2.0.0...v2.1.0

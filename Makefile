@@ -25,7 +25,7 @@ SRC =
 SRC_MAIN = src/main
 SRC_TEST = src/test
 BIN = bin
-INC = include/$(TARGET)
+INC = include/$(PACKAGE)
 
 LINKS =
 
