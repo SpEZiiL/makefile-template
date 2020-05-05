@@ -13,10 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added ###
 
 * `PACKAGE` variable (default value is the `TARGET` variable)
+* `universe` target (formerly `_universe`)
 
 ### Changed ###
 
 * `INC` variable uses the `PACKAGE` variable instead of `TARGET`
+
+### Deprecated ###
+
+* `_universe` target
 
 ## [2.1.0] - 2019-10-09 ##
 
