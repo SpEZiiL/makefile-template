@@ -110,6 +110,9 @@ Open it up and you will see various variable definitions under the
    standards (`-std=`) and warning flags like `-Wall` here.  
   Do *not* add compilation options like `-c`, output options like `-o` or
    linking options like `-l`
+* `NO_COLOR`  
+  By default, the messages the Makefile prints out will be colored. This can be
+   disabled by setting the `NO_COLOR` variable to `1`.
 
 Several variables will already have a value written in them. This is what *I*
  perceive to be best practice. Feel free to change them however you like.
