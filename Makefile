@@ -177,7 +177,7 @@ static_lib_prefix = lib
 shared_lib_suffix = .so
 static_lib_suffix = .a
 
-# *nix executables usually don't have a suffix, if you want you can change that
+# unix like executables usually don't have a suffix, if you want you can change that
 exe_prefix =
 exe_suffix =
 
