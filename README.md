@@ -200,6 +200,9 @@ Most of the time `make` and `make clean` will be enough for testing your
 * `targets` (library)  
   Builds the shared & static object files and both the shared & static libraries.  
   The binaries are saved next to the Makefile
+* `target` (executable)  
+  Builds the static object files and the executable.  
+  The binary is saved next to the Makefile
 * *\<executable target\>*  (executable)  
   Builds the static object files and the executable.  
   The binary is saved next to the Makefile
@@ -232,6 +235,12 @@ Most of the time `make` and `make clean` will be enough for testing your
 * `install/targets` (library)  
   Builds the shared & static object files and the shared & static libraries and
    installs the binaries into `$(DESTDIR)$(libdir)`
+* `install/target` (executable)  
+  Builds the static object files and the executable and installs the binary into
+   `$(DESTDIR)$(bindir)`.
+* `install/`*\<executable target\>* (executable)  
+  Builds the static object files and the executable and installs the binary into
+   `$(DESTDIR)$(bindir)`.
 * `install/`*\<shared library target\>* (library)  
   Builds the shared object files and the shared library and installs the binary
    into `$(DESTDIR)$(libdir)`
@@ -250,6 +259,10 @@ Most of the time `make` and `make clean` will be enough for testing your
    `$(DESTDIR)$(includedir)` and the header directory from `$(DESTDIR)$(includedir)`
 * `uninstall/targets` (library)  
   Removes the shared and static library binaries from `$(DESTDIR)$(libdir)`
+* `uninstall/target` (executable)  
+  Removes the executable binary from `$(DESTDIR)$(bindir)`.
+* `uninstall/`*\<executable target\>* (executable)  
+  Removes the executable binary from `$(DESTDIR)$(bindir)`.
 * `uninstall/`*\<shared library target\>* (library)  
   Removes the shared library binary from `$(DESTDIR)$(libdir)`
 * `uninstall/`*\<static library target\>* (library)  
@@ -277,6 +290,8 @@ Most of the time `make` and `make clean` will be enough for testing your
    subdirectories if they became empty
 * `clean/targets` (library)  
   Removes both the shared and static library binary
+* `clean/target` (executable)  
+  Removes the executable binary
 * `clean/`*\<executable target\>* (executable)  
   Removes the executable binary
 * `clean/`*\<shared library target\>* (library)  
