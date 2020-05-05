@@ -518,7 +518,7 @@ ifeq "$(SOFTWARE)" "exe"
  .PHONY: clean/objects $(CLEANING_STATIC_OBJECTS)
 
  clean/$(EXE_TARGET):
-	@rm -fv '$@' | $(call _color_pipe,$(clean_fx))
+	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
  .PHONY: clean/$(EXE_TARGET)
 
  ifneq "$(SRC_TEST)" "/dev/null"

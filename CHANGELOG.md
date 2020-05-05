@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * `INC` variable uses the `PACKAGE` variable instead of `TARGET`
 
+### Fixed ###
+
+* The executable target will no longer be ignored the clean
+
 ### Deprecated ###
 
 * `_universe` target
