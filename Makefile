@@ -37,18 +37,18 @@ CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
 # === colors ================================================================= #
 
 ifneq "$(NO_COLOR)" "1"
- # reset:     0
- # bold:      1
- # italic:    3
- # underline: 4
- # black:    30  |  bright black:   90
- # red:      31  |  bright red:     91
- # green:    32  |  bright green:   92
- # yellow:   33  |  bright yellow:  93
- # blue:     34  |  bright blue:    94
- # magenta:  35  |  bright magenta: 95
- # cyan:     36  |  bright cyan:    96
- # white:    37  |  bright white:   97
+ # reset:      0
+ # bold:       1
+ # italic:     3
+ # underline:  4
+ # black:     30  |  bright black:   90
+ # red:       31  |  bright red:     91
+ # green:     32  |  bright green:   92
+ # yellow:    33  |  bright yellow:  93
+ # blue:      34  |  bright blue:    94
+ # magenta:   35  |  bright magenta: 95
+ # cyan:      36  |  bright cyan:    96
+ # white:     37  |  bright white:   97
  override _ascii_esc = $(shell printf '\033[$(1)m')
 
  override _green_clr_fxn      := 32
