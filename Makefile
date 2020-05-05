@@ -469,7 +469,7 @@ endif
 
 ifeq "$(SOFTWARE)" "exe"
  uninstall:
-	@rm -f '$(DESTDIR)$(bindir)/$(EXE_TARGET)' | \
+	@rm -fv '$(DESTDIR)$(bindir)/$(EXE_TARGET)' | \
 		sed -E s/'(.*)'/'$(uninstall_fx)\1$(reset_fx)'/g
  .PHONY: uninstall
 else
