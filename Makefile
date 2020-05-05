@@ -50,15 +50,22 @@ CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
 # white:    37  |  bright white:   97
 override _ascii_esc = $(shell printf '\033[$(1)m')
 
+override _green_clr_fxn      := 32
+override _yellow_clr_fxn     := 33
+override _blue_clr_fxn       := 34
+override _magenta_clr_fxn    := 35
+override _bright_red_clr_fxn := 91
+override _bold_fxn           := 1
+
 reset_fx        := $(call _ascii_esc,0)
-error_fx        := $(call _ascii_esc,91;1)
-warning_fx      := $(call _ascii_esc,33)
-object_build_fx := $(call _ascii_esc,34)
-target_build_fx := $(call _ascii_esc,34;1)
-test_build_fx   := $(call _ascii_esc,35;1)
-install_fx      := $(call _ascii_esc,32)
-uninstall_fx    := $(call _ascii_esc,91)
-clean_fx        := $(call _ascii_esc,91)
+error_fx        := $(call _ascii_esc,$(_bright_red_clr_fxn);$(_bold_fxn))
+warning_fx      := $(call _ascii_esc,$(_yellow_clr_fxn))
+object_build_fx := $(call _ascii_esc,$(_blue_clr_fxn))
+target_build_fx := $(call _ascii_esc,$(_blue_clr_fxn);$(_bold_fxn))
+test_build_fx   := $(call _ascii_esc,$(_magenta_clr_fxn);$(_bold_fxn))
+install_fx      := $(call _ascii_esc,$(_green_clr_fxn))
+uninstall_fx    := $(call _ascii_esc,$(_bright_red_clr_fxn))
+clean_fx        := $(call _ascii_esc,$(_bright_red_clr_fxn))
 
 # === preconditions ========================================================== #
 
