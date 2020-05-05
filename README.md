@@ -257,9 +257,10 @@ Most of the time `make` and `make clean` will be enough for testing your
 **cleaning object files, targets & tests:**
 
 * `clean` (executable & library)  
-  Removes all object files and the executable or the libraries
+  Removes all object files, the executable or the libraries and all tests
 * `clean/objects` (executable & library)  
-  Removes the `BIN` directory with all object files in it
+  Removes the object files in the `BIN` directory and `BIN` or any
+   subdirectories if they became empty
 * `clean/objects/shared` (library)  
   Removes the shared object files in the `BIN` directory and `BIN` or any
    subdirectories if they became empty
