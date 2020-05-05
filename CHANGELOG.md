@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * `PACKAGE` variable (default value is the `TARGET` variable)
 * `universe` target (formerly `_universe`)
+* `clean/$(BIN)` target
 
 ### Changed ###
 

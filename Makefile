@@ -505,6 +505,8 @@ ifeq "$(SOFTWARE)" "exe"
  endif
 
  clean/objects: $(CLEANING_STATIC_OBJECTS)
+ clean/$(BIN):
+	@rm -rfv '$(BIN)' | $(call _color_pipe,$(clean_fx))
  $(CLEANING_STATIC_OBJECTS): %:
 	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
 	@$(call _clean_empty_dir,$(BIN))
@@ -532,6 +534,8 @@ else
  clean/objects: clean/objects/shared clean/objects/static
  clean/objects/shared: $(CLEANING_SHARED_OBJECTS)
  clean/objects/static: $(CLEANING_STATIC_OBJECTS)
+ clean/$(BIN):
+	@rm -rfv '$(BIN)' | $(call _color_pipe,$(clean_fx))
  $(CLEANING_OBJECTS): %:
 	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
 	@$(call _clean_empty_dir,$(BIN))
