@@ -129,6 +129,9 @@ ifndef BIN
  $(error $(error_fx)BIN is not defined$(reset_fx))
 endif
 override BIN := $(strip $(BIN))
+ifeq "$(BIN)" "."
+ $(error $(error_fx)BIN is not allowed to be the root directory$(reset_fx))
+endif
 
 ifneq "$(SOFTWARE)" "exe"
  ifndef INC
