@@ -470,7 +470,7 @@ endif
 ifeq "$(SOFTWARE)" "exe"
  uninstall:
 	@rm -fv '$(DESTDIR)$(bindir)/$(EXE_TARGET)' | \
-		sed -E s/'(.*)'/'$(uninstall_fx)\1$(reset_fx)'/g
+		$(call _color_pipe,$(uninstall_fx))
  .PHONY: uninstall
 else
  uninstall: uninstall/targets uninstall/headers
