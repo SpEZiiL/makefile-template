@@ -212,7 +212,7 @@ Most of the time `make` and `make clean` will be enough for testing your
 * `tests` (executable & library)  
   Builds the tests.  
   The binaries are saved next to the Makefile
-* `tests/`*&lt;test target&gt;* (executable & library)  
+* *&lt;test target&gt;* (executable & library)  
   Builds the specified test individually and stores the binary next to the
    Makefile
 * `test` (executable & library)  
