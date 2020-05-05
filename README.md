@@ -53,6 +53,8 @@ Open it up and you will see various variable definitions under the
   If you want to change any prefix or suffixes you can do so by changing the
    `exe_prefix`, `exe_suffix`, `shared_lib_prefix`, `shared_lib_suffix`,
    `static_lib_prefix` and `static_lib_suffix` variables.
+* `PACKAGE`  
+  The name of the package the target belongs to.
 * `SRC_MAIN`  
   The directory in which the source files are stored.  
   The Makefile will search this directory for any source files and will
