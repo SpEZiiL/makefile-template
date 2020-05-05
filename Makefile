@@ -36,36 +36,38 @@ CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
 
 # === colors ================================================================= #
 
-# reset:     0
-# bold:      1
-# italic:    3
-# underline: 4
-# black:    30  |  bright black:   90
-# red:      31  |  bright red:     91
-# green:    32  |  bright green:   92
-# yellow:   33  |  bright yellow:  93
-# blue:     34  |  bright blue:    94
-# magenta:  35  |  bright magenta: 95
-# cyan:     36  |  bright cyan:    96
-# white:    37  |  bright white:   97
-override _ascii_esc = $(shell printf '\033[$(1)m')
+ifneq "$(NO_COLOR)" "1"
+ # reset:     0
+ # bold:      1
+ # italic:    3
+ # underline: 4
+ # black:    30  |  bright black:   90
+ # red:      31  |  bright red:     91
+ # green:    32  |  bright green:   92
+ # yellow:   33  |  bright yellow:  93
+ # blue:     34  |  bright blue:    94
+ # magenta:  35  |  bright magenta: 95
+ # cyan:     36  |  bright cyan:    96
+ # white:    37  |  bright white:   97
+ override _ascii_esc = $(shell printf '\033[$(1)m')
 
-override _green_clr_fxn      := 32
-override _yellow_clr_fxn     := 33
-override _blue_clr_fxn       := 34
-override _magenta_clr_fxn    := 35
-override _bright_red_clr_fxn := 91
-override _bold_fxn           := 1
+ override _green_clr_fxn      := 32
+ override _yellow_clr_fxn     := 33
+ override _blue_clr_fxn       := 34
+ override _magenta_clr_fxn    := 35
+ override _bright_red_clr_fxn := 91
+ override _bold_fxn           := 1
 
-reset_fx        := $(call _ascii_esc,0)
-error_fx        := $(call _ascii_esc,$(_bright_red_clr_fxn);$(_bold_fxn))
-warning_fx      := $(call _ascii_esc,$(_yellow_clr_fxn))
-object_build_fx := $(call _ascii_esc,$(_blue_clr_fxn))
-target_build_fx := $(call _ascii_esc,$(_blue_clr_fxn);$(_bold_fxn))
-test_build_fx   := $(call _ascii_esc,$(_magenta_clr_fxn);$(_bold_fxn))
-install_fx      := $(call _ascii_esc,$(_green_clr_fxn))
-uninstall_fx    := $(call _ascii_esc,$(_bright_red_clr_fxn))
-clean_fx        := $(call _ascii_esc,$(_bright_red_clr_fxn))
+ reset_fx        := $(call _ascii_esc,0)
+ error_fx        := $(call _ascii_esc,$(_bright_red_clr_fxn);$(_bold_fxn))
+ warning_fx      := $(call _ascii_esc,$(_yellow_clr_fxn))
+ object_build_fx := $(call _ascii_esc,$(_blue_clr_fxn))
+ target_build_fx := $(call _ascii_esc,$(_blue_clr_fxn);$(_bold_fxn))
+ test_build_fx   := $(call _ascii_esc,$(_magenta_clr_fxn);$(_bold_fxn))
+ install_fx      := $(call _ascii_esc,$(_green_clr_fxn))
+ uninstall_fx    := $(call _ascii_esc,$(_bright_red_clr_fxn))
+ clean_fx        := $(call _ascii_esc,$(_bright_red_clr_fxn))
+endif
 
 # === preconditions ========================================================== #
 
