@@ -293,18 +293,40 @@ endif
 ifeq "$(SOFTWARE)" "exe"
  ifneq "$(SRC_TEST)" "/dev/null"
   _universe: $(EXE_TARGET) tests
+	$(warning $(warning_fx)The `_universe` target is deprecated, use the `universe` target instead$(reset_fx))
   .PHONY: _universe
  else
   _universe: $(EXE_TARGET)
+	$(warning $(warning_fx)The `_universe` target is deprecated, use the `universe` target instead$(reset_fx))
   .PHONY: _universe
  endif
 else
  ifneq "$(SRC_TEST)" "/dev/null"
   _universe: targets tests
+	$(warning $(warning_fx)The `_universe` target is deprecated, use the `universe` target instead$(reset_fx))
   .PHONY: _universe
  else
   _universe: targets
+	$(warning $(warning_fx)The `_universe` target is deprecated, use the `universe` target instead$(reset_fx))
   .PHONY: _universe
+ endif
+endif
+
+ifeq "$(SOFTWARE)" "exe"
+ ifneq "$(SRC_TEST)" "/dev/null"
+  universe: $(EXE_TARGET) tests
+  .PHONY: universe
+ else
+  universe: $(EXE_TARGET)
+  .PHONY: universe
+ endif
+else
+ ifneq "$(SRC_TEST)" "/dev/null"
+  universe: targets tests
+  .PHONY: universe
+ else
+  universe: targets
+  .PHONY: universe
  endif
 endif
 
