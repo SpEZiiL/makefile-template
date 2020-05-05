@@ -1,8 +1,8 @@
 # C/C++ Makefile Template #
 
-[version_shield]: https://img.shields.io/badge/version-2.1.0-blue.svg
+[version_shield]: https://img.shields.io/badge/version-2.2.0-blue.svg
 [latest_release]: https://github.com/mfederczuk/makefile-template/releases/latest "Latest Release"
-[![version: 2.1.0][version_shield]][latest_release]
+[![version: 2.2.0][version_shield]][latest_release]
 [![Changelog](https://img.shields.io/badge/-Changelog-blue)](./CHANGELOG.md "Changelog")
 
 ## About ##
@@ -53,6 +53,8 @@ Open it up and you will see various variable definitions under the
   If you want to change any prefix or suffixes you can do so by changing the
    `exe_prefix`, `exe_suffix`, `shared_lib_prefix`, `shared_lib_suffix`,
    `static_lib_prefix` and `static_lib_suffix` variables.
+* `PACKAGE`  
+  The name of the package the target belongs to.
 * `SRC_MAIN`  
   The directory in which the source files are stored.  
   The Makefile will search this directory for any source files and will
@@ -108,6 +110,9 @@ Open it up and you will see various variable definitions under the
    standards (`-std=`) and warning flags like `-Wall` here.  
   Do *not* add compilation options like `-c`, output options like `-o` or
    linking options like `-l`
+* `NO_COLOR`  
+  By default, the messages the Makefile prints out will be colored. This can be
+   disabled by setting the `NO_COLOR` variable to `1`.
 
 Several variables will already have a value written in them. This is what *I*
  perceive to be best practice. Feel free to change them however you like.
@@ -171,7 +176,7 @@ Most of the time `make` and `make clean` will be enough for testing your
 
 * `all` (executable & library)  
   Default rule; builds the executable or the libraries
-* `_universe` (executable & library)  
+* `universe` (executable & library)  
   Builds the executable or the libraries and the tests (if tests are disabled,
    this is identical to `all`)
 
@@ -186,7 +191,7 @@ Most of the time `make` and `make clean` will be enough for testing your
   Builds the shared object files and stores them inside the `BIN` directory
 * `objects/static` (library)  
   Builds the static object files and stores them inside the `BIN` directory
-* `$(BIN)/`*&lt;object file&gt;* (executable & library)  
+* `$(BIN)/`*\<object file\>* (executable & library)  
   Builds the specified object file individually and stores it inside the `BIN`
    directory.
 
@@ -195,13 +200,16 @@ Most of the time `make` and `make clean` will be enough for testing your
 * `targets` (library)  
   Builds the shared & static object files and both the shared & static libraries.  
   The binaries are saved next to the Makefile
-* *&lt;executable target&gt;*  (executable)  
+* `target` (executable)  
   Builds the static object files and the executable.  
   The binary is saved next to the Makefile
-* *&lt;shared library target&gt;* (library)  
+* *\<executable target\>*  (executable)  
+  Builds the static object files and the executable.  
+  The binary is saved next to the Makefile
+* *\<shared library target\>* (library)  
   Builds the shared object files and the shared library individually.  
   The binary is saved next to the Makefile
-* *&lt;static library target&gt;* (library)  
+* *\<static library target\>* (library)  
   Builds the static object files and the static library individually.  
   The binary is saved next to the Makefile
 
@@ -210,7 +218,7 @@ Most of the time `make` and `make clean` will be enough for testing your
 * `tests` (executable & library)  
   Builds the tests.  
   The binaries are saved next to the Makefile
-* `tests/`*&lt;test target&gt;* (executable & library)  
+* *\<test target\>* (executable & library)  
   Builds the specified test individually and stores the binary next to the
    Makefile
 * `test` (executable & library)  
@@ -227,10 +235,16 @@ Most of the time `make` and `make clean` will be enough for testing your
 * `install/targets` (library)  
   Builds the shared & static object files and the shared & static libraries and
    installs the binaries into `$(DESTDIR)$(libdir)`
-* `install/`*&lt;shared library target&gt;* (library)  
+* `install/target` (executable)  
+  Builds the static object files and the executable and installs the binary into
+   `$(DESTDIR)$(bindir)`.
+* `install/`*\<executable target\>* (executable)  
+  Builds the static object files and the executable and installs the binary into
+   `$(DESTDIR)$(bindir)`.
+* `install/`*\<shared library target\>* (library)  
   Builds the shared object files and the shared library and installs the binary
    into `$(DESTDIR)$(libdir)`
-* `install/`*&lt;static library target&gt;* (library)  
+* `install/`*\<static library target\>* (library)  
   Builds the static object files and the static library and installs the binary
    into `$(DESTDIR)$(libdir)`
 * `install/headers` (library)  
@@ -245,9 +259,13 @@ Most of the time `make` and `make clean` will be enough for testing your
    `$(DESTDIR)$(includedir)` and the header directory from `$(DESTDIR)$(includedir)`
 * `uninstall/targets` (library)  
   Removes the shared and static library binaries from `$(DESTDIR)$(libdir)`
-* `uninstall/`*&lt;shared library target&gt;* (library)  
+* `uninstall/target` (executable)  
+  Removes the executable binary from `$(DESTDIR)$(bindir)`.
+* `uninstall/`*\<executable target\>* (executable)  
+  Removes the executable binary from `$(DESTDIR)$(bindir)`.
+* `uninstall/`*\<shared library target\>* (library)  
   Removes the shared library binary from `$(DESTDIR)$(libdir)`
-* `uninstall/`*&lt;static library target&gt;* (library)  
+* `uninstall/`*\<static library target\>* (library)  
   Removes the static library binary from `$(DESTDIR)$(libdir)`
 * `uninstall/headers` (library)  
   Removes the header directory from `$(DESTDIR)$(includedir)`
@@ -255,30 +273,40 @@ Most of the time `make` and `make clean` will be enough for testing your
 **cleaning object files, targets & tests:**
 
 * `clean` (executable & library)  
-  Removes all object files and the executable or the libraries
+  Removes all object files, the executable or the libraries and all tests
 * `clean/objects` (executable & library)  
-  Removes the `BIN` directory with all object files in it
+  Removes the object files in the `BIN` directory and `BIN` or any
+   subdirectories if they became empty
 * `clean/objects/shared` (library)  
   Removes the shared object files in the `BIN` directory and `BIN` or any
    subdirectories if they became empty
 * `clean/objects/static` (library)  
   Removes the static object files in the `BIN` directory and `BIN` or any
    subdirectories if they became empty
-* `clean/$(BIN)/`*&lt;object file&gt;* (executable & library)  
+* `clean/$(BIN)` (executable & library)
+  Removes the `BIN` directory
+* `clean/$(BIN)/`*\<object file\>* (executable & library)  
   Removes the specific object file in the `BIN` directory and `BIN` or any
    subdirectories if they became empty
 * `clean/targets` (library)  
   Removes both the shared and static library binary
-* `clean/`*&lt;executable target&gt;* (executable)  
+* `clean/target` (executable)  
   Removes the executable binary
-* `clean/`*&lt;shared library target&gt;* (library)  
+* `clean/`*\<executable target\>* (executable)  
+  Removes the executable binary
+* `clean/`*\<shared library target\>* (library)  
   Removes the shared library binary
-* `clean/`*&lt;static library target&gt;* (library)  
+* `clean/`*\<static library target\>* (library)  
   Removes the static library binary
 * `clean/tests` (executable & library)  
   Removes all test targets
-* `clean/`*&lt;test target&gt;* (executable & library)  
+* `clean/`*\<test target\>* (executable & library)  
   Removes the specific test target
+
+**other:**
+
+* `_version`  
+  Displays the current version of the Makefile template
 
 ## Contributing ##
 
