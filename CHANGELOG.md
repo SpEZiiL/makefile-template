@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed ###
 
-* The executable target will no longer be ignored the clean
+* The executable target will no longer be ignored by the clean
 
 ### Deprecated ###
 
