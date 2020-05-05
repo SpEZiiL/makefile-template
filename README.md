@@ -303,6 +303,11 @@ Most of the time `make` and `make clean` will be enough for testing your
 * `clean/`*\<test target\>* (executable & library)  
   Removes the specific test target
 
+**other:**
+
+* `_version`  
+  Displays the current version of the Makefile template
+
 ## Contributing ##
 
 Read through the [C/C++ Makefile Template Contribution Guidelines](./CONTRIBUTING.md)
