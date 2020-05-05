@@ -48,7 +48,7 @@ CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
 # blue:     34  |  bright blue:    94
 # magenta:  35  |  bright magenta: 95
 # white:    37  |  bright white:   97
-_ascii_esc = $(shell printf '\033[$(1)m')
+override _ascii_esc = $(shell printf '\033[$(1)m')
 
 reset_fx        := $(call _ascii_esc,0)
 error_fx        := $(call _ascii_esc,91;1)
