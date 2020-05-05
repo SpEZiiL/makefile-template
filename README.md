@@ -267,6 +267,8 @@ Most of the time `make` and `make clean` will be enough for testing your
 * `clean/objects/static` (library)  
   Removes the static object files in the `BIN` directory and `BIN` or any
    subdirectories if they became empty
+* `clean/$(BIN)` (executable & library)
+  Removes the `BIN` directory
 * `clean/$(BIN)/`*&lt;object file&gt;* (executable & library)  
   Removes the specific object file in the `BIN` directory and `BIN` or any
    subdirectories if they became empty
