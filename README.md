@@ -188,7 +188,7 @@ Most of the time `make` and `make clean` will be enough for testing your
   Builds the shared object files and stores them inside the `BIN` directory
 * `objects/static` (library)  
   Builds the static object files and stores them inside the `BIN` directory
-* `$(BIN)/`*&lt;object file&gt;* (executable & library)  
+* `$(BIN)/`*\<object file\>* (executable & library)  
   Builds the specified object file individually and stores it inside the `BIN`
    directory.
 
@@ -197,13 +197,13 @@ Most of the time `make` and `make clean` will be enough for testing your
 * `targets` (library)  
   Builds the shared & static object files and both the shared & static libraries.  
   The binaries are saved next to the Makefile
-* *&lt;executable target&gt;*  (executable)  
+* *\<executable target\>*  (executable)  
   Builds the static object files and the executable.  
   The binary is saved next to the Makefile
-* *&lt;shared library target&gt;* (library)  
+* *\<shared library target\>* (library)  
   Builds the shared object files and the shared library individually.  
   The binary is saved next to the Makefile
-* *&lt;static library target&gt;* (library)  
+* *\<static library target\>* (library)  
   Builds the static object files and the static library individually.  
   The binary is saved next to the Makefile
 
@@ -212,7 +212,7 @@ Most of the time `make` and `make clean` will be enough for testing your
 * `tests` (executable & library)  
   Builds the tests.  
   The binaries are saved next to the Makefile
-* *&lt;test target&gt;* (executable & library)  
+* *\<test target\>* (executable & library)  
   Builds the specified test individually and stores the binary next to the
    Makefile
 * `test` (executable & library)  
@@ -229,10 +229,10 @@ Most of the time `make` and `make clean` will be enough for testing your
 * `install/targets` (library)  
   Builds the shared & static object files and the shared & static libraries and
    installs the binaries into `$(DESTDIR)$(libdir)`
-* `install/`*&lt;shared library target&gt;* (library)  
+* `install/`*\<shared library target\>* (library)  
   Builds the shared object files and the shared library and installs the binary
    into `$(DESTDIR)$(libdir)`
-* `install/`*&lt;static library target&gt;* (library)  
+* `install/`*\<static library target\>* (library)  
   Builds the static object files and the static library and installs the binary
    into `$(DESTDIR)$(libdir)`
 * `install/headers` (library)  
@@ -247,9 +247,9 @@ Most of the time `make` and `make clean` will be enough for testing your
    `$(DESTDIR)$(includedir)` and the header directory from `$(DESTDIR)$(includedir)`
 * `uninstall/targets` (library)  
   Removes the shared and static library binaries from `$(DESTDIR)$(libdir)`
-* `uninstall/`*&lt;shared library target&gt;* (library)  
+* `uninstall/`*\<shared library target\>* (library)  
   Removes the shared library binary from `$(DESTDIR)$(libdir)`
-* `uninstall/`*&lt;static library target&gt;* (library)  
+* `uninstall/`*\<static library target\>* (library)  
   Removes the static library binary from `$(DESTDIR)$(libdir)`
 * `uninstall/headers` (library)  
   Removes the header directory from `$(DESTDIR)$(includedir)`
@@ -269,20 +269,20 @@ Most of the time `make` and `make clean` will be enough for testing your
    subdirectories if they became empty
 * `clean/$(BIN)` (executable & library)
   Removes the `BIN` directory
-* `clean/$(BIN)/`*&lt;object file&gt;* (executable & library)  
+* `clean/$(BIN)/`*\<object file\>* (executable & library)  
   Removes the specific object file in the `BIN` directory and `BIN` or any
    subdirectories if they became empty
 * `clean/targets` (library)  
   Removes both the shared and static library binary
-* `clean/`*&lt;executable target&gt;* (executable)  
+* `clean/`*\<executable target\>* (executable)  
   Removes the executable binary
-* `clean/`*&lt;shared library target&gt;* (library)  
+* `clean/`*\<shared library target\>* (library)  
   Removes the shared library binary
-* `clean/`*&lt;static library target&gt;* (library)  
+* `clean/`*\<static library target\>* (library)  
   Removes the static library binary
 * `clean/tests` (executable & library)  
   Removes all test targets
-* `clean/`*&lt;test target&gt;* (executable & library)  
+* `clean/`*\<test target\>* (executable & library)  
   Removes the specific test target
 
 ## Contributing ##
