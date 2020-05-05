@@ -293,7 +293,7 @@ override TEST_TARGETS     := $(TEST_C_TARGETS) $(TEST_CXX_TARGETS)
 # === default rule =========================================================== #
 
 ifeq "$(SOFTWARE)" "exe"
- all: $(EXE_TARGET)
+ all: target
  .PHONY: all
 else
  all: targets
@@ -304,11 +304,11 @@ endif
 
 ifeq "$(SOFTWARE)" "exe"
  ifneq "$(SRC_TEST)" "/dev/null"
-  _universe: $(EXE_TARGET) tests
+  _universe: target tests
 	$(warning $(warning_fx)The `_universe` target is deprecated, use the `universe` target instead$(reset_fx))
   .PHONY: _universe
  else
-  _universe: $(EXE_TARGET)
+  _universe: target
 	$(warning $(warning_fx)The `_universe` target is deprecated, use the `universe` target instead$(reset_fx))
   .PHONY: _universe
  endif
@@ -326,10 +326,10 @@ endif
 
 ifeq "$(SOFTWARE)" "exe"
  ifneq "$(SRC_TEST)" "/dev/null"
-  universe: $(EXE_TARGET) tests
+  universe: target tests
   .PHONY: universe
  else
-  universe: $(EXE_TARGET)
+  universe: target
   .PHONY: universe
  endif
 else
@@ -381,6 +381,7 @@ endif
 # === building targets ======================================================= #
 
 ifeq "$(SOFTWARE)" "exe"
+ target: $(EXE_TARGET)
  $(EXE_TARGET): $(STATIC_OBJECTS)
 	$(info $(target_build_fx)Building target '$@'...$(reset_fx))
   ifeq "$(CXX_SOURCES)" ""
@@ -388,6 +389,7 @@ ifeq "$(SOFTWARE)" "exe"
   else
 	@$(CXX) $(CXXFLAGS) $^ -o '$@' $(LINK_FLAGS)
   endif
+  .PHONY: target
 else
  targets: $(SHARED_LIB_TARGET) $(STATIC_LIB_TARGET)
  $(SHARED_LIB_TARGET): $(SHARED_OBJECTS)
@@ -447,10 +449,12 @@ endif
 # === installing ============================================================= #
 
 ifeq "$(SOFTWARE)" "exe"
- install: $(EXE_TARGET)
-	$(info $(install_fx)Installing target '$@' to '$(DESTDIR)$(bindir)'...$(reset_fx))
-	@$(INSTALL) -m755 '$@' '$(DESTDIR)$(bindir)'
- .PHONY: install
+ install: install/target
+ install/target: install/$(EXE_TARGET)
+ install/$(EXE_TARGET): install/%: %
+	$(info $(install_fx)Installing target '$(@:install/%=%)' to '$(DESTDIR)$(bindir)'...$(reset_fx))
+	@$(INSTALL) -m755 '$(@:install/%=%)' '$(DESTDIR)$(bindir)'
+ .PHONY: install install/target install/$(EXE_TARGET)
 else
  install: install/targets install/headers
  install/targets: install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET)
@@ -468,10 +472,12 @@ endif
 # === uninstalling =========================================================== #
 
 ifeq "$(SOFTWARE)" "exe"
- uninstall:
-	@rm -fv '$(DESTDIR)$(bindir)/$(EXE_TARGET)' | \
+ uninstall: uninstall/target
+ uninstall/target: uninstall/$(EXE_TARGET)
+ uninstall/$(EXE_TARGET):
+	@rm -fv '$(DESTDIR)$(bindir)/$(@:uninstall/%=%)' | \
 		$(call _color_pipe,$(uninstall_fx))
- .PHONY: uninstall
+ .PHONY: uninstall uninstall/target uninstall/$(EXE_TARGET)
 else
  uninstall: uninstall/targets uninstall/headers
  uninstall/targets: uninstall/$(SHARED_LIB_TARGET) uninstall/$(STATIC_LIB_TARGET)
@@ -502,10 +508,10 @@ override CLEANING_TEST_TARGETS := $(addprefix clean/,$(TEST_TARGETS))
 
 ifeq "$(SOFTWARE)" "exe"
  ifneq "$(SRC_TEST)" "/dev/null"
-  clean: clean/objects clean/$(EXE_TARGET) clean/tests
+  clean: clean/objects clean/target clean/tests
   .PHONY: clean
  else
-  clean: clean/objects clean/$(EXE_TARGET)
+  clean: clean/objects clean/target
   .PHONY: clean
  endif
 
@@ -517,9 +523,10 @@ ifeq "$(SOFTWARE)" "exe"
 	@$(call _clean_empty_dir,$(BIN))
  .PHONY: clean/objects $(CLEANING_STATIC_OBJECTS)
 
+ clean/target: clean/$(EXE_TARGET)
  clean/$(EXE_TARGET):
 	@rm -fv '$(@:clean/%=%)' | $(call _color_pipe,$(clean_fx))
- .PHONY: clean/$(EXE_TARGET)
+ .PHONY: clean/target clean/$(EXE_TARGET)
 
  ifneq "$(SRC_TEST)" "/dev/null"
   clean/tests: $(CLEANING_TEST_TARGETS)

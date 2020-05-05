@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `universe` target (formerly `_universe`)
 * `clean/$(BIN)` target
 * support for `NO_COLOR` variable
+* `target`, `install/$(TARGET)`, `install/target`, `uninstall/$(TARGET)`,
+   `uninstall/target`, `clean/target` targets for executable
 
 ### Changed ###
 
