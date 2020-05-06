@@ -71,30 +71,42 @@ endif
 
 # === preconditions ========================================================== #
 
+# prevent make from automatically building object files from source files
 .SUFFIXES:
 
+# just for debugging purposes
 -include _debug.mk
 
+# check if the SOFTWARE variable is defined
 ifndef SOFTWARE
  $(error $(error_fx)SOFTWARE is not defined$(reset_fx))
 endif
 override SOFTWARE := $(strip $(SOFTWARE))
+# check if the Makefile has been configured
+# we're comparing every configuration variable with their pre-defined value
 ifeq "$(SOFTWARE),$(TARGET),$(PACKAGE),$(SRC),$(SRC_MAIN),$(SRC_TEST),$(BIN),$(INC),$(LINKS),$(LINK_DIRS),$(TEST),$(CCFLAGS),$(CXXFLAGS)" \
      "exe|lib,,$(TARGET),,src/main,src/test,bin,include/$(PACKAGE),,,,-Iinclude -std=c17   -Wall -Wextra,-Iinclude -std=c++17 -Wall -Wextra"
  $(error $(error_fx)Makefile is not configured$(reset_fx))
 endif
+# check if a supported SOFTWARE type has been given
 ifneq "$(SOFTWARE)" "exe"
  ifneq "$(SOFTWARE)" "lib"
   $(error $(error_fx)Software type ("$(SOFTWARE)") is unknown$(reset_fx))
  endif
 endif
 
+# check if the TARGET variable is defined
 ifndef TARGET
  $(error $(error_fx)TARGET is not defined$(reset_fx))
 endif
 override TARGET := $(strip $(TARGET))
 
+# check if the SRC, SRC_MAIN and SRC_TEST variables are defined
 ifdef SRC_MAIN
+ # SRC_MAIN is defined
+
+ # check if SRC_TEST is defined
+ # if SRC_MAIN is defined, SRC_TEST must also be defined
  ifndef SRC_TEST
   $(error $(error_fx)SRC_MAIN is defined but SRC_TEST is not defined. \
           If you don't want to use tests, \
@@ -102,6 +114,9 @@ ifdef SRC_MAIN
  endif
  override SRC_TEST := $(strip $(SRC_TEST))
 
+ # check if SRC_MAN and SRC_TEST are equal
+ # SRC_MAIN and SRC_TEST are not allowed to be equal, there's no way good way to
+ # hold main source files and test source files apart
  ifeq "$(SRC_MAIN)" "$(SRC_TEST)"
   $(error $(error_fx)SRC_MAIN and SRC_TEST are equal. \
           If you don't want to use tests, \
@@ -109,16 +124,24 @@ ifdef SRC_MAIN
  endif
  override SRC_MAIN := $(strip $(SRC_MAIN))
 
+ # check if the SRC variable defined
+ # just give a warning if it is, we ignore it anyway
  ifdef SRC
   $(warning $(warning_fx)SRC is ignored if SRC_MAIN is defined. \
             Consider removing it$(reset_fx))
  endif
 else
+ # SRC_MAIN is not defined
+
+ # check if the SRC variable is defined
+ # we obviously can't do anything if neither SRC nor SRC_MAIN are defined
  ifndef SRC
   $(error $(error_fx)Neither SRC nor SRC_MAIN are defined$(reset_fx))
  endif
  override SRC_MAIN := $(strip $(SRC))
 
+ # check if the SRC_TEST variable is defined
+ # if we're using SRC, we don't want tests. give a warning; SRC_TEST is ignored
  ifdef SRC_TEST
   $(warning $(warning_fx)SRC_TEST is ignored if SRC_MAIN is not defined and \
             SRC is defined. \
@@ -127,12 +150,19 @@ else
  override SRC_TEST := /dev/null
 endif
 
+# note about SRC, SRC_MAIN and SRC_TEST:
+#  internally, we always use SRC_MAIN and SRC_TEST
+#  if tests are supposed to be disabled, SRC_TEST will be set to "/dev/null"
+
+# check if the main and test source directories even exist and if they are
+# directories
 ifeq "$(shell test -e '$(SRC_MAIN)' || echo x)" "x"
  $(error $(error_fx)Source directory does not exist$(reset_fx))
 endif
 ifeq "$(shell test -d '$(SRC_MAIN)' || echo x)" "x"
  $(error $(error_fx)Specified source directory is not a directory$(reset_fx))
 endif
+# don't check if test source directory if disabled
 ifneq "$(SRC_TEST)" "/dev/null"
  ifeq "$(shell test -e '$(SRC_TEST)' || echo x)" "x"
   $(error $(error_fx)Test source directory does not exist$(reset_fx))
@@ -142,14 +172,18 @@ ifneq "$(SRC_TEST)" "/dev/null"
  endif
 endif
 
+# check if the BIN variable is defined
 ifndef BIN
  $(error $(error_fx)BIN is not defined$(reset_fx))
 endif
 override BIN := $(strip $(BIN))
+# checking if BIN is project root
 ifeq "$(BIN)" "."
  $(error $(error_fx)BIN is not allowed to be the root directory$(reset_fx))
 endif
 
+# check if the INC variable is defined, but only do it if we're not bulding an
+# executable
 ifneq "$(SOFTWARE)" "exe"
  ifndef INC
   $(error $(error_fx)INC is not defined$(reset_fx))
@@ -157,8 +191,11 @@ ifneq "$(SOFTWARE)" "exe"
  override INC := $(strip $(INC))
 endif
 
-# warnings/errors about LINKS and LINK_DIRS
+# warnings about LINKS and LINK_DIRS
 ifeq "$(SOFTWARE)" "exe"
+ # for executables
+
+ # check if LINK_DIRS is defined but LINKS isn't
  ifdef LINK_DIRS
   ifndef LINKS
    $(warning $(warning_fx)LINK_DIRS is defined, but LINKS isn't. \
@@ -167,6 +204,10 @@ ifeq "$(SOFTWARE)" "exe"
   endif
  endif
 else
+ # for libraries
+
+ # we can't link anything if we're building a lib ourselves, so give out a
+ # warning if LINKS or LINK_DIRS are defined
  ifdef LINKS
   $(warning $(warning_fx)LINKS is defined, but is ignored when building a \
             library. Consider removing LINKS$(reset_fx))
@@ -177,6 +218,7 @@ else
  endif
 endif
 
+# check if TEST is not defined if SRC_TEST is defined
 ifneq "$(SRC_TEST)" "/dev/null"
  ifndef TEST
   $(error $(error_fx)SRC_TEST is defined but TEST is not defined. \
@@ -188,6 +230,7 @@ endif
 
 # === variables ============================================================== #
 
+# conventional make variables
 SHELL = /bin/sh
 prefix      = /usr/local
 exec_prefix = $(prefix)
@@ -207,10 +250,12 @@ static_lib_prefix = lib
 shared_lib_suffix = .so
 static_lib_suffix = .a
 
-# unix like executables usually don't have a suffix, if you want you can change that
+# unix like executables usually don't have a suffix, if you want you can change
+# that
 exe_prefix =
 exe_suffix =
 
+# specifically for test executables
 test_prefix = $(exe_prefix)
 test_suffix = _test$(exe_suffix)
 
