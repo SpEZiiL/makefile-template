@@ -177,11 +177,14 @@ else
  endif
 endif
 
-ifndef TEST
- $(error $(error_fx)TEST is not defined. \
-         If you don't have any tests, define it as ':'$(reset_fx))
+ifneq "$(SRC_TEST)" "/dev/null"
+ ifndef TEST
+  $(error $(error_fx)SRC_TEST is defined but TEST is not defined. \
+          If you don't want to use tests, \
+          consider using just SRC instead of SRC_MAIN and SRC_TEST$(reset_fx))
+ endif
+ override TEST := $(strip $(TEST))
 endif
-override TEST := $(strip $(TEST))
 
 # === variables ============================================================== #
 
