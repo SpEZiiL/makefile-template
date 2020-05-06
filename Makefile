@@ -267,13 +267,19 @@ INSTALL ?= install
 
 # === custom functions ======================================================= #
 
+# checks if argument 1 and 2 are equal
 override _eq = $(and $(findstring $(1),$(2)),$(findstring $(2),$(1)))
 
+# gets the target executable name of the test tuple
 override _test_target = $(word 1,$(subst :, ,$(1)))
+# gets the source file of the test tuple
 override _test_source = $(word 2,$(subst :, ,$(1)))
 
+# pipe commands into this function to color/style them
+# argument should be an ascii escape sequence (the *_fx variables)
 override _color_pipe = sed -E s/'.*'/'$(1)\0$(reset_fx)'/g
 
+# finds all C language files in directory of argument 1
 override _find_c_files   = $(foreach \
 		__file, \
 		$(shell find '$(1)' \
@@ -282,6 +288,7 @@ override _find_c_files   = $(foreach \
 		), \
 		$(__file:$(1)/%=%) \
 )
+# finds all C++ language files in directory of argument 1
 override _find_cxx_files = $(foreach \
 		__file, \
 		$(shell find '$(1)' \
@@ -304,6 +311,7 @@ override _find_cxx_files = $(foreach \
 
 override LINK_FLAGS := $(addprefix -L,$(LINK_DIRS)) $(addprefix -l,$(LINKS))
 
+# all main C/C++ source files
 override C_SOURCES   := $(sort $(call _find_c_files,$(SRC_MAIN)))
 override CXX_SOURCES := $(sort $(call _find_cxx_files,$(SRC_MAIN)))
 
@@ -312,6 +320,7 @@ ifeq "$(C_SOURCES)$(CXX_SOURCES)" ""
  $(error $(error_fx)No source files found$(reset_fx))
 endif
 
+# all test C/C++ source files
 override TEST_C_SOURCES   := $(sort $(call _find_c_files,$(SRC_TEST)))
 override TEST_CXX_SOURCES := $(sort $(call _find_cxx_files,$(SRC_TEST)))
 
@@ -338,6 +347,8 @@ override SHARED_LIB_TARGET := $(shared_lib_prefix)$(TARGET)$(shared_lib_suffix)
 override STATIC_LIB_TARGET := $(static_lib_prefix)$(TARGET)$(static_lib_suffix)
 override EXE_TARGET        := $(exe_prefix)$(TARGET)$(exe_suffix)
 
+# test tuples
+# these are in format of <test executable name>:<test source file>
 override C_TESTS   := $(sort $(foreach __source_file,$(TEST_C_SOURCES), \
 	$(test_prefix)$(basename $(notdir $(__source_file)))$(test_suffix):$(__source_file) \
 ))
@@ -345,6 +356,7 @@ override CXX_TESTS := $(sort $(foreach __source_file,$(TEST_CXX_SOURCES), \
 	$(test_prefix)$(basename $(notdir $(__source_file)))$(test_suffix):$(__source_file) \
 ))
 
+# extracts just the targets from the test tuples
 override TEST_C_TARGETS   := $(sort $(foreach __test,$(C_TESTS), \
 	$(call _test_target,$(__test)) \
 ))
