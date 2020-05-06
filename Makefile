@@ -241,54 +241,54 @@ override _find_cxx_files = $(foreach \
 		$(__file:$(1)/%=%) \
 )
 
-override C_SOURCES   := $(call _find_c_files,$(SRC_MAIN))
-override CXX_SOURCES := $(call _find_cxx_files,$(SRC_MAIN))
+override C_SOURCES   := $(sort $(call _find_c_files,$(SRC_MAIN)))
+override CXX_SOURCES := $(sort $(call _find_cxx_files,$(SRC_MAIN)))
 
 # checking if source files were found
 ifeq "$(C_SOURCES)$(CXX_SOURCES)" ""
  $(error $(error_fx)No source files found$(reset_fx))
 endif
 
-override TEST_C_SOURCES   := $(call _find_c_files,$(SRC_TEST))
-override TEST_CXX_SOURCES := $(call _find_cxx_files,$(SRC_TEST))
+override TEST_C_SOURCES   := $(sort $(call _find_c_files,$(SRC_TEST)))
+override TEST_CXX_SOURCES := $(sort $(call _find_cxx_files,$(SRC_TEST)))
 
 # shared objects
-override SHARED_C_OBJECTS   := $(foreach __source_file,$(C_SOURCES), \
+override SHARED_C_OBJECTS   := $(sort $(foreach __source_file,$(C_SOURCES), \
 	$(BIN)/$(__source_file).$(shared_object_ext) \
-)
-override SHARED_CXX_OBJECTS := $(foreach __source_file,$(CXX_SOURCES), \
+))
+override SHARED_CXX_OBJECTS := $(sort $(foreach __source_file,$(CXX_SOURCES), \
 	$(BIN)/$(__source_file).$(shared_object_ext) \
-)
-override SHARED_OBJECTS     := $(SHARED_C_OBJECTS) $(SHARED_CXX_OBJECTS)
+))
+override SHARED_OBJECTS     := $(sort $(SHARED_C_OBJECTS) $(SHARED_CXX_OBJECTS))
 
 # static objects
-override STATIC_C_OBJECTS   := $(foreach __source_file,$(C_SOURCES), \
+override STATIC_C_OBJECTS   := $(sort $(foreach __source_file,$(C_SOURCES), \
 	$(BIN)/$(__source_file).$(static_object_ext) \
-)
-override STATIC_CXX_OBJECTS := $(foreach __source_file,$(CXX_SOURCES), \
+))
+override STATIC_CXX_OBJECTS := $(sort $(foreach __source_file,$(CXX_SOURCES), \
 	$(BIN)/$(__source_file).$(static_object_ext) \
-)
-override STATIC_OBJECTS     := $(STATIC_C_OBJECTS) $(STATIC_CXX_OBJECTS)
+))
+override STATIC_OBJECTS     := $(sort $(STATIC_C_OBJECTS) $(STATIC_CXX_OBJECTS))
 
 # targets
 override SHARED_LIB_TARGET := $(shared_lib_prefix)$(TARGET)$(shared_lib_suffix)
 override STATIC_LIB_TARGET := $(static_lib_prefix)$(TARGET)$(static_lib_suffix)
 override EXE_TARGET        := $(exe_prefix)$(TARGET)$(exe_suffix)
 
-override C_TESTS   := $(foreach __source_file,$(TEST_C_SOURCES), \
+override C_TESTS   := $(sort $(foreach __source_file,$(TEST_C_SOURCES), \
 	$(test_prefix)$(basename $(notdir $(__source_file)))$(test_suffix):$(__source_file) \
-)
-override CXX_TESTS := $(foreach __source_file,$(TEST_CXX_SOURCES), \
+))
+override CXX_TESTS := $(sort $(foreach __source_file,$(TEST_CXX_SOURCES), \
 	$(test_prefix)$(basename $(notdir $(__source_file)))$(test_suffix):$(__source_file) \
-)
+))
 
-override TEST_C_TARGETS   := $(foreach __test,$(C_TESTS), \
+override TEST_C_TARGETS   := $(sort $(foreach __test,$(C_TESTS), \
 	$(call _test_target,$(__test)) \
-)
-override TEST_CXX_TARGETS := $(foreach __test,$(CXX_TESTS), \
+))
+override TEST_CXX_TARGETS := $(sort $(foreach __test,$(CXX_TESTS), \
 	$(call _test_target,$(__test)) \
-)
-override TEST_TARGETS     := $(TEST_C_TARGETS) $(TEST_CXX_TARGETS)
+))
+override TEST_TARGETS     := $(sort $(TEST_C_TARGETS) $(TEST_CXX_TARGETS))
 
 # === default rule =========================================================== #
 
