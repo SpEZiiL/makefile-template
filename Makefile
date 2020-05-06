@@ -274,10 +274,6 @@ override _test_source = $(word 2,$(subst :, ,$(1)))
 
 override _color_pipe = sed -E s/'.*'/'$(1)\0$(reset_fx)'/g
 
-# === constants ============================================================== #
-
-override LINK_FLAGS := $(addprefix -L,$(LINK_DIRS)) $(addprefix -l,$(LINKS))
-
 override _find_c_files   = $(foreach \
 		__file, \
 		$(shell find '$(1)' \
@@ -303,6 +299,10 @@ override _find_cxx_files = $(foreach \
 		), \
 		$(__file:$(1)/%=%) \
 )
+
+# === constants ============================================================== #
+
+override LINK_FLAGS := $(addprefix -L,$(LINK_DIRS)) $(addprefix -l,$(LINKS))
 
 override C_SOURCES   := $(sort $(call _find_c_files,$(SRC_MAIN)))
 override CXX_SOURCES := $(sort $(call _find_cxx_files,$(SRC_MAIN)))
