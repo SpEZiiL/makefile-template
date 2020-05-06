@@ -127,6 +127,21 @@ else
  override SRC_TEST := /dev/null
 endif
 
+ifeq "$(shell test -e '$(SRC_MAIN)' || echo x)" "x"
+ $(error $(error_fx)Source directory does not exist$(reset_fx))
+endif
+ifeq "$(shell test -d '$(SRC_MAIN)' || echo x)" "x"
+ $(error $(error_fx)Specified source directory is not a directory$(reset_fx))
+endif
+ifneq "$(SRC_TEST)" "/dev/null"
+ ifeq "$(shell test -e '$(SRC_TEST)' || echo x)" "x"
+  $(error $(error_fx)Test source directory does not exist$(reset_fx))
+ endif
+ ifeq "$(shell test -d '$(SRC_TEST)' || echo x)" "x"
+  $(error $(error_fx)Specified test source directory is not a directory$(reset_fx))
+ endif
+endif
+
 ifndef BIN
  $(error $(error_fx)BIN is not defined$(reset_fx))
 endif
