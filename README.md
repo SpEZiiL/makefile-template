@@ -1,8 +1,8 @@
 # C/C++ Makefile Template #
 
-[version_shield]: https://img.shields.io/badge/version-2.2.0-blue.svg
+[version_shield]: https://img.shields.io/badge/version-2.3.0-blue.svg
 [latest_release]: https://github.com/mfederczuk/makefile-template/releases/latest "Latest Release"
-[![version: 2.2.0][version_shield]][latest_release]
+[![version: 2.3.0][version_shield]][latest_release]
 [![Changelog](https://img.shields.io/badge/-Changelog-blue)](./CHANGELOG.md "Changelog")
 
 ## About ##
@@ -104,6 +104,10 @@ Open it up and you will see various variable definitions under the
   If you don't have a program that can call tests like this, I recommend
    [utest-script](https://github.com/mfederczuk/utest-script). (also written by
    me)
+* `MAIN`  
+  The source file which contains the `main` function.  
+  When linking object files to the test executables, this file will be excluded.  
+  This variables is only needed when building an executable.
 * `CCFLAGS` & `CXXFLAGS`  
   It's standard Makefile conventions  to use these variables as flags for the
    **C** and **C++** compiler, add include directories (`-I`), language
@@ -126,8 +130,8 @@ For a full list of rules and what they do, see [Makefile Rules](#makefile-rules)
 
 Compliant with **GNU** conventions, you can define the `DESTDIR` variable, to
  change the directory any files will be installed to.  
-Setting it to `/tmp` will install any files to `/tmp/usr/local/...`. Just make
- sure that the subdirectories exist, the Makefile will not try to create them.
+Setting it to `/tmp` will install any files to `/tmp/usr/local/...`.  
+The subdirectories do not need to exist, the Makefile will create them for you.
 
 Change where targets and headers are installed with the `prefix` and
  `exec_prefix` variables. By default, `prefix` will be `/usr/local` and
@@ -163,7 +167,10 @@ As previously mentioned, [utest-script](https://github.com/mfederczuk/utest-scri
  like this.
 
 If you're building a library, every test file will be linked with the static
- object files, so that you can actually test the content in the library.
+ object files, so that you can actually test the content in the library.  
+When building an executable the test executables will also be linked with the
+ object files, the only file that will not be linked with is the file which
+ contains the `main` function, which is stored inside the `MAIN` variable.
 
 ### Makefile Rules ###
 
@@ -283,7 +290,7 @@ Most of the time `make` and `make clean` will be enough for testing your
 * `clean/objects/static` (library)  
   Removes the static object files in the `BIN` directory and `BIN` or any
    subdirectories if they became empty
-* `clean/$(BIN)` (executable & library)
+* `clean/$(BIN)` (executable & library)  
   Removes the `BIN` directory
 * `clean/$(BIN)/`*\<object file\>* (executable & library)  
   Removes the specific object file in the `BIN` directory and `BIN` or any
