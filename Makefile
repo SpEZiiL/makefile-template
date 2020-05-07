@@ -584,7 +584,7 @@ endif
 # === cleaning =============================================================== #
 
 override _clean_empty_dir = if [ -d '$(1)' ]; then \
-	find '$(BIN)' -depth -type d -exec rm -dfv '{}' ';' 2>/dev/null \
+	find '$(1)' -depth -type d -exec rm -dfv '{}' ';' 2>/dev/null \
 		| $(call _color_pipe,$(clean_fx)) ; \
 fi
 
