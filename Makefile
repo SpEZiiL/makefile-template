@@ -521,7 +521,7 @@ ifneq "$(SRC_TEST)" "/dev/null"
  else
   tests: $(TEST_TARGETS)
   .SECONDEXPANSION:
-  $(TEST_C_TARGETS): %:   $(STATIC_OBJECTS) \
+  $(TEST_C_TARGETS): %:   $(STATIC_C_OBJECTS) \
                           $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
 	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
 	@$(CC)  $(CCFLAGS)  $^ -o '$@'
