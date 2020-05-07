@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Proper error messages if the source directories don't exist
 
+### Fixed ###
+
+* C++ objects will no longer be linked with C tests (library)
+
 ## [2.2.0] - 2020-05-05 ##
 
 [2.2.0]: https://github.com/mfederczuk/makefile-template/compare/v2.1.0...v2.2.0
