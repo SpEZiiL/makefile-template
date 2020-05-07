@@ -71,6 +71,9 @@ endif
 
 # === preconditions ========================================================== #
 
+override EXE_SOFTWARE := exe
+override LIB_SOFTWARE := lib
+
 # prevent make from automatically building object files from source files
 .SUFFIXES:
 
@@ -89,8 +92,8 @@ ifeq "$(SOFTWARE),$(TARGET),$(PACKAGE),$(SRC),$(SRC_MAIN),$(SRC_TEST),$(BIN),$(I
  $(error $(error_fx)Makefile is not configured$(reset_fx))
 endif
 # check if a supported SOFTWARE type has been given
-ifneq "$(SOFTWARE)" "exe"
- ifneq "$(SOFTWARE)" "lib"
+ifneq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
+ ifneq "$(SOFTWARE)" "$(LIB_SOFTWARE)"
   $(error $(error_fx)Software type ("$(SOFTWARE)") is unknown$(reset_fx))
  endif
 endif
@@ -184,7 +187,7 @@ endif
 
 # check if the INC variable is defined, but only do it if we're not bulding an
 # executable
-ifneq "$(SOFTWARE)" "exe"
+ifneq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  ifndef INC
   $(error $(error_fx)INC is not defined$(reset_fx))
  endif
@@ -192,7 +195,7 @@ ifneq "$(SOFTWARE)" "exe"
 endif
 
 # warnings about LINKS and LINK_DIRS
-ifeq "$(SOFTWARE)" "exe"
+ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  # for executables
 
  # check if LINK_DIRS is defined but LINKS isn't
@@ -367,7 +370,7 @@ override TEST_TARGETS     := $(sort $(TEST_C_TARGETS) $(TEST_CXX_TARGETS))
 
 # === default rule =========================================================== #
 
-ifeq "$(SOFTWARE)" "exe"
+ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  all: target
  .PHONY: all
 else
@@ -377,7 +380,7 @@ endif
 
 # === universe rule ========================================================== #
 
-ifeq "$(SOFTWARE)" "exe"
+ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  ifneq "$(SRC_TEST)" "/dev/null"
   _universe: target tests
 	$(warning $(warning_fx)The `_universe` target is deprecated, use the `universe` target instead$(reset_fx))
@@ -399,7 +402,7 @@ else
  endif
 endif
 
-ifeq "$(SOFTWARE)" "exe"
+ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  ifneq "$(SRC_TEST)" "/dev/null"
   universe: target tests
   .PHONY: universe
@@ -419,7 +422,7 @@ endif
 
 # === building object files ================================================== #
 
-ifeq "$(SOFTWARE)" "exe"
+ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  objects: $(STATIC_OBJECTS)
  $(STATIC_C_OBJECTS):   $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
@@ -455,7 +458,7 @@ endif
 
 # === building targets ======================================================= #
 
-ifeq "$(SOFTWARE)" "exe"
+ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  target: $(EXE_TARGET)
  $(EXE_TARGET): $(STATIC_OBJECTS)
 	$(info $(target_build_fx)Building target '$@'...$(reset_fx))
@@ -490,7 +493,7 @@ ifneq "$(SRC_TEST)" "/dev/null"
 	) \
  )
 
- ifeq "$(SOFTWARE)" "exe"
+ ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
   tests: $(TEST_TARGETS)
   .SECONDEXPANSION:
   $(TEST_C_TARGETS): %:   $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
@@ -523,7 +526,7 @@ endif
 
 # === installing ============================================================= #
 
-ifeq "$(SOFTWARE)" "exe"
+ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  install: install/target
  install/target: install/$(EXE_TARGET)
  install/$(EXE_TARGET): install/%: %
@@ -546,7 +549,7 @@ endif
 
 # === uninstalling =========================================================== #
 
-ifeq "$(SOFTWARE)" "exe"
+ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  uninstall: uninstall/target
  uninstall/target: uninstall/$(EXE_TARGET)
  uninstall/$(EXE_TARGET):
@@ -581,7 +584,7 @@ override CLEANING_OBJECTS        := $(CLEANING_SHARED_OBJECTS) \
 
 override CLEANING_TEST_TARGETS := $(addprefix clean/,$(TEST_TARGETS))
 
-ifeq "$(SOFTWARE)" "exe"
+ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  ifneq "$(SRC_TEST)" "/dev/null"
   clean: clean/objects clean/target clean/tests
   .PHONY: clean
