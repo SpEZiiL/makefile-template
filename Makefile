@@ -131,7 +131,8 @@ ifdef SRC_MAIN
  # make sure that, if building an executable, MAIN is defined
  ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
   ifndef MAIN
-   $(error $(error_fx)SRC_TEST is defined but MAIN is not defined$(reset_fx))
+   $(warning $(warning_fx)SRC_TEST is defined but MAIN is not defined. \
+             Tests will not be linked with the object files$(reset_fx))
   endif
  endif
 
@@ -508,9 +509,11 @@ ifneq "$(SRC_TEST)" "/dev/null"
 
  ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
   # static objects without the main file
-  override STATIC_C_OBJECTS_FOR_EXE_TEST   := $(sort $(filter-out $(call _static_object,$(MAIN)),$(STATIC_C_OBJECTS)))
-  override STATIC_CXX_OBJECTS_FOR_EXE_TEST := $(sort $(filter-out $(call _static_object,$(MAIN)),$(STATIC_CXX_OBJECTS)))
-  override STATIC_OBJECTS_FOR_EXE_TEST     := $(sort $(STATIC_C_OBJECTS_FOR_EXE_TEST) $(STATIC_CXX_OBJECTS_FOR_EXE_TEST))
+  ifdef MAIN
+   override STATIC_C_OBJECTS_FOR_EXE_TEST   := $(sort $(filter-out $(call _static_object,$(MAIN)),$(STATIC_C_OBJECTS)))
+   override STATIC_CXX_OBJECTS_FOR_EXE_TEST := $(sort $(filter-out $(call _static_object,$(MAIN)),$(STATIC_CXX_OBJECTS)))
+   override STATIC_OBJECTS_FOR_EXE_TEST     := $(sort $(STATIC_C_OBJECTS_FOR_EXE_TEST) $(STATIC_CXX_OBJECTS_FOR_EXE_TEST))
+  endif
 
   tests: $(TEST_TARGETS)
   .SECONDEXPANSION:
