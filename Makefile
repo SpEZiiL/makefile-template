@@ -30,6 +30,7 @@ INC = include/$(PACKAGE)
 LINKS =
 
 TEST =
+MAIN =
 
 CCFLAGS  = -Iinclude -std=c17   -Wall -Wextra
 CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
@@ -87,8 +88,8 @@ endif
 override SOFTWARE := $(strip $(SOFTWARE))
 # check if the Makefile has been configured
 # we're comparing every configuration variable with their pre-defined value
-ifeq "$(SOFTWARE),$(TARGET),$(PACKAGE),$(SRC),$(SRC_MAIN),$(SRC_TEST),$(BIN),$(INC),$(LINKS),$(LINK_DIRS),$(TEST),$(CCFLAGS),$(CXXFLAGS)" \
-     "exe|lib,,$(TARGET),,src/main,src/test,bin,include/$(PACKAGE),,,,-Iinclude -std=c17   -Wall -Wextra,-Iinclude -std=c++17 -Wall -Wextra"
+ifeq "$(SOFTWARE),$(TARGET),$(PACKAGE),$(SRC),$(SRC_MAIN),$(SRC_TEST),$(BIN),$(INC),$(LINKS),$(LINK_DIRS),$(TEST),$(MAIN),$(CCFLAGS),$(CXXFLAGS)" \
+     "exe|lib,,$(TARGET),,src/main,src/test,bin,include/$(PACKAGE),,,,,-Iinclude -std=c17   -Wall -Wextra,-Iinclude -std=c++17 -Wall -Wextra"
  $(error $(error_fx)Makefile is not configured$(reset_fx))
 endif
 # check if a supported SOFTWARE type has been given
@@ -126,6 +127,13 @@ ifdef SRC_MAIN
           consider using just SRC instead of SRC_MAIN and SRC_TEST$(reset_fx))
  endif
  override SRC_MAIN := $(strip $(SRC_MAIN))
+
+ # make sure that, if building an executable, MAIN is defined
+ ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
+  ifndef MAIN
+   $(error $(error_fx)SRC_TEST is defined but MAIN is not defined$(reset_fx))
+  endif
+ endif
 
  # check if the SRC variable defined
  # just give a warning if it is, we ignore it anyway
