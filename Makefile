@@ -290,6 +290,10 @@ override _test_source = $(word 2,$(subst :, ,$(1)))
 # argument should be an ascii escape sequence (the *_fx variables)
 override _color_pipe = sed -E s/'.*'/'$(1)\0$(reset_fx)'/g
 
+# gets the object file from a source file
+override _static_object = $(BIN)/$(1).$(static_object_ext)
+override _shared_object = $(BIN)/$(1).$(shared_object_ext)
+
 # finds all C language files in directory of argument 1
 override _find_c_files   = $(foreach \
 		__file, \
@@ -337,19 +341,19 @@ override TEST_CXX_SOURCES := $(sort $(call _find_cxx_files,$(SRC_TEST)))
 
 # shared objects
 override SHARED_C_OBJECTS   := $(sort $(foreach __source_file,$(C_SOURCES), \
-	$(BIN)/$(__source_file).$(shared_object_ext) \
+	$(call _shared_object,$(__source_file)) \
 ))
 override SHARED_CXX_OBJECTS := $(sort $(foreach __source_file,$(CXX_SOURCES), \
-	$(BIN)/$(__source_file).$(shared_object_ext) \
+	$(call _shared_object,$(__source_file)) \
 ))
 override SHARED_OBJECTS     := $(sort $(SHARED_C_OBJECTS) $(SHARED_CXX_OBJECTS))
 
 # static objects
 override STATIC_C_OBJECTS   := $(sort $(foreach __source_file,$(C_SOURCES), \
-	$(BIN)/$(__source_file).$(static_object_ext) \
+	$(call _static_object,$(__source_file)) \
 ))
 override STATIC_CXX_OBJECTS := $(sort $(foreach __source_file,$(CXX_SOURCES), \
-	$(BIN)/$(__source_file).$(static_object_ext) \
+	$(call _static_object,$(__source_file)) \
 ))
 override STATIC_OBJECTS     := $(sort $(STATIC_C_OBJECTS) $(STATIC_CXX_OBJECTS))
 
@@ -432,11 +436,11 @@ endif
 
 ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  objects: $(STATIC_OBJECTS)
- $(STATIC_C_OBJECTS):   $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
+ $(STATIC_C_OBJECTS):   $(call _static_object,%): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CC)  $(CCFLAGS) -c '$<' -o '$@'
- $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
+ $(STATIC_CXX_OBJECTS): $(call _static_object,%): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
@@ -445,19 +449,19 @@ else
  objects: objects/shared objects/static
  objects/shared: $(SHARED_OBJECTS)
  objects/static: $(STATIC_OBJECTS)
- $(SHARED_C_OBJECTS):   $(BIN)/%.$(shared_object_ext): $(SRC_MAIN)/%
+ $(SHARED_C_OBJECTS):   $(call _shared_object,%): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CC)  $(CCFLAGS) -c '$<' -o '$@' -fPIC
- $(SHARED_CXX_OBJECTS): $(BIN)/%.$(shared_object_ext): $(SRC_MAIN)/%
+ $(SHARED_CXX_OBJECTS): $(call _shared_object,%): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@' -fPIC
- $(STATIC_C_OBJECTS):   $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
+ $(STATIC_C_OBJECTS):   $(call _static_object,%): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CC)  $(CCFLAGS) -c '$<' -o '$@'
- $(STATIC_CXX_OBJECTS): $(BIN)/%.$(static_object_ext): $(SRC_MAIN)/%
+ $(STATIC_CXX_OBJECTS): $(call _static_object,%): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
