@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added ###
 
 * Proper error messages if the source directories don't exist
+* Directories where targets are installed to will be made by the Makefile
 
 ### Fixed ###
 
