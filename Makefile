@@ -498,6 +498,7 @@ endif
 # === testing ================================================================ #
 
 ifneq "$(SRC_TEST)" "/dev/null"
+ # finds the test source file to a given test target from all test tuples
  override _find_test_source = $(foreach __test,$(C_TESTS) $(CXX_TESTS), \
 	$(if \
 		$(call _eq,$(1),$(call _test_target,$(__test))), \
