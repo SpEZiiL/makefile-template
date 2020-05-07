@@ -539,6 +539,7 @@ ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  install/target: install/$(EXE_TARGET)
  install/$(EXE_TARGET): install/%: %
 	$(info $(install_fx)Installing target '$(@:install/%=%)' to '$(DESTDIR)$(bindir)'...$(reset_fx))
+	@mkdir -p '$(DESTDIR)$(bindir)'
 	@$(INSTALL) -m755 '$(@:install/%=%)' '$(DESTDIR)$(bindir)'
  .PHONY: install install/target install/$(EXE_TARGET)
 else
@@ -546,9 +547,11 @@ else
  install/targets: install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET)
  install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET): install/%: %
 	$(info $(install_fx)Installing target '$(@:install/%=%)' to '$(DESTDIR)$(libdir)'...$(reset_fx))
+	@mkdir -p '$(DESTDIR)$(libdir)'
 	@$(INSTALL) -m644 '$(@:install/%=%)' '$(DESTDIR)$(libdir)'
  install/headers:
 	$(info $(install_fx)Installing headers to '$(DESTDIR)$(includedir)'...$(reset_fx))
+	@mkdir -p '$(DESTDIR)$(includedir)'
 	@cp -r '$(INC)' '$(DESTDIR)$(includedir)'
  .PHONY: install install/targets \
          install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET) \

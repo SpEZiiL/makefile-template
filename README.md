@@ -126,8 +126,8 @@ For a full list of rules and what they do, see [Makefile Rules](#makefile-rules)
 
 Compliant with **GNU** conventions, you can define the `DESTDIR` variable, to
  change the directory any files will be installed to.  
-Setting it to `/tmp` will install any files to `/tmp/usr/local/...`. Just make
- sure that the subdirectories exist, the Makefile will not try to create them.
+Setting it to `/tmp` will install any files to `/tmp/usr/local/...`.  
+The subdirectories do not need to exist, the Makefile will create them for you.
 
 Change where targets and headers are installed with the `prefix` and
  `exec_prefix` variables. By default, `prefix` will be `/usr/local` and
