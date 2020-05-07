@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed ###
 
-* C++ objects will no longer be linked with C tests (library)
+* **C++** object files will no longer be linked with **C** tests (library)
 
 ## [2.2.0] - 2020-05-05 ##
 
