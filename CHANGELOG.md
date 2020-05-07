@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Proper error messages if the source directories don't exist
 * Directories where targets are installed to will be made by the Makefile
+* When building an executable, tests are now linked with all other object files,
+   excluding the main file
+  * `MAIN` variable which specifies the main file
 
 ### Fixed ###
 
