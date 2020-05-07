@@ -507,15 +507,22 @@ ifneq "$(SRC_TEST)" "/dev/null"
  )
 
  ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
+  # static objects without the main file
+  override STATIC_C_OBJECTS_FOR_EXE_TEST   := $(sort $(filter-out $(call _static_object,$(MAIN)),$(STATIC_C_OBJECTS)))
+  override STATIC_CXX_OBJECTS_FOR_EXE_TEST := $(sort $(filter-out $(call _static_object,$(MAIN)),$(STATIC_CXX_OBJECTS)))
+  override STATIC_OBJECTS_FOR_EXE_TEST     := $(sort $(STATIC_C_OBJECTS_FOR_EXE_TEST) $(STATIC_CXX_OBJECTS_FOR_EXE_TEST))
+
   tests: $(TEST_TARGETS)
   .SECONDEXPANSION:
-  $(TEST_C_TARGETS): %:   $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
+  $(TEST_C_TARGETS): %:   $(STATIC_C_OBJECTS_FOR_EXE_TEST) \
+                          $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
 	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
-	@$(CC)  $(CCFLAGS)  '$<' -o '$@'
+	@$(CC)  $(CCFLAGS)  $^ -o '$@'
   .SECONDEXPANSION:
-  $(TEST_CXX_TARGETS): %: $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
+  $(TEST_CXX_TARGETS): %: $(STATIC_OBJECTS_FOR_EXE_TEST) \
+                          $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
 	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
-	@$(CXX) $(CXXFLAGS) '$<' -o '$@'
+	@$(CXX) $(CXXFLAGS) $^ -o '$@'
   test: $(TEST_TARGETS)
 	@$(TEST) $(addprefix ./,$^)
   .PHONY: tests test
