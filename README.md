@@ -104,6 +104,10 @@ Open it up and you will see various variable definitions under the
   If you don't have a program that can call tests like this, I recommend
    [utest-script](https://github.com/mfederczuk/utest-script). (also written by
    me)
+* `MAIN`  
+  The source file which contains the `main` function.  
+  When linking object files to the test executables, this file will be excluded.  
+  This variables is only needed when building an executable.
 * `CCFLAGS` & `CXXFLAGS`  
   It's standard Makefile conventions  to use these variables as flags for the
    **C** and **C++** compiler, add include directories (`-I`), language
@@ -163,7 +167,10 @@ As previously mentioned, [utest-script](https://github.com/mfederczuk/utest-scri
  like this.
 
 If you're building a library, every test file will be linked with the static
- object files, so that you can actually test the content in the library.
+ object files, so that you can actually test the content in the library.  
+When building an executable the test executables will also be linked with the
+ object files, the only file that will not be linked with is the file which
+ contains the `main` function, which is stored inside the `MAIN` variable.
 
 ### Makefile Rules ###
 
