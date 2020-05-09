@@ -272,10 +272,10 @@ test_prefix = $(exe_prefix)
 test_suffix = _test$(exe_suffix)
 
 # in case these are not defined for some reason
-CC      ?= cc
-CXX     ?= c++
-AR      ?= ar
-INSTALL ?= install
+CC      = cc
+CXX     = c++
+AR      = ar
+INSTALL = install
 
 # === custom functions ======================================================= #
 
