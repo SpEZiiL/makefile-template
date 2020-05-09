@@ -109,7 +109,7 @@ Open it up and you will see various variable definitions under the
   When linking object files to the test executables, this file will be excluded.  
   This variables is only needed when building an executable.
 * `CFLAGS` & `CXXFLAGS`  
-  It's standard Makefile conventions  to use these variables as flags for the
+  It's standard Makefile conventions to use these variables as flags for the
    **C** and **C++** compiler, add include directories (`-I`), language
    standards (`-std=`) and warning flags like `-Wall` here.  
   Do *not* add compilation options like `-c`, output options like `-o` or
