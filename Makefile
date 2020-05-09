@@ -304,8 +304,8 @@ override _color_pipe = sed -E s/'.*'/'$(1)\0$(reset_fx)'/g
 override _static_object = $(BIN)/$(1).$(static_object_ext)
 override _shared_object = $(BIN)/$(1).$(shared_object_ext)
 
-# finds all C language files in directory of argument 1
-override _find_c_files   = $(foreach \
+# finds all C language source files in directory of argument 1
+override _find_c_sources   = $(foreach \
 		__file, \
 		$(shell find '$(1)' \
 				-type f \
@@ -313,8 +313,8 @@ override _find_c_files   = $(foreach \
 		), \
 		$(__file:$(1)/%=%) \
 )
-# finds all C++ language files in directory of argument 1
-override _find_cxx_files = $(foreach \
+# finds all C++ language source files in directory of argument 1
+override _find_cxx_sources = $(foreach \
 		__file, \
 		$(shell find '$(1)' \
 				-type f \
@@ -337,8 +337,8 @@ override _find_cxx_files = $(foreach \
 override LINK_FLAGS := $(addprefix -L,$(LINK_DIRS)) $(addprefix -l,$(LINKS))
 
 # all main C/C++ source files
-override C_SOURCES   := $(sort $(call _find_c_files,$(SRC_MAIN)))
-override CXX_SOURCES := $(sort $(call _find_cxx_files,$(SRC_MAIN)))
+override C_SOURCES   := $(sort $(call _find_c_sources,$(SRC_MAIN)))
+override CXX_SOURCES := $(sort $(call _find_cxx_sources,$(SRC_MAIN)))
 
 # checking if source files were found
 ifeq "$(C_SOURCES)$(CXX_SOURCES)" ""
@@ -346,8 +346,8 @@ ifeq "$(C_SOURCES)$(CXX_SOURCES)" ""
 endif
 
 # all test C/C++ source files
-override TEST_C_SOURCES   := $(sort $(call _find_c_files,$(SRC_TEST)))
-override TEST_CXX_SOURCES := $(sort $(call _find_cxx_files,$(SRC_TEST)))
+override TEST_C_SOURCES   := $(sort $(call _find_c_sources,$(SRC_TEST)))
+override TEST_CXX_SOURCES := $(sort $(call _find_cxx_sources,$(SRC_TEST)))
 
 # shared objects
 override SHARED_C_OBJECTS   := $(sort $(foreach __source_file,$(C_SOURCES), \
