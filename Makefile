@@ -32,7 +32,7 @@ LINKS =
 TEST =
 MAIN =
 
-CCFLAGS  = -Iinclude -std=c17   -Wall -Wextra
+CFLAGS   = -Iinclude -std=c17   -Wall -Wextra
 CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
 
 # === colors ================================================================= #
@@ -88,7 +88,7 @@ endif
 override SOFTWARE := $(strip $(SOFTWARE))
 # check if the Makefile has been configured
 # we're comparing every configuration variable with their pre-defined value
-ifeq "$(SOFTWARE),$(TARGET),$(PACKAGE),$(SRC),$(SRC_MAIN),$(SRC_TEST),$(BIN),$(INC),$(LINKS),$(LINK_DIRS),$(TEST),$(MAIN),$(CCFLAGS),$(CXXFLAGS)" \
+ifeq "$(SOFTWARE),$(TARGET),$(PACKAGE),$(SRC),$(SRC_MAIN),$(SRC_TEST),$(BIN),$(INC),$(LINKS),$(LINK_DIRS),$(TEST),$(MAIN),$(CFLAGS),$(CXXFLAGS)" \
      "exe|lib,,$(TARGET),,src/main,src/test,bin,include/$(PACKAGE),,,,,-Iinclude -std=c17   -Wall -Wextra,-Iinclude -std=c++17 -Wall -Wextra"
  $(error $(error_fx)Makefile is not configured$(reset_fx))
 endif
@@ -271,6 +271,11 @@ exe_suffix =
 test_prefix = $(exe_prefix)
 test_suffix = _test$(exe_suffix)
 
+ifdef CCFLAGS
+ $(warning $(warning_fx)Use the CFLAGS variable instead of the CCFLAGS variable$(reset_fx))
+ CFLAGS = $(CCFLAGS)
+endif
+
 # in case these are not defined for some reason
 CC      = cc
 CXX     = c++
@@ -440,7 +445,7 @@ ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  $(STATIC_C_OBJECTS):   $(call _static_object,%): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
-	@$(CC)  $(CCFLAGS) -c '$<' -o '$@'
+	@$(CC)  $(CFLAGS)  -c '$<' -o '$@'
  $(STATIC_CXX_OBJECTS): $(call _static_object,%): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
@@ -453,7 +458,7 @@ else
  $(SHARED_C_OBJECTS):   $(call _shared_object,%): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
-	@$(CC)  $(CCFLAGS) -c '$<' -o '$@' -fPIC
+	@$(CC)  $(CFLAGS)  -c '$<' -o '$@' -fPIC
  $(SHARED_CXX_OBJECTS): $(call _shared_object,%): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
@@ -461,7 +466,7 @@ else
  $(STATIC_C_OBJECTS):   $(call _static_object,%): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
-	@$(CC)  $(CCFLAGS) -c '$<' -o '$@'
+	@$(CC)  $(CFLAGS)  -c '$<' -o '$@'
  $(STATIC_CXX_OBJECTS): $(call _static_object,%): $(SRC_MAIN)/%
 	@mkdir -p '$(dir $@)'
 	$(info $(object_build_fx)Building file '$@'...$(reset_fx))
@@ -476,7 +481,7 @@ ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
  $(EXE_TARGET): $(STATIC_OBJECTS)
 	$(info $(target_build_fx)Building target '$@'...$(reset_fx))
   ifeq "$(CXX_SOURCES)" ""
-	@$(CC)  $(CCFLAGS)  $^ -o '$@' $(LINK_FLAGS)
+	@$(CC)  $(CFLAGS)   $^ -o '$@' $(LINK_FLAGS)
   else
 	@$(CXX) $(CXXFLAGS) $^ -o '$@' $(LINK_FLAGS)
   endif
@@ -486,7 +491,7 @@ else
  $(SHARED_LIB_TARGET): $(SHARED_OBJECTS)
 	$(info $(target_build_fx)Building target '$@'...$(reset_fx))
   ifeq "$(CXX_SOURCES)" ""
-	@$(CC)  $(CCFLAGS)  $^ -o '$@' -shared
+	@$(CC)  $(CFLAGS)   $^ -o '$@' -shared
   else
 	@$(CXX) $(CXXFLAGS) $^ -o '$@' -shared
   endif
@@ -520,7 +525,7 @@ ifneq "$(SRC_TEST)" "/dev/null"
   $(TEST_C_TARGETS): %:   $(STATIC_C_OBJECTS_FOR_EXE_TEST) \
                           $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
 	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
-	@$(CC)  $(CCFLAGS)  $^ -o '$@'
+	@$(CC)  $(CFLAGS)   $^ -o '$@'
   .SECONDEXPANSION:
   $(TEST_CXX_TARGETS): %: $(STATIC_OBJECTS_FOR_EXE_TEST) \
                           $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
@@ -535,7 +540,7 @@ ifneq "$(SRC_TEST)" "/dev/null"
   $(TEST_C_TARGETS): %:   $(STATIC_C_OBJECTS) \
                           $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
 	$(info $(test_build_fx)Building test '$@'...$(reset_fx))
-	@$(CC)  $(CCFLAGS)  $^ -o '$@'
+	@$(CC)  $(CFLAGS)   $^ -o '$@'
   .SECONDEXPANSION:
   $(TEST_CXX_TARGETS): %: $(STATIC_OBJECTS) \
                           $(SRC_TEST)/$$(strip $$(call _find_test_source,%))
