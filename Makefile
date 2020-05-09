@@ -272,8 +272,12 @@ test_prefix = $(exe_prefix)
 test_suffix = _test$(exe_suffix)
 
 ifdef CCFLAGS
- $(warning $(warning_fx)Use the CFLAGS variable instead of the CCFLAGS variable$(reset_fx))
- CFLAGS = $(CCFLAGS)
+ ifdef CFLAGS
+  $(warning $(warning_fx)The CCFLAGS variable is deprecated and is ignored when CFLAGS is defined$(reset_fx))
+ else
+  $(warning $(warning_fx)The CCFLAGS variable is deprecated, use the CFLAGS variable instead$(reset_fx))
+  CFLAGS = $(CCFLAGS)
+ endif
 endif
 
 # in case these are not defined for some reason
