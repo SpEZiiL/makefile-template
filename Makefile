@@ -138,9 +138,6 @@ endif
 
 # === preconditions ========================================================== #
 
-override EXE_SOFTWARE := exe
-override LIB_SOFTWARE := lib
-
 # prevent make from automatically building object files from source files
 .SUFFIXES:
 
