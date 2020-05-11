@@ -187,6 +187,8 @@ ifneq "$(or \
  override clean_style        := $(call _ascii_esc,$(clean_style))
 endif
 
+override stylemsg = $($(1)_style)$(2)$(reset_style)
+
 # === preconditions ========================================================== #
 
 # prevent make from automatically building object files from source files
