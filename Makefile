@@ -109,7 +109,24 @@ override is_value = $(and \
 
 # === colors ================================================================= #
 
-ifneq "$(NO_COLOR)" "1"
+# checks if the terminal supports colors
+override COLOR_SUPPORT != case "$$TERM" in \
+	xterm-color|*-256color) printf $(TRUE) ;; \
+esac
+
+# if the `color` variable is 'always', we force colored output, even if the
+# terminal would not support it
+# if the variable is 'never', we disable colored output, even if the terminal
+# would support it
+# any other value, and we enable it if the terminal supports colored output
+
+ifneq "$(or \
+	$(call is_equal,$(color),always), \
+	$(and \
+		$(call is_not_equal,$(color),never), \
+		$(call is_not_empty,$(COLOR_SUPPORT)) \
+	) \
+)" "$(FALSE)"
  # reset:      0
  # bold:       1
  # italic:     3
