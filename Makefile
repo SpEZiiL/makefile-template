@@ -54,6 +54,12 @@ CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
 override TRUE  := x
 override FALSE :=
 
+# always use:
+#   ifneq "$(...)" "$(FALSE)"
+# DON'T use:
+#   ifeq "$(...)" "$(TRUE)"
+# as it might fail
+
 override EXE_SOFTWARE  := exe
 override LIB_SOFTWARE  := lib
 override HLIB_SOFTWARE := hlib
