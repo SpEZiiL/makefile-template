@@ -49,6 +49,15 @@ CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
 
 
 
+# === constants ============================================================== #
+
+override TRUE  := x
+override FALSE :=
+
+override EXE_SOFTWARE  := exe
+override LIB_SOFTWARE  := lib
+override HLIB_SOFTWARE := hlib
+
 # === colors ================================================================= #
 
 ifneq "$(NO_COLOR)" "1"
