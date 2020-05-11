@@ -1,3 +1,4 @@
+#!/usr/bin/make -f
 # C/C++ Makefile Template for applications and libraries.
 # Copyright (C) 2020 Michael Federczuk
 #
