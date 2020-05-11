@@ -58,6 +58,49 @@ override EXE_SOFTWARE  := exe
 override LIB_SOFTWARE  := lib
 override HLIB_SOFTWARE := hlib
 
+# === custom conditional functions =========================================== #
+
+# expands to a non-empty string if argument 1 is an empty string, expands to an
+# empty string otherwise
+override not = $(if $(1),$(FALSE),$(TRUE))
+
+# expands to an non-empty string if argument 1 is an empty string, expands to an
+# empty string otherwise
+override is_empty = $(call not,$(1))
+# expands to an non-empty string if argument 1 is a non-empty string, expands to
+# an empty string otherwise
+override is_not_empty = $(call not,$(call is_empty,$(1)))
+
+# expands to a non-empty string if argument 1 and 2 are equal, expands to an
+# empty string otherwise
+override is_equal = $(or \
+	$(and \
+		$(call is_empty,$(1)), \
+		$(call is_empty,$(2)) \
+	), \
+	$(and \
+		$(findstring $(1),$(2)), \
+		$(findstring $(2),$(1)) \
+	) \
+)
+# expands to a non-empty string if argument 1 and 2 are not equal, expands to an
+# empty string otherwise
+override is_not_equal = $(call not,$(call is_equal,$(1),$(2)))
+
+# expands to non-empty string if the variable given as argument 1 is defined,
+# expands to an empty string otherwise
+override is_def = $(call is_not_equal,$(origin $(1)),undefined)
+# expands to non-empty string if the variable given as argument 1 is undefined,
+# expands to an empty string otherwise
+override is_undef = $(call not,$(call is_def,$(1)))
+
+# expands to a non-empty string if the variable given as argument 1 is defined
+# and is equal to argument 2, expands to an empty string otherwise
+override is_value = $(and \
+	$(call is_def,$(1)), \
+	$(call is_equal,$($(1)),$(2)) \
+)
+
 # === colors ================================================================= #
 
 ifneq "$(NO_COLOR)" "1"
