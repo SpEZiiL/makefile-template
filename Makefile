@@ -141,6 +141,7 @@ ifneq "$(or \
  # white:     37  |  bright white:   97
  override _ascii_esc = $(shell printf '\033[$(1)m')
 
+ # DEPRECATED
  override _green_clr_fxn      := 32
  override _yellow_clr_fxn     := 33
  override _blue_clr_fxn       := 34
@@ -148,6 +149,7 @@ ifneq "$(or \
  override _bright_red_clr_fxn := 91
  override _bold_fxn           := 1
 
+ # DEPRECATED
  reset_fx        := $(call _ascii_esc,0)
  error_fx        := $(call _ascii_esc,$(_bright_red_clr_fxn);$(_bold_fxn))
  warning_fx      := $(call _ascii_esc,$(_yellow_clr_fxn))
@@ -157,6 +159,32 @@ ifneq "$(or \
  install_fx      := $(call _ascii_esc,$(_green_clr_fxn))
  uninstall_fx    := $(call _ascii_esc,$(_bright_red_clr_fxn))
  clean_fx        := $(call _ascii_esc,$(_bright_red_clr_fxn))
+
+ override _green_clr_style_n      := 32
+ override _yellow_clr_style_n     := 33
+ override _blue_clr_style_n       := 34
+ override _magenta_clr_style_n    := 35
+ override _bright_red_clr_style_n := 91
+ override _bold_style_n           := 1
+
+ error_style        := $(_bright_red_clr_style_n);$(_bold_fxn)
+ warning_style      := $(_yellow_clr_style_n)
+ object_build_style := $(_blue_clr_style_n)
+ target_build_style := $(_blue_clr_style_n);$(_bold_fxn)
+ test_build_style   := $(_magenta_clr_style_n);$(_bold_fxn)
+ install_style      := $(_green_clr_style_n)
+ uninstall_style    := $(_bright_red_clr_style_n)
+ clean_style        := $(_bright_red_clr_style_n)
+
+ override reset_style        := $(call _ascii_esc,0)
+ override error_style        := $(call _ascii_esc,$(error_style))
+ override warning_style      := $(call _ascii_esc,$(warning_style))
+ override object_build_style := $(call _ascii_esc,$(object_build_style))
+ override target_build_style := $(call _ascii_esc,$(target_build_style))
+ override test_build_style   := $(call _ascii_esc,$(test_build_style))
+ override install_style      := $(call _ascii_esc,$(install_style))
+ override uninstall_style    := $(call _ascii_esc,$(uninstall_style))
+ override clean_style        := $(call _ascii_esc,$(clean_style))
 endif
 
 # === preconditions ========================================================== #
