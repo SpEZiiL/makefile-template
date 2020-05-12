@@ -111,6 +111,29 @@ override is_value = $(and \
 	$(call is_equal,$($(1)),$(2)) \
 )
 
+# === files/directories/paths === #
+
+# expands to non-empty string if the path given as argument 1 exists, expands to
+# an empty string otherwise
+override exists = $(shell test -e '$(1)' && printf $(TRUE))
+
+# expands to non-empty string if the path given as argument 1 is a regular file,
+# expands to an empty string otherwise
+override is_file = $(shell test -f '$(1)' && printf $(TRUE))
+# expands to non-empty string if the path given as argument 1 is a directory,
+# expands to an empty string otherwise
+override is_dir = $(shell test -d '$(1)' && printf $(TRUE))
+
+# expands to non-empty string if the path given as argument 1 is accessable by
+# the current user, expands to an empty string otherwise
+override is_accessable = $(shell \
+	if [ -d '$(1)' ]; then \
+		test -r && test -x && printf $(TRUE); \
+	else \
+		test -r && printf $(TRUE); \
+	fi \
+)
+
 # === colors ================================================================= #
 
 # checks if the terminal supports colors
