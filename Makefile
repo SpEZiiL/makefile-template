@@ -167,11 +167,11 @@ ifneq "$(or \
  override _bright_red_clr_style_n := 91
  override _bold_style_n           := 1
 
- error_style        := $(_bright_red_clr_style_n);$(_bold_fxn)
+ error_style        := $(_bright_red_clr_style_n);$(_bold_style_n)
  warning_style      := $(_yellow_clr_style_n)
  object_build_style := $(_blue_clr_style_n)
- target_build_style := $(_blue_clr_style_n);$(_bold_fxn)
- test_build_style   := $(_magenta_clr_style_n);$(_bold_fxn)
+ target_build_style := $(_blue_clr_style_n);$(_bold_style_n)
+ test_build_style   := $(_magenta_clr_style_n);$(_bold_style_n)
  install_style      := $(_green_clr_style_n)
  uninstall_style    := $(_bright_red_clr_style_n)
  clean_style        := $(_bright_red_clr_style_n)
