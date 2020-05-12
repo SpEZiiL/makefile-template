@@ -66,6 +66,8 @@ override HLIB_SOFTWARE := hlib
 
 # === custom conditional functions =========================================== #
 
+# === strings === #
+
 # expands to a non-empty string if argument 1 is an empty string, expands to an
 # empty string otherwise
 override not = $(if $(1),$(FALSE),$(TRUE))
@@ -92,6 +94,8 @@ override is_equal = $(or \
 # expands to a non-empty string if argument 1 and 2 are not equal, expands to an
 # empty string otherwise
 override is_not_equal = $(call not,$(call is_equal,$(1),$(2)))
+
+# === variables === #
 
 # expands to non-empty string if the variable given as argument 1 is defined,
 # expands to an empty string otherwise
