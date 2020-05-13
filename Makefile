@@ -66,6 +66,8 @@ override HLIB_SOFTWARE := hlib
 
 override __built_in_test_cmd__ := [__built_in_test_cmd__]
 
+override __auto_main_source__        := [__auto_main_source__]
+
 # === custom conditional functions =========================================== #
 
 # === strings === #
