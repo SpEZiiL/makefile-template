@@ -64,6 +64,8 @@ override EXE_SOFTWARE  := exe
 override LIB_SOFTWARE  := lib
 override HLIB_SOFTWARE := hlib
 
+override __built_in_test_cmd__ := [__built_in_test_cmd__]
+
 # === custom conditional functions =========================================== #
 
 # === strings === #
