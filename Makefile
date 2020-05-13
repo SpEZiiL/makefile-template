@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# === configuration ========================================================== #
+# === old configuration ====================================================== #
 
 SOFTWARE = exe|lib
 
@@ -35,6 +35,34 @@ MAIN =
 
 CFLAGS   = -Iinclude -std=c17   -Wall -Wextra
 CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
+
+# === configuration ========================================================== #
+
+SOFTWARE = exe|lib|hlib
+
+NAME    =
+PACKAGE = $(NAME)
+TARGET  = $(NAME)
+
+SRC      = src
+SRC_MAIN = src/main
+SRC_TEST = src/test
+BIN      = bin
+INCLUDE  = include/$(PACKAGE)
+
+TEST_CMD    = $(__built_in_test_cmd__)
+MAIN_SOURCE = $(__auto_main_source__)
+
+CLINKS    =
+CXXLINKS  =
+LINKS     =
+LINK_DIRS =
+
+CFLAGS   = -std=c17
+CXXFLAGS = -std=c++17
+FLAGS    = -Iinclude -Wall -Wextra
+
+HOOKSCRIPT =
 
 # ============================================================================ #
 
