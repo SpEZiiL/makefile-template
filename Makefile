@@ -97,7 +97,8 @@ override HLIB_SOFTWARE := hlib
 override BUILT_IN_TEST_CMD     := [built_in_test_cmd]
 override __built_in_test_cmd__ := $(BUILT_IN_TEST_CMD)
 
-override __auto_main_source__        := [__auto_main_source__]
+override AUTO_MAIN_SOURCE            := [auto_main_source]
+override __auto_main_source__        := $(AUTO_MAIN_SOURCE)
 
 # === custom conditional functions =========================================== #
 
