@@ -44,6 +44,8 @@ NAME    =
 PACKAGE = $(NAME)
 TARGET  = $(NAME)
 
+ROOT = .
+
 SRC      = src
 SRC_MAIN = src/main
 SRC_TEST = src/test
