@@ -170,6 +170,10 @@ override is_file = $(shell test -f '$(1)' && printf $(TRUE))
 # expands to an empty string otherwise
 override is_dir = $(shell test -d '$(1)' && printf $(TRUE))
 
+# expands to non-empty string if the path given as argument 1 is executable,
+# expands to an empty string otherwise
+override is_executable = $(shell test -x '$(1)' && printf $(TRUE))
+
 # expands to non-empty string if the path given as argument 1 is accessable by
 # the current user, expands to an empty string otherwise
 override is_accessable = $(shell \
