@@ -94,7 +94,8 @@ override EXE_SOFTWARE  := exe
 override LIB_SOFTWARE  := lib
 override HLIB_SOFTWARE := hlib
 
-override __built_in_test_cmd__ := [__built_in_test_cmd__]
+override BUILT_IN_TEST_CMD     := [built_in_test_cmd]
+override __built_in_test_cmd__ := $(BUILT_IN_TEST_CMD)
 
 override __auto_main_source__        := [__auto_main_source__]
 
