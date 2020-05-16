@@ -49,8 +49,8 @@ ROOT = .
 SRC      = src
 SRC_MAIN = src/main
 SRC_TEST = src/test
-BIN      = bin
 INCLUDE  = include/$(PACKAGE)
+BIN      = bin
 
 TEST_CMD    = $(__built_in_test_cmd__)
 MAIN_SOURCE = $(__auto_main_source__)
