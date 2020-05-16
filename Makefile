@@ -94,6 +94,15 @@ override EXE_SOFTWARE  := exe
 override LIB_SOFTWARE  := lib
 override HLIB_SOFTWARE := hlib
 
+override NO_TARGET      := [no_target]
+override NO_SRC         := [no_src]
+override NO_TEST        := [no_test]
+override NO_BIN         := [no_bin]
+override NO_INCLUDE     := [no_include]
+override NO_TEST_CMD    := [no_test_cmd]
+override NO_MAIN_SOURCE := [no_main_source]
+override NO_HOOKSCRIPT  := [no_hookscript]
+
 override BUILT_IN_TEST_CMD     := [built_in_test_cmd]
 override __built_in_test_cmd__ := $(BUILT_IN_TEST_CMD)
 
