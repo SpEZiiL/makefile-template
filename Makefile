@@ -106,6 +106,7 @@ override NO_HOOKSCRIPT  := [no_hookscript]
 override BUILT_IN_TEST_CMD     := [built_in_test_cmd]
 override __built_in_test_cmd__ := $(BUILT_IN_TEST_CMD)
 
+override AUTO_MAIN_SOURCE_NO_RESULT  := [auto_main_source_no_result]
 override AUTO_MAIN_SOURCE            := [auto_main_source]
 override __auto_main_source__        := $(AUTO_MAIN_SOURCE)
 
