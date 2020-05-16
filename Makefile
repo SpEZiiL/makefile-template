@@ -118,10 +118,10 @@ override __auto_main_source__        := $(AUTO_MAIN_SOURCE)
 # empty string otherwise
 override not = $(if $(1),$(FALSE),$(TRUE))
 
-# expands to an non-empty string if argument 1 is an empty string, expands to an
+# expands to a non-empty string if argument 1 is an empty string, expands to an
 # empty string otherwise
 override is_empty = $(call not,$(1))
-# expands to an non-empty string if argument 1 is a non-empty string, expands to
+# expands to a non-empty string if argument 1 is a non-empty string, expands to
 # an empty string otherwise
 override is_not_empty = $(call not,$(call is_empty,$(1)))
 
@@ -143,10 +143,10 @@ override is_not_equal = $(call not,$(call is_equal,$(1),$(2)))
 
 # === variables === #
 
-# expands to non-empty string if the variable given as argument 1 is defined,
+# expands to a non-empty string if the variable given as argument 1 is defined,
 # expands to an empty string otherwise
 override is_def = $(call is_not_equal,$(origin $(1)),undefined)
-# expands to non-empty string if the variable given as argument 1 is undefined,
+# expands to a non-empty string if the variable given as argument 1 is undefined,
 # expands to an empty string otherwise
 override is_undef = $(call not,$(call is_def,$(1)))
 
@@ -159,22 +159,22 @@ override is_value = $(and \
 
 # === files/directories/paths === #
 
-# expands to non-empty string if the path given as argument 1 exists, expands to
+# expands to a non-empty string if the path given as argument 1 exists, expands to
 # an empty string otherwise
 override exists = $(shell test -e '$(1)' && printf $(TRUE))
 
-# expands to non-empty string if the path given as argument 1 is a regular file,
+# expands to a non-empty string if the path given as argument 1 is a regular file,
 # expands to an empty string otherwise
 override is_file = $(shell test -f '$(1)' && printf $(TRUE))
-# expands to non-empty string if the path given as argument 1 is a directory,
+# expands to a non-empty string if the path given as argument 1 is a directory,
 # expands to an empty string otherwise
 override is_dir = $(shell test -d '$(1)' && printf $(TRUE))
 
-# expands to non-empty string if the path given as argument 1 is executable,
+# expands to a non-empty string if the path given as argument 1 is executable,
 # expands to an empty string otherwise
 override is_executable = $(shell test -x '$(1)' && printf $(TRUE))
 
-# expands to non-empty string if the path given as argument 1 is accessable by
+# expands to a non-empty string if the path given as argument 1 is accessable by
 # the current user, expands to an empty string otherwise
 override is_accessable = $(shell \
 	if [ -d '$(1)' ]; then \
