@@ -397,10 +397,10 @@ override require_vars_not_same_paths = $(if \
 )
 
 
+override prep_path = $(shell realpath -ms --relative-to=. '$(ROOT)/$(1)')
+
 override prep_var = $(eval override $(1) := $(strip $($(1))))
-override prep_var_path = $(eval override $(1) := $(shell \
-	realpath -ms --relative-to=. '$(ROOT)/$($(1))' \
-))
+override prep_var_path = $(eval override $(1) := $(call prep_path,$($(1))))
 
 # === preconditions ========================================================== #
 
