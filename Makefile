@@ -329,6 +329,8 @@ override warnmsg_useless_link_dirs = The LINK_DIRS variable is unnecessary when 
 
 override errmsg_hookscript_not_exe = The hookscript ('$($(1))' ($(1) variable)) is not executable
 
+override errmsg_object_ext_same = The shared object file extension ('$($(1))' ($(1) variable)) and the static object file extension ('$($(2))' ($(2) variable)) are equal
+
 # === precondition functions ================================================= #
 
 override err = $(error $(call stylemsg,error,$(1)))
@@ -941,6 +943,12 @@ CC      ?= cc
 CXX     ?= c++
 AR      ?= ar
 INSTALL ?= install
+
+# === variable conditions ==================================================== #
+
+ifeq "$(shared_object_ext)" "$(static_object_ext)"
+ $(call err,$(call errmsg_object_ext_same,shared_object_ext,static_object_ext))
+endif
 
 # === pre-rule stuff ========================================================= #
 
