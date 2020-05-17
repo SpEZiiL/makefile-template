@@ -79,6 +79,10 @@ HOOKSCRIPT =
 
 
 
+# === debug makefile ========================================================= #
+
+-include _debug.mk
+
 # === constants ============================================================== #
 
 override TRUE  := x
@@ -904,9 +908,6 @@ endif # include used?
 
 # prevent make from automatically building object files from source files
 .SUFFIXES:
-
-# just for debugging purposes
--include _debug.mk
 
 # check if the SOFTWARE variable is defined
 ifndef SOFTWARE
