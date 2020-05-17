@@ -266,6 +266,65 @@ endif
 
 override stylemsg = $($(1)_style)$(2)$(reset_style)
 
+# === error/warning message variables/functions ============================== #
+
+override msg_software = building $(strip $(if \
+	$(call is_equal,$(1),$(EXE_SOFTWARE)), \
+	an executable, \
+	$(if \
+		$(call is_equal,$(1),$(LIB_SOFTWARE)), \
+		a library, \
+		$(if \
+			$(call is_equal,$(1),$(HLIB_SOFTWARE)), \
+			a header-only library \
+		) \
+	) \
+))
+
+override var_msg_used = the $(1) variable is used
+
+override msg_tests_disabled = tests are disabled
+
+
+override errmsg_makefile_unconfigured := The Makefile is unconfigured
+
+override errmsg_invalid_software = Invalid software type ($(1))
+
+override var_errmsg_undefined     = The $(1) variable is undefined
+override var_errmsg_undefined_but = $(call var_errmsg_undefined,$(1)) but $(2)
+
+override var_errmsg_empty = The $(1) variable is empty
+
+override var_warnmsg_ignored      = The $(1) variable is ignored. Consider removing it
+override var_warnmsg_ignored_when = The $(1) variable is ignored when $(2). Consider removing it
+
+override var_warnmsg_useless_empty_var = The $(1) variable is unnecessary when it is empty. Consider removing it
+
+override errmsg_file_not_exist      = The file '$(1)' does not exist
+override errmsg_path_not_file       = The path '$(1)' does not lead to a file
+override errmsg_file_not_accessable = The file '$(1)' is not accessable
+
+override errmsg_dir_not_exist      = The directory '$(1)' does not exist
+override errmsg_path_not_dir       = The path '$(1)' does not lead to a directory
+override errmsg_dir_not_accessable = The directory '$(1)' is not accessable
+
+override var_errmsg_file_not_exist      = The file '$($(1))' ($(1) variable) does not exist
+override var_errmsg_path_not_file       = The path '$($(1))' ($(1) variable) does not lead to a file
+override var_errmsg_file_not_accessable = The file '$($(1))' ($(1) variable) is not accessable
+
+override var_errmsg_dir_not_exist      = The directory '$($(1))' ($(1) variable) does not exist
+override var_errmsg_path_not_dir       = The path '$($(1))' ($(1) variable) does not lead to a directory
+override var_errmsg_dir_not_accessable = The directory '$($(1))' ($(1) variable) is not accessable
+
+override var_errmsg_paths_same = The paths '$($(1))' ($(1) variable) and '$($(2))' ($(2) variable) lead to the same location
+
+
+override var_errmsg_not_basename = The string '$($(1))' ($(1) variable) is not a basename
+
+override warnmsg_useless_link_dirs = The LINK_DIRS variable is unnecessary when no CLINKS, CXXLINKS or LINKS are set. Consider removing it
+
+override errmsg_hookscript_not_exe = The hookscript ('$($(1))' ($(1) variable)) is not executable
+
 # === preconditions ========================================================== #
 
 # prevent make from automatically building object files from source files
