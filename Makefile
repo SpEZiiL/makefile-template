@@ -325,6 +325,117 @@ override warnmsg_useless_link_dirs = The LINK_DIRS variable is unnecessary when 
 
 override errmsg_hookscript_not_exe = The hookscript ('$($(1))' ($(1) variable)) is not executable
 
+# === precondition functions ================================================= #
+
+override err = $(error $(call stylemsg,error,$(1)))
+override warn = $(warning $(call stylemsg,warning,$(1)))
+
+
+override path = $(shell realpath -m '$(1)')
+
+
+override require_var = $(if \
+	$(call is_undef,$(1)), \
+	$(call err,$(call var_errmsg_undefined,$(1))), \
+	$(if \
+		$(call is_empty,$($(1))), \
+		$(call err,$(call var_errmsg_empty,$(1))) \
+	) \
+)
+override require_var_but = $(if \
+	$(call is_undef,$(1)), \
+	$(call err,$(call var_errmsg_undefined_but,$(1),$(2))), \
+	$(if \
+		$(call is_empty,$($(1))), \
+		$(call err,$(call var_errmsg_empty,$(1))) \
+	) \
+)
+
+override ignore_var = $(if \
+	$(call is_def,$(1)), \
+	$(call warn,$(call var_warnmsg_ignored,$(1))) \
+)
+override ignore_var_when = $(if \
+	$(call is_def,$(1)), \
+	$(call warn,$(call var_warnmsg_ignored_when,$(1),$(2))) \
+)
+
+override useless_empty_var = $(if \
+	$(and \
+		$(call is_def,$(1)), \
+		$(call is_empty,$($(1))) \
+	), \
+	$(call warn,$(call var_warnmsg_useless_empty_var,$(1))) \
+)
+
+
+override require_file = $(if \
+	$(call not,$(call exists,$(call path,$(1)))), \
+	$(call err,$(call errmsg_file_not_exist,$(1))), \
+	$(if \
+		$(call not,$(call is_file,$(call path,$(1)))), \
+		$(call err,$(call errmsg_path_not_file,$(1))), \
+		$(if \
+			$(call not,$(call is_accessable,$(call path,$(1)))), \
+			$(call err,$(call errmsg_file_not_accessable,$(1))) \
+		) \
+	) \
+)
+override require_dir = $(if \
+	$(call not,$(call exists,$(call path,$(1)))), \
+	$(call err,$(call errmsg_dir_not_exist,$(1))), \
+	$(if \
+		$(call not,$(call is_dir,$(call path,$(1)))), \
+		$(call err,$(call errmsg_path_not_dir,$(1))), \
+		$(if \
+			$(call not,$(call is_accessable,$(call path,$(1)))), \
+			$(call err,$(call errmsg_dir_not_accessable,$(1))) \
+		) \
+	) \
+)
+
+
+override require_var_file = $(if \
+	$(call not,$(call exists,$(call path,$($(1))))), \
+	$(call err,$(call var_errmsg_file_not_exist,$(1))), \
+	$(if \
+		$(call not,$(call is_file,$(call path,$($(1))))), \
+		$(call err,$(call var_errmsg_path_not_file,$(1))), \
+		$(if \
+			$(call not,$(call is_accessable,$(call path,$($(1))))), \
+			$(call err,$(call var_errmsg_file_not_accessable,$(1))) \
+		) \
+	) \
+)
+override require_var_dir = $(if \
+	$(call not,$(call exists,$(call path,$($(1))))), \
+	$(call err,$(call var_errmsg_dir_not_exist,$(1))), \
+	$(if \
+		$(call not,$(call is_dir,$(call path,$($(1))))), \
+		$(call err,$(call var_errmsg_path_not_dir,$(1))), \
+		$(if \
+			$(call not,$(call is_accessable,$(call path,$($(1))))), \
+			$(call err,$(call var_errmsg_dir_not_accessable,$(1))) \
+		) \
+	) \
+)
+
+
+override require_vars_not_same_paths = $(if \
+	$(call is_equal,$(strip \
+		$(call path,$($(1))) \
+	),$(strip \
+		$(call path,$($(2))) \
+	)), \
+	$(call err,$(call var_errmsg_paths_same,$(1),$(2))) \
+)
+
+
+override prep_var = $(eval override $(1) := $(strip $($(1))))
+override prep_var_path = $(eval override $(1) := $(shell \
+	realpath -ms --relative-to=. '$(ROOT)/$($(1))' \
+))
+
 # === preconditions ========================================================== #
 
 # prevent make from automatically building object files from source files
