@@ -906,6 +906,44 @@ ifneq "$(INCLUDE)" "$(NO_INCLUDE)"
  endif # bin used?
 endif # include used?
 
+# === variables ============================================================== #
+
+# conventional make variables
+SHELL ?= /bin/sh
+prefix      ?= /usr/local
+exec_prefix ?= $(prefix)
+bindir      ?= $(exec_prefix)/bin
+includedir  ?= $(prefix)/include
+libdir      ?= $(exec_prefix)/lib
+
+# normally, shared object files also have the .o extension, to hold them apart
+# we're going to use .so (which literally stands for shared object).
+# it's important that these two variables are different
+shared_object_ext ?= so
+static_object_ext ?= o
+
+# better not change those
+shared_lib_prefix ?= lib
+static_lib_prefix ?= lib
+shared_lib_suffix ?= .so
+static_lib_suffix ?= .a
+
+# unix like executables usually don't have a suffix
+exe_prefix ?=
+exe_suffix ?=
+
+# specifically for the test executables
+test_prefix ?= $(exe_prefix)
+test_suffix ?= _test$(exe_suffix)
+
+# in case these are not defined for some reason
+CC      ?= cc
+CXX     ?= c++
+AR      ?= ar
+INSTALL ?= install
+
+# === pre-rule stuff ========================================================= #
+
 # prevent make from automatically building object files from source files
 .SUFFIXES:
 
@@ -1067,52 +1105,6 @@ ifneq "$(SRC_TEST)" "/dev/null"
  endif
  override TEST := $(strip $(TEST))
 endif
-
-# === variables ============================================================== #
-
-# conventional make variables
-SHELL = /bin/sh
-prefix      = /usr/local
-exec_prefix = $(prefix)
-bindir      = $(exec_prefix)/bin
-includedir  = $(prefix)/include
-libdir      = $(exec_prefix)/lib
-
-# normally, shared object files also have the .o extension, to hold them apart
-# we're going to use .so (which literally stands for shared object).
-# it's important that these two variables are different
-shared_object_ext = so
-static_object_ext = o
-
-# better not change those
-shared_lib_prefix = lib
-static_lib_prefix = lib
-shared_lib_suffix = .so
-static_lib_suffix = .a
-
-# unix like executables usually don't have a suffix, if you want you can change
-# that
-exe_prefix =
-exe_suffix =
-
-# specifically for test executables
-test_prefix = $(exe_prefix)
-test_suffix = _test$(exe_suffix)
-
-ifdef CCFLAGS
- ifdef CFLAGS
-  $(warning $(warning_fx)The CCFLAGS variable is deprecated and is ignored when CFLAGS is defined$(reset_fx))
- else
-  $(warning $(warning_fx)The CCFLAGS variable is deprecated, use the CFLAGS variable instead$(reset_fx))
-  CFLAGS = $(CCFLAGS)
- endif
-endif
-
-# in case these are not defined for some reason
-CC      ?= cc
-CXX     ?= c++
-AR      ?= ar
-INSTALL ?= install
 
 # === custom functions ======================================================= #
 
