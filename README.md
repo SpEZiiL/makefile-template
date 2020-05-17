@@ -31,7 +31,9 @@ Download the Makefile from the [latest release][latest_release] and move it into
 
 You can also use `wget` to quickly get it from my **GitHub Pages** site.
 
-	wget https://mfederczuk.github.io/makefile-template/Makefile
+```sh
+wget https://mfederczuk.github.io/makefile-template/Makefile
+```
 
 ## Configuration ##
 
