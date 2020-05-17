@@ -21,6 +21,9 @@ SOFTWARE = exe|lib|hlib
 
 ROOT = .
 
+TARGETDIR = .
+TESTDIR   = .
+
 NAME    =
 PACKAGE = $(NAME)
 TARGET  = $(NAME)
@@ -410,6 +413,9 @@ ifneq "$(and \
 	\
 	$(call is_value,ROOT,.), \
 	\
+	$(call is_value,TARGETDIR,.), \
+	$(call is_value,TESTDIR,.), \
+	\
 	$(call is_value,NAME,), \
 	$(call is_value,PACKAGE,$(NAME)), \
 	$(call is_value,TARGET,$(NAME)), \
@@ -458,6 +464,17 @@ override ROOT := $(shell realpath -m --relative-to=. '$(ROOT)')
 $(call require_var_dir,ROOT)
 
 
+# TARGETDIR variable
+$(call require_var,TARGETDIR)
+$(call prep_var,TARGETDIR)
+$(call prep_var_path,TARGETDIR)
+
+# TESTDIR variable
+$(call require_var,TESTDIR)
+$(call prep_var,TESTDIR)
+$(call prep_var_path,TESTDIR)
+
+
 # NAME variable
 $(call require_var,NAME)
 $(call prep_var,NAME)
@@ -475,6 +492,7 @@ ifneq "$(SOFTWARE)" "$(HLIB_SOFTWARE)"
  ifneq "$(findstring /,$(TARGET))" "$(FALSE)"
   $(call err,$(call var_errmsg_not_basename,TARGET))
  endif
+ override TARGET := $(TARGETDIR)/$(TARGET)
  $(call prep_var_path,TARGET)
 else
  # hlib software
