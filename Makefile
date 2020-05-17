@@ -465,7 +465,7 @@ ifneq "$(SOFTWARE)" "$(HLIB_SOFTWARE)"
 
  $(call require_var,TARGET)
  $(call prep_var,TARGET)
- ifneq "$(findstring /,$(TARGET))" "$(FALSE))"
+ ifneq "$(findstring /,$(TARGET))" "$(FALSE)"
   $(call err,$(call var_errmsg_not_basename,TARGET))
  endif
  $(call prep_var_path,TARGET)
