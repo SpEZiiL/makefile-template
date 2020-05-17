@@ -15,27 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# === old configuration ====================================================== #
-
-SOFTWARE = exe|lib
-
-TARGET =
-PACKAGE = $(TARGET)
-
-SRC =
-SRC_MAIN = src/main
-SRC_TEST = src/test
-BIN = bin
-INC = include/$(PACKAGE)
-
-LINKS =
-
-TEST =
-MAIN =
-
-CFLAGS   = -Iinclude -std=c17   -Wall -Wextra
-CXXFLAGS = -Iinclude -std=c++17 -Wall -Wextra
-
 # === configuration ========================================================== #
 
 SOFTWARE = exe|lib|hlib
