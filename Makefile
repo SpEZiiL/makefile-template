@@ -19,11 +19,11 @@
 
 SOFTWARE = exe|lib|hlib
 
+ROOT = .
+
 NAME    =
 PACKAGE = $(NAME)
 TARGET  = $(NAME)
-
-ROOT = .
 
 SRC      = src
 SRC_MAIN = src/main
@@ -408,11 +408,11 @@ override prep_var_path = $(eval override $(1) := $(shell \
 ifneq "$(and \
 	$(call is_value,SOFTWARE,exe|lib|hlib), \
 	\
+	$(call is_value,ROOT,.), \
+	\
 	$(call is_value,NAME,), \
 	$(call is_value,PACKAGE,$(NAME)), \
 	$(call is_value,TARGET,$(NAME)), \
-	\
-	$(call is_value,ROOT,.), \
 	\
 	$(call is_value,SRC,src), \
 	$(call is_value,SRC_MAIN,src/main), \
@@ -451,6 +451,13 @@ ifneq "$(and \
 endif
 
 
+# ROOT variable
+$(call require_var,ROOT)
+$(call prep_var,ROOT)
+override ROOT := $(shell realpath -m --relative-to=. '$(ROOT)')
+$(call require_var_dir,ROOT)
+
+
 # NAME variable
 $(call require_var,NAME)
 $(call prep_var,NAME)
@@ -475,13 +482,6 @@ else
  $(call ignore_var_when,TARGET,$(call msg_software,$(SOFTWARE)))
  override TARGET := $(NO_TARGET)
 endif # exe or lib software?
-
-
-# ROOT variable
-$(call require_var,ROOT)
-$(call prep_var,ROOT)
-override ROOT := $(shell realpath -m --relative-to=. '$(ROOT)')
-$(call require_var_dir,ROOT)
 
 
 # note about SRC, SRC_MAIN and SRC_TEST:
