@@ -438,6 +438,470 @@ override prep_var_path = $(eval override $(1) := $(shell \
 
 # === preconditions ========================================================== #
 
+# checking if the configuration variables have not bee changed
+ifneq "$(and \
+	$(call is_value,SOFTWARE,exe|lib|hlib), \
+	\
+	$(call is_value,NAME,), \
+	$(call is_value,PACKAGE,$(NAME)), \
+	$(call is_value,TARGET,$(NAME)), \
+	\
+	$(call is_value,ROOT,.), \
+	\
+	$(call is_value,SRC,src), \
+	$(call is_value,SRC_MAIN,src/main), \
+	$(call is_value,SRC_TEST,src/test), \
+	$(call is_value,INCLUDE,include/$(PACKAGE)), \
+	$(call is_value,BIN,bin), \
+	\
+	$(call is_value,TEST_CMD,$(__built_in_test_cmd__)), \
+	$(call is_value,MAIN_SOURCE,$(__auto_main_source__)), \
+	\
+	$(call is_value,CLINKS,), \
+	$(call is_value,CXXLINKS,), \
+	$(call is_value,LINKS,), \
+	$(call is_value,LINK_DIRS), \
+	\
+	$(call is_value,CFLAGS,-std=c17), \
+	$(call is_value,CXXFLAGS,-std=c++17), \
+	$(call is_value,FLAGS,-Iinclude -Wall -Wextra) \
+	\
+	$(call is_value,HOOKSCRIPT,) \
+)" "$(FALSE)"
+ $(call err,$(errmsg_makefile_unconfigured))
+endif
+
+
+
+# SOFTWARE variable
+$(call require_var,SOFTWARE)
+$(call prep_var,SOFTWARE)
+ifneq "$(and \
+	$(call is_not_equal,$(SOFTWARE),$(EXE_SOFTWARE)), \
+	$(call is_not_equal,$(SOFTWARE),$(LIB_SOFTWARE)), \
+	$(call is_not_equal,$(SOFTWARE),$(HLIB_SOFTWARE)) \
+)" "$(FALSE)"
+ $(call err,$(call errmsg_invalid_software,$(SOFTWARE)))
+endif
+
+
+# NAME variable
+$(call require_var,NAME)
+$(call prep_var,NAME)
+
+# PACKAGE variable
+$(call require_var,PACKAGE)
+$(call prep_var,PACKAGE)
+
+# TARGET variable
+ifneq "$(SOFTWARE)" "$(HLIB_SOFTWARE)"
+ # exe or lib software
+
+ $(call require_var,TARGET)
+ $(call prep_var,TARGET)
+ ifneq "$(findstring /,$(TARGET))" "$(FALSE))"
+  $(call err,$(call var_errmsg_not_basename,TARGET))
+ endif
+ $(call prep_var_path,TARGET)
+else
+ # hlib software
+
+ $(call ignore_var_when,TARGET,$(call msg_software,$(SOFTWARE)))
+ override TARGET := $(NO_TARGET)
+endif # exe or lib software?
+
+
+# ROOT variable
+$(call require_var,ROOT)
+$(call prep_var,ROOT)
+override ROOT := $(shell realpath -m --relative-to=. '$(ROOT)')
+$(call require_var_dir,ROOT)
+
+
+# note about SRC, SRC_MAIN and SRC_TEST:
+#  internally, we always use SRC_MAIN and SRC_TEST
+#  if tests are supposed to be disabled, SRC_TEST will be set to NO_TEST
+
+# SRC, SRC_MAIN & SRC_TEST variables
+ifneq "$(SOFTWARE)" "$(HLIB_SOFTWARE)"
+ # exe or lib software
+
+ ifneq "$(call is_def,SRC_MAIN)" "$(FALSE)"
+  # exe or lib software
+  # SRC_MAIN defined
+
+  $(call require_var,SRC_MAIN)
+  $(call prep_var,SRC_MAIN)
+  $(call prep_var_path,SRC_MAIN)
+  $(call require_var_dir,SRC_MAIN)
+
+  $(call require_var_but,SRC_TEST,$(call var_msg_used,SRC_MAIN))
+  $(call prep_var,SRC_TEST)
+  $(call prep_var_path,SRC_TEST)
+  $(call require_var_dir,SRC_TEST)
+
+  $(call ignore_var_when,SRC,$(call var_msg_used,SRC_MAIN))
+  override SRC := $(NO_SRC)
+ else
+  # exe or lib software
+  # SRC_MAIN undefined
+
+  ifneq "$(call is_def,SRC)" "$(FALSE)"
+   # exe or lib software
+   # SRC_MAIN undefined
+   # SRC defined
+
+   $(call require_var,SRC)
+   $(call prep_var,SRC)
+   $(call prep_var_path,SRC)
+   $(call require_var_dir,SRC)
+   override SRC_MAIN := $(SRC)
+
+   $(call ignore_var_when,SRC_TEST,$(call var_msg_used,SRC))
+   override SRC_TEST := $(NO_TEST)
+  else
+   # exe or lib software
+   # SRC_MAIN undefined
+   # SRC undefined
+
+   $(call require_var,SRC_MAIN)
+  endif # SRC defined?
+ endif # SRC_MAIN defined?
+else
+ # hlib software
+
+ $(call ignore_var_when,SRC_MAIN,$(call msg_software,$(SOFTWARE)))
+ $(call ignore_var_when,SRC,$(call msg_software,$(SOFTWARE)))
+
+ ifneq "$(call is_def,SRC_TEST)" "$(FALSE)"
+  # hlib software
+  # SRC_TEST defined
+
+  $(call require_var,SRC_TEST)
+  $(call prep_var,SRC_TEST)
+  $(call prep_var_path,SRC_TEST)
+  $(call require_var_dir,SRC_TEST)
+ else
+  # hlib software
+  # SRC_TEST undefined
+
+  override SRC_TEST := $(NO_TEST)
+ endif # SRC_TEST defined?
+
+ override SRC      := $(NO_SRC)
+ override SRC_MAIN := $(NO_SRC)
+endif # exe or lib software?
+
+# INCLUDE variable
+ifneq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
+ # lib or hlib software
+
+ $(call require_var,INCLUDE)
+ $(call prep_var,INCLUDE)
+ $(call prep_var_path,INCLUDE)
+ $(call require_var_dir,INCLUDE)
+else
+ # exe software
+
+ ifneq "$(call is_def,INCLUDE)" "$(FALSE)"
+  # exe software
+  # INCLUDE defined
+
+ $(call require_var,INCLUDE)
+ $(call prep_var,INCLUDE)
+ $(call prep_var_path,INCLUDE)
+ $(call require_var_dir,INCLUDE)
+ else
+  # exe software
+  # INCLUDE undefined
+
+  override INCLUDE := $(NO_INCLUDE)
+ endif # INCLUDE defined?
+endif # lib or hlib software?
+
+# BIN variable
+ifneq "$(SOFTWARE)" "$(HLIB_SOFTWARE)"
+ # exe or lib software
+
+ $(call require_var,BIN)
+ $(call prep_var,BIN)
+ $(call prep_var_path,BIN)
+else
+ # hlib software
+
+ ifneq "$(SRC_TEST)" "$(NO_TEST)"
+  # hlib software
+  # SRC_TEST used
+
+  $(call require_var_but,BIN,$(call var_msg_used,SRC_TEST))
+  $(call prep_var,BIN)
+  $(call prep_var_path,BIN)
+ else
+  # hlib software
+  # SRC_TEST unused
+
+  override BIN := $(NO_BIN)
+ endif # SRC_TEST used?
+endif # exe or lib software?
+
+
+# TEST_CMD variable
+ifneq "$(SRC_TEST)" "$(NO_TEST)"
+ # tests enabled
+
+ $(call require_var,TEST_CMD)
+ $(call prep_var,TEST_CMD)
+else
+ # test disabled
+
+ $(call ignore_var_when,TEST_CMD,$(msg_tests_disabled))
+endif # tests enabled?
+
+# MAIN_SOURCE variable
+ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
+ # exe software
+
+ ifneq "$(SRC_TEST)" "$(NO_TEST)"
+  # exe software
+  # tests enabled
+
+  $(call require_var,MAIN_SOURCE)
+  $(call prep_var,MAIN_SOURCE)
+
+  ifneq "$(MAIN_SOURCE)" "$(AUTO_MAIN_SOURCE)"
+   # exe software?
+   # tests enabled
+   # main source not automatically detected
+
+   $(call require_file,$(SRC_MAIN)/$(MAIN_SOURCE))
+  endif # main source not automatically detected?
+ else
+  # exe software
+  # tests disabled
+
+  $(call ignore_var_when,MAIN_SOURCE,$(msg_tests_disabled))
+ endif # tests enabled?
+else
+ # lib or hlib software?
+
+ $(call ignore_var_when,MAIN_SOURCE,$(call msg_software,$(SOFTWARE)))
+endif # exe software?
+
+
+# CLINKS, CXXLINKS, LINKS & LINK_DIRS variables
+ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
+ # exe software
+
+ ifneq "$(and \
+	 $(call is_not_empty,$(LINK_DIRS)), \
+	 $(call is_empty,$(strip $(CLINKS)$(CXXLINKS)$(LINKS))) \
+ )" "$(FALSE)"
+  # LINK_DIRS not empty and no links defined
+
+  $(call warn,$(warnmsg_useless_link_dirs))
+ else
+  # LINK_DIRS empty or links defined
+
+  $(call useless_empty_var,CLINKS)
+  $(call useless_empty_var,CXXLINKS)
+  $(call useless_empty_var,LINKS)
+  $(call useless_empty_var,LINK_DIRS)
+ endif # LINK_DIRS not empty and no links defined?
+
+ override CLINKS   := $(strip $(LINKS) $(CLINKS))
+ override CXXLINKS := $(strip $(LINKS) $(CXXLINKS))
+else
+ # lib or hlib software
+
+ $(call ignore_var_when,CLINKS,$(call msg_software,$(SOFTWARE)))
+ $(call ignore_var_when,CXXLINKS,$(call msg_software,$(SOFTWARE)))
+ $(call ignore_var_when,LINKS,$(call msg_software,$(SOFTWARE)))
+ $(call ignore_var_when,LINK_DIRS,$(call msg_software,$(SOFTWARE)))
+endif # exe software?
+
+
+# CFLAGS, CXXFLAGS & FLAGS variables
+$(call useless_empty_var,CFLAGS)
+$(call useless_empty_var,CXXFLAGS)
+$(call useless_empty_var,FLAGS)
+override CFLAGS   := $(strip $(FLAGS) $(CFLAGS))
+override CXXFLAGS := $(strip $(FLAGS) $(CXXFLAGS))
+
+
+# HOOKSCRIPT variable
+ifneq "$(call is_def,HOOKSCRIPT)" "$(FALSE)"
+ # HOOKSCRIPT defined
+
+ $(call require_var,HOOKSCRIPT)
+ $(call prep_var,HOOKSCRIPT)
+ $(call prep_var_path,HOOKSCRIPT)
+ $(call require_var_file,HOOKSCRIPT)
+
+ ifeq "$(call is_executable,$(HOOKSCRIPT))" "$(FALSE)"
+  # hookscript not executable
+
+  $(call err,$(call errmsg_hookscript_not_exe,HOOKSCRIPT))
+ endif # hookscript not executable?
+endif # HOOKSCRIPT defined?
+
+
+
+# making sure that no paths lead to the same location:
+
+# TARGET variable
+ifneq "$(TARGET)" "$(NO_TARGET)"
+ # target used
+
+ $(call require_vars_not_same_paths,TARGET,ROOT)
+ ifneq "$(SRC_MAIN)" "$(NO_SRC)"
+  # target used
+  # src used
+
+  ifneq "$(SRC)" "$(NO_SRC)"
+   # target used
+   # src used
+   # SRC variable used
+
+   $(call require_vars_not_same_paths,TARGET,SRC)
+  else
+   # target used
+   # src used
+   # SRC_MAIN variable used
+
+   $(call require_vars_not_same_paths,TARGET,SRC_MAIN)
+  endif # SRC variable used?
+ endif # src used?
+
+ ifneq "$(SRC_TEST)" "$(NO_TEST)"
+  # target used
+  # tests enabled
+
+  $(call require_vars_not_same_paths,TARGET,SRC_TEST)
+ endif # tests enabled?
+
+ ifneq "$(INCLUDE)" "$(NO_INCLUDE)"
+  # target used
+  # include used
+
+  $(call require_vars_not_same_paths,TARGET,INCLUDE)
+ endif # include used?
+
+ ifneq "$(BIN)" "$(NO_BIN)"
+  # target used
+  # bin used
+
+  $(call require_vars_not_same_paths,TARGET,BIN)
+ endif # bin used?
+endif # target used?
+
+# ROOT variable
+ifneq "$(SRC_MAIN)" "$(NO_SRC)"
+ # src used
+
+ ifneq "$(SRC)" "$(NO_SRC)"
+  # src used
+  # SRC variable used
+
+  $(call require_vars_not_same_paths,ROOT,SRC)
+ else
+  # src used
+  # SRC_MAIN variable used
+
+  $(call require_vars_not_same_paths,ROOT,SRC_MAIN)
+ endif # SRC variable used?
+endif # src used?
+ifneq "$(SRC_TEST)" "$(NO_TEST)"
+ # tests enabled
+
+ $(call require_vars_not_same_paths,ROOT,SRC_TEST)
+endif # tests enabled?
+ifneq "$(INCLUDE)" "$(NO_INCLUDE)"
+ # include used
+
+ $(call require_vars_not_same_paths,ROOT,INCLUDE)
+endif # include used?
+ifneq "$(BIN)" "$(NO_BIN)"
+ # bin used
+
+ $(call require_vars_not_same_paths,ROOT,BIN)
+endif # bin used?
+
+# SRC/SRC_MAIN variable
+ifneq "$(SRC_MAIN)" "$(NO_SRC)"
+ # src used
+
+ ifneq "$(SRC)" "$(NO_SRC)"
+  # src used
+  # SRC variable used
+
+  ifneq "$(SRC_TEST)" "$(NO_TEST)"
+   # src used
+   # SRC variable used
+   # tests enabled
+
+   $(call require_vars_not_same_paths,SRC,SRC_TEST)
+  endif # tests enabled?
+  ifneq "$(INCLUDE)" "$(NO_INCLUDE)"
+   # src used
+   # SRC variable used
+   # include used
+
+   $(call require_vars_not_same_paths,SRC,INCLUDE)
+  endif # include used?
+  ifneq "$(BIN)" "$(NO_BIN)"
+   # src used
+   # SRC variable used
+   # bin used
+
+   $(call require_vars_not_same_paths,SRC,BIN)
+  endif # bin used?
+ else
+  # src used
+  # SRC_MAIN variable used
+
+  ifneq "$(SRC_TEST)" "$(NO_TEST)"
+   $(call require_vars_not_same_paths,SRC_MAIN,SRC_TEST)
+  endif
+  ifneq "$(INCLUDE)" "$(NO_INCLUDE)"
+   $(call require_vars_not_same_paths,SRC_MAIN,INCLUDE)
+  endif
+  ifneq "$(BIN)" "$(NO_BIN)"
+   $(call require_vars_not_same_paths,SRC_MAIN,BIN)
+  endif
+ endif # SRC variable used?
+endif # src used?
+
+# SRC_TEST variable
+ifneq "$(SRC_TEST)" "$(NO_TEST)"
+ # tests enabled
+
+ ifneq "$(INCLUDE)" "$(NO_INCLUDE)"
+  # tests enabled
+  # include used
+
+  $(call require_vars_not_same_paths,SRC_TEST,INCLUDE)
+ endif # include used?
+
+ ifneq "$(BIN)" "$(NO_BIN)"
+  # tests enabled
+  # bin used
+
+  $(call require_vars_not_same_paths,SRC_TEST,BIN)
+ endif # bin used?
+endif # tests enabled?
+
+# INCLUDE
+ifneq "$(INCLUDE)" "$(NO_INCLUDE)"
+ # include used
+
+ ifneq "$(BIN)" "$(NO_BIN)"
+  # include used
+  # bin used
+
+  $(call require_vars_not_same_paths,INCLUDE,BIN)
+ endif # bin used?
+endif # include used?
+
 # prevent make from automatically building object files from source files
 .SUFFIXES:
 
