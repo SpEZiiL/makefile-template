@@ -235,6 +235,16 @@ endif
 
 override stylemsg = $($(1)_style)$(2)$(reset_style)
 
+# === debug stuff ============================================================ #
+
+override debug_var = $(if \
+	$(call is_equal,$(__DEBUG),1), \
+	$(info $(call stylemsg,debug,$(1):) $(call stylemsg,debug,')$($(1))$(call stylemsg,debug,')) \
+)
+override debug_ln = $(if \
+	$(call is_equal,$(__DEBUG),1), \
+	$(info ) \
+)
 # === error/warning message variables/functions ============================== #
 
 override msg_software = building $(strip $(if \
