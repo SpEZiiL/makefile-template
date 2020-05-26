@@ -219,6 +219,7 @@ ifneq "$(or \
  install_style      := $(_green_clr_style_n)
  uninstall_style    := $(_bright_red_clr_style_n)
  clean_style        := $(_bright_red_clr_style_n)
+ debug_style        := $(_magenta_clr_style_n)
 
  override reset_style        := $(call _ascii_esc,0)
  override error_style        := $(call _ascii_esc,$(error_style))
@@ -229,6 +230,7 @@ ifneq "$(or \
  override install_style      := $(call _ascii_esc,$(install_style))
  override uninstall_style    := $(call _ascii_esc,$(uninstall_style))
  override clean_style        := $(call _ascii_esc,$(clean_style))
+ override debug_style        := $(call _ascii_esc,$(debug_style))
 endif
 
 override stylemsg = $($(1)_style)$(2)$(reset_style)
