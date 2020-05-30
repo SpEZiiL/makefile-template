@@ -739,6 +739,8 @@ ifneq "$(call is_def,HOOKSCRIPT)" "$(FALSE)"
 
   $(call err,$(call errmsg_hookscript_not_exe,HOOKSCRIPT))
  endif # hookscript not executable?
+else
+ override HOOKSCRIPT := $(NO_HOOKSCRIPT)
 endif # HOOKSCRIPT defined?
 
 
