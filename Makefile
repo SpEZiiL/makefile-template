@@ -676,11 +676,13 @@ ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
   # tests disabled
 
   $(call ignore_var_when,MAIN_SOURCE,$(msg_tests_disabled))
+  override MAIN_SOURCE := $(NO_MAIN_SOURCE)
  endif # tests enabled?
 else
  # lib or hlib software
 
  $(call ignore_var_when,MAIN_SOURCE,$(call msg_software,$(SOFTWARE)))
+ override MAIN_SOURCE := $(NO_MAIN_SOURCE)
 endif # exe software?
 
 
