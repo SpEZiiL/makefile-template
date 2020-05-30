@@ -665,7 +665,7 @@ ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
   $(call prep_var,MAIN_SOURCE)
 
   ifneq "$(MAIN_SOURCE)" "$(AUTO_MAIN_SOURCE)"
-   # exe software?
+   # exe software
    # tests enabled
    # main source not automatically detected
 
@@ -678,7 +678,7 @@ ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
   $(call ignore_var_when,MAIN_SOURCE,$(msg_tests_disabled))
  endif # tests enabled?
 else
- # lib or hlib software?
+ # lib or hlib software
 
  $(call ignore_var_when,MAIN_SOURCE,$(call msg_software,$(SOFTWARE)))
 endif # exe software?
