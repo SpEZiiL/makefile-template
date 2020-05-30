@@ -705,9 +705,6 @@ ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
   $(call useless_empty_var,LINKS)
   $(call useless_empty_var,LINK_DIRS)
  endif # LINK_DIRS not empty and no links defined?
-
- override CLINKS   := $(strip $(LINKS) $(CLINKS))
- override CXXLINKS := $(strip $(LINKS) $(CXXLINKS))
 else
  # lib or hlib software
 
@@ -716,6 +713,8 @@ else
  $(call ignore_var_when,LINKS,$(call msg_software,$(SOFTWARE)))
  $(call ignore_var_when,LINK_DIRS,$(call msg_software,$(SOFTWARE)))
 endif # exe software?
+override CLINKS   := $(strip $(LINKS) $(CLINKS))
+override CXXLINKS := $(strip $(LINKS) $(CXXLINKS))
 
 
 # CFLAGS, CXXFLAGS & FLAGS variables
