@@ -1152,6 +1152,19 @@ ifneq "$(call is_not_empty,$(OBJECTS_REREQUISITES))" "$(SOFTWARE)"
  .PHONY: objects
 endif
 
+# === universe rule ========================================================== #
+
+override UNIVERSE_PREREQUISITES :=
+
+ifneq "$(call is_not_empty,$(OBJECTS_REREQUISITES))" "$(FALSE)"
+ override UNIVERSE_PREREQUISITES := objects
+endif
+
+ifneq "$(call is_not_empty,$(UNIVERSE_PREREQUISITES))" "$(FALSE)"
+ universe: $(UNIVERSE_PREREQUISITES)
+ .PHONY: universe
+endif
+
 # === version rule =========================================================== #
 
 _version:
