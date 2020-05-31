@@ -1150,6 +1150,12 @@ ifneq "$(call is_not_empty,$(OBJECTS_REREQUISITES))" "$(SOFTWARE)"
  .PHONY: objects
 endif
 
+# === empty rule ============================================================= #
+
+_empty:
+	@:
+.PHONY: _empty
+
 # === custom functions ======================================================= #
 
 # checks if argument 1 and 2 are equal
