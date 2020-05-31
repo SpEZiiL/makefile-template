@@ -1011,6 +1011,59 @@ override find_cxx_headers = $(foreach \
 	$(__file:$(1)/%=%) \
 )
 
+# === build constants ======================================================== #
+
+ifneq "$(and \
+	$(call is_not_equal,$(SRC_MAIN),$(NO_SRC)), \
+	$(call is_not_equal,$(BIN),$(NO_BIN)) \
+)" "$(FALSE)"
+ # all main C/C++ source files
+ override MAIN_C_SOURCES   := $(sort $(call find_c_sources,$(SRC_MAIN)))
+ override MAIN_CXX_SOURCES := $(sort $(call find_cxx_sources,$(SRC_MAIN)))
+ override MAIN_SOURCES     := $(sort $(MAIN_C_SOURCES) $(MAIN_CXX_SOURCES))
+
+ # checking if main source files were found
+ ifneq "$(call is_empty,$(MAIN_SOURCES))" "$(FALSE)"
+  $(call warn,$(warnmsg_no_main_sources))
+ endif
+
+
+ # shared source objects
+ override SHARED_C_SOURCE_OBJECTS   := $(sort $(foreach __main_c_source,$(MAIN_C_SOURCES), \
+	 $(call to_shared_object,$(__main_c_source)) \
+ ))
+ override SHARED_CXX_SOURCE_OBJECTS := $(sort $(foreach __main_cxx_source,$(MAIN_CXX_SOURCES), \
+	 $(call to_shared_object,$(__main_cxx_source)) \
+ ))
+ override SHARED_SOURCE_OBJECTS     := $(sort $(SHARED_C_SOURCE_OBJECTS) $(SHARED_CXX_SOURCE_OBJECTS))
+
+ # static source objects
+ override STATIC_C_SOURCE_OBJECTS   := $(sort $(foreach __main_c_source,$(MAIN_C_SOURCES), \
+	 $(call to_static_object,$(__main_c_source)) \
+ ))
+ override STATIC_CXX_SOURCE_OBJECTS := $(sort $(foreach __main_cxx_source,$(MAIN_CXX_SOURCES), \
+	 $(call to_static_object,$(__main_cxx_source)) \
+ ))
+ override STATIC_SOURCE_OBJECTS     := $(sort $(STATIC_C_SOURCE_OBJECTS) $(STATIC_CXX_SOURCE_OBJECTS))
+endif
+
+ifneq "$(and \
+	$(call is_not_equal,$(INCLUDE),$(NO_INCLUDE)), \
+	$(call is_not_equal,$(BIN),$(NO_BIN)) \
+)" "$(FALSE)"
+ override C_HEADERS   := $(sort $(call find_c_headers,$(INCLUDE)))
+ override CXX_HEADERS := $(sort $(call find_cxx_headers,$(INCLUDE)))
+ override HEADERS     := $(sort $(C_HEADERS) $(CXX_HEADERS))
+
+ override C_HEADER_OBJECTS   := $(sort $(foreach __source_file,$(C_HEADERS), \
+        $(call to_static_object,$(__source_file)) \
+ ))
+ override CXX_HEADER_OBJECTS := $(sort $(foreach __source_file,$(CXX_HEADERS), \
+        $(call to_static_object,$(__source_file)) \
+ ))
+ override HEADER_OBJECTS     := $(sort $(C_HEADER_OBJECTS) $(CXX_HEADER_OBJECTS))
+endif
+
 # === pre-rule stuff ========================================================= #
 
 # prevent make from automatically building object files from source files
