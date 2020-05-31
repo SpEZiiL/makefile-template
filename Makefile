@@ -721,8 +721,8 @@ override CXXLINKS := $(strip $(LINKS) $(CXXLINKS))
 $(call useless_empty_var,CFLAGS)
 $(call useless_empty_var,CXXFLAGS)
 $(call useless_empty_var,FLAGS)
-override CFLAGS   := $(strip $(FLAGS) $(CFLAGS))
-override CXXFLAGS := $(strip $(FLAGS) $(CXXFLAGS))
+override CFLAGS   := $(strip -x c   $(FLAGS) $(CFLAGS))
+override CXXFLAGS := $(strip -x c++ $(FLAGS) $(CXXFLAGS))
 
 
 # HOOKSCRIPT variable
