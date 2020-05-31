@@ -1090,6 +1090,7 @@ endif
 .SUFFIXES:
 
 override CLEAN_PREREQUISITES :=
+override UNIVERSE_PREREQUISITES :=
 
 # === rule message variables/functions ======================================= #
 
@@ -1239,6 +1240,8 @@ ifneq "$(call is_not_empty,$(OBJECTS_REREQUISITES))" "$(SOFTWARE)"
  $(call to_clean_targets,objects): $(call to_clean_targets,$(OBJECTS_REREQUISITES))
  .PHONY: $(call to_clean_targets,objects)
  override CLEAN_PREREQUISITES += $(call to_clean_targets,objects)
+
+ override UNIVERSE_PREREQUISITES := objects
 endif
 
 # === cleaning rule ========================================================== #
@@ -1261,12 +1264,6 @@ ifneq "$(call is_not_empty,$(ALL_PREREQUISITES))" "$(FALSE)"
 endif
 
 # === universe rule ========================================================== #
-
-override UNIVERSE_PREREQUISITES :=
-
-ifneq "$(call is_not_empty,$(OBJECTS_REREQUISITES))" "$(FALSE)"
- override UNIVERSE_PREREQUISITES := objects
-endif
 
 ifneq "$(call is_not_empty,$(UNIVERSE_PREREQUISITES))" "$(FALSE)"
  universe: $(UNIVERSE_PREREQUISITES)
