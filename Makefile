@@ -959,6 +959,11 @@ override to_shared_object = $(BIN)/$(1).$(shared_object_ext)
 override to_static_object = $(BIN)/$(1).$(static_object_ext)
 
 
+# convert to and from cleaning targets
+override to_clean_targets  = $(addprefix clean/,$(1))
+override from_clean_target = $(1:clean/%=%)
+
+
 # finds all C language source files in directory of argument 1
 override find_c_sources   = $(foreach \
 	__file, \
