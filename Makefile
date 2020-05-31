@@ -1124,20 +1124,20 @@ ifneq "$(and \
 )" "$(FALSE)"
  objects/sources/shared: $(SHARED_SOURCE_OBJECTS)
  objects/sources/static: $(STATIC_SOURCE_OBJECTS)
- objects/source: objects/sources/shared objects/sources/static
+ objects/sources: objects/sources/shared objects/sources/static
 
  .PHONY: objects/sources/shared \
          objects/sources/static \
-         objects/source
+         objects/sources
 
  override OBJECTS_REREQUISITES += objects/sources/shared \
                                   objects/sources/static \
-                                  objects/source
+                                  objects/sources
 else
  ifneq "$(call is_not_empty,$(STATIC_SOURCE_OBJECTS))" "$(FALSE)"
-  objects/source: $(STATIC_SOURCE_OBJECTS)
-  .PHONY: objects/source
-  override OBJECTS_REREQUISITES += objects/source
+  objects/sources: $(STATIC_SOURCE_OBJECTS)
+  .PHONY: objects/sources
+  override OBJECTS_REREQUISITES += objects/sources
  endif
 endif
 
