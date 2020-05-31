@@ -726,8 +726,8 @@ override CXXLINKS := $(strip $(LINKS) $(CXXLINKS))
 $(call useless_empty_var,CFLAGS)
 $(call useless_empty_var,CXXFLAGS)
 $(call useless_empty_var,FLAGS)
-override CFLAGS   := $(strip -x c   $(FLAGS) $(CFLAGS))
-override CXXFLAGS := $(strip -x c++ $(FLAGS) $(CXXFLAGS))
+override CFLAGS   := $(strip $(FLAGS) $(CFLAGS))
+override CXXFLAGS := $(strip $(FLAGS) $(CXXFLAGS))
 
 
 # HOOKSCRIPT variable
@@ -1132,7 +1132,7 @@ endef
 ifneq "$(call is_not_empty,$(SHARED_C_SOURCE_OBJECTS))" "$(FALSE)"
  $(SHARED_C_SOURCE_OBJECTS):   $(call to_shared_object,%): $(SRC_MAIN)/%
 	$(pre_build_object)
-	@$(CC)  $(CFLAGS)  -c '$<' -o '$@' -fPIC
+	@$(CC)  $(CFLAGS)  -x c   -c '$<' -o '$@' -fPIC
 
  override CLEANING_SHARED_C_SOURCE_OBJECTS := $(call to_clean_targets,$(SHARED_C_SOURCE_OBJECTS))
 
@@ -1143,7 +1143,7 @@ endif
 ifneq "$(call is_not_empty,$(SHARED_CXX_SOURCE_OBJECTS))" "$(FALSE)"
  $(SHARED_CXX_SOURCE_OBJECTS): $(call to_shared_object,%): $(SRC_MAIN)/%
 	$(pre_build_object)
-	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@' -fPIC
+	@$(CXX) $(CXXFLAGS) -x c++ -c '$<' -o '$@' -fPIC
 
  override CLEANING_SHARED_CXX_SOURCE_OBJECTS := $(call to_clean_targets,$(SHARED_CXX_SOURCE_OBJECTS))
 
@@ -1155,7 +1155,7 @@ endif
 ifneq "$(call is_not_empty,$(STATIC_C_SOURCE_OBJECTS))" "$(FALSE)"
  $(STATIC_C_SOURCE_OBJECTS):   $(call to_static_object,%): $(SRC_MAIN)/%
 	$(pre_build_object)
-	@$(CC)  $(CFLAGS)  -c '$<' -o '$@'
+	@$(CC)  $(CFLAGS)  -x c   -c '$<' -o '$@'
 
  override CLEANING_STATIC_C_SOURCE_OBJECTS := $(call to_clean_targets,$(STATIC_C_SOURCE_OBJECTS))
 
@@ -1166,7 +1166,7 @@ endif
 ifneq "$(call is_not_empty,$(STATIC_CXX_SOURCE_OBJECTS))" "$(FALSE)"
  $(STATIC_CXX_SOURCE_OBJECTS): $(call to_static_object,%): $(SRC_MAIN)/%
 	$(pre_build_object)
-	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
+	@$(CXX) $(CXXFLAGS) -x c++ -c '$<' -o '$@'
 
  override CLEANING_STATIC_CXX_SOURCE_OBJECTS := $(call to_clean_targets,$(STATIC_CXX_SOURCE_OBJECTS))
 
@@ -1178,7 +1178,7 @@ endif
 ifneq "$(call is_not_empty,$(C_HEADER_OBJECTS))" "$(FALSE)"
  $(C_HEADER_OBJECTS):   $(call to_static_object,%): $(INCLUDE)/%
 	$(pre_build_object)
-	@$(CC)  $(CFLAGS)  -c '$<' -o '$@'
+	@$(CC)  $(CFLAGS)  -x c   -c '$<' -o '$@'
 
  override CLEANING_C_HEADER_OBJECTS := $(call to_clean_targets,$(C_HEADER_OBJECTS))
 
@@ -1189,7 +1189,7 @@ endif
 ifneq "$(call is_not_empty,$(CXX_HEADER_OBJECTS))" "$(FALSE)"
  $(CXX_HEADER_OBJECTS): $(call to_static_object,%): $(INCLUDE)/%
 	$(pre_build_object)
-	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
+	@$(CXX) $(CXXFLAGS) -x c++ -c '$<' -o '$@'
 
  override CLEANING_CXX_HEADER_OBJECTS := $(call to_clean_targets,$(CXX_HEADER_OBJECTS))
 
