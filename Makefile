@@ -1031,6 +1031,11 @@ fi
 
 # === build constants ======================================================== #
 
+# link flags
+override LINK_DIR_FLAGS := $(strip $(addprefix -L,$(LINK_DIRS)))
+override CLINK_FLAGS    := $(strip $(LINK_DIR_FLAGS) $(addprefix -l,$(CLINKS)))
+override CXXLINK_FLAGS  := $(strip $(LINK_DIR_FLAGS) $(addprefix -l,$(CXXLINKS)))
+
 ifneq "$(and \
 	$(call is_not_equal,$(SRC_MAIN),$(NO_SRC)), \
 	$(call is_not_equal,$(BIN),$(NO_BIN)), \
