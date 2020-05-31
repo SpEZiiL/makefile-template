@@ -1189,6 +1189,10 @@ _empty:
 	@:
 .PHONY: _empty
 
+# ============================================================================ #
+
+override .DEFAULT_GOAL := $(SET_DEFAULT_GOAL)
+
 # === custom functions ======================================================= #
 
 # checks if argument 1 and 2 are equal
