@@ -1089,6 +1089,8 @@ endif
 # prevent make from automatically building object files from source files
 .SUFFIXES:
 
+override CLEAN_PREREQUISITES :=
+
 # === rule message variables/functions ======================================= #
 
 override act_msg_building_object = Building file '$(1)'...
@@ -1100,39 +1102,87 @@ override define pre_build_object =
 	$(info $(call stylemsg,object_build,$(call act_msg_building_object,$@)))
 endef
 
+override define clean_object =
+	@$(call clean_file,$(call from_clean_target,$(1)))
+	@$(call clean_empty_dir_recursively,$(BIN))
+endef
+
 
 ifneq "$(call is_not_empty,$(SHARED_C_SOURCE_OBJECTS))" "$(FALSE)"
  $(SHARED_C_SOURCE_OBJECTS):   $(call to_shared_object,%): $(SRC_MAIN)/%
 	$(pre_build_object)
 	@$(CC)  $(CFLAGS)  -c '$<' -o '$@' -fPIC
+
+ override CLEANING_SHARED_C_SOURCE_OBJECTS := $(call to_clean_targets,$(SHARED_C_SOURCE_OBJECTS))
+
+ $(CLEANING_SHARED_C_SOURCE_OBJECTS): %:
+	$(call clean_object,$@)
+ .PHONY: $(CLEANING_SHARED_C_SOURCE_OBJECTS)
 endif
 ifneq "$(call is_not_empty,$(SHARED_CXX_SOURCE_OBJECTS))" "$(FALSE)"
  $(SHARED_CXX_SOURCE_OBJECTS): $(call to_shared_object,%): $(SRC_MAIN)/%
 	$(pre_build_object)
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@' -fPIC
+
+ override CLEANING_SHARED_CXX_SOURCE_OBJECTS := $(call to_clean_targets,$(SHARED_CXX_SOURCE_OBJECTS))
+
+ $(CLEANING_SHARED_CXX_SOURCE_OBJECTS): %:
+	$(call clean_object,$@)
+ .PHONY: $(CLEANING_SHARED_CXX_SOURCE_OBJECTS)
 endif
 
 ifneq "$(call is_not_empty,$(STATIC_C_SOURCE_OBJECTS))" "$(FALSE)"
  $(STATIC_C_SOURCE_OBJECTS):   $(call to_static_object,%): $(SRC_MAIN)/%
 	$(pre_build_object)
 	@$(CC)  $(CFLAGS)  -c '$<' -o '$@'
+
+ override CLEANING_STATIC_C_SOURCE_OBJECTS := $(call to_clean_targets,$(STATIC_C_SOURCE_OBJECTS))
+
+ $(CLEANING_STATIC_C_SOURCE_OBJECTS): %:
+	$(call clean_object,$@)
+ .PHONY: $(CLEANING_STATIC_C_SOURCE_OBJECTS)
 endif
 ifneq "$(call is_not_empty,$(STATIC_CXX_SOURCE_OBJECTS))" "$(FALSE)"
  $(STATIC_CXX_SOURCE_OBJECTS): $(call to_static_object,%): $(SRC_MAIN)/%
 	$(pre_build_object)
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
+
+ override CLEANING_STATIC_CXX_SOURCE_OBJECTS := $(call to_clean_targets,$(STATIC_CXX_SOURCE_OBJECTS))
+
+ $(CLEANING_STATIC_CXX_SOURCE_OBJECTS): %:
+	$(call clean_object,$@)
+ .PHONY: $(CLEANING_STATIC_CXX_SOURCE_OBJECTS)
 endif
 
 ifneq "$(call is_not_empty,$(C_HEADER_OBJECTS))" "$(FALSE)"
  $(C_HEADER_OBJECTS):   $(call to_static_object,%): $(INCLUDE)/%
 	$(pre_build_object)
 	@$(CC)  $(CFLAGS)  -c '$<' -o '$@'
+
+ override CLEANING_C_HEADER_OBJECTS := $(call to_clean_targets,$(C_HEADER_OBJECTS))
+
+ $(CLEANING_C_HEADER_OBJECTS): %:
+	$(call clean_object,$@)
+ .PHONY: $(CLEANING_C_HEADER_OBJECTS)
 endif
 ifneq "$(call is_not_empty,$(CXX_HEADER_OBJECTS))" "$(FALSE)"
  $(CXX_HEADER_OBJECTS): $(call to_static_object,%): $(INCLUDE)/%
 	$(pre_build_object)
 	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
+
+ override CLEANING_CXX_HEADER_OBJECTS := $(call to_clean_targets,$(CXX_HEADER_OBJECTS))
+
+ $(CLEANING_CXX_HEADER_OBJECTS): %:
+	$(call clean_object,$@)
+ .PHONY: $(CLEANING_CXX_HEADER_OBJECTS)
 endif
+
+override CLEANING_SHARED_SOURCE_OBJECTS := $(sort $(CLEANING_SHARED_C_SOURCE_OBJECTS) \
+                                                  $(CLEANING_SHARED_CXX_SOURCE_OBJECTS))
+override CLEANING_STATIC_SOURCE_OBJECTS := $(sort $(CLEANING_STATIC_C_SOURCE_OBJECTS) \
+                                                  $(CLEANING_STATIC_CXX_SOURCE_OBJECTS))
+override CLEANING_HEADER_OBJECTS        := $(sort $(CLEANING_C_HEADER_OBJECTS) \
+                                                  $(CLEANING_CXX_HEADER_OBJECTS))
 
 
 override OBJECTS_REREQUISITES :=
@@ -1152,11 +1202,24 @@ ifneq "$(and \
  override OBJECTS_REREQUISITES += objects/sources/shared \
                                   objects/sources/static \
                                   objects/sources
+
+
+ $(call to_clean_targets,objects/sources/shared): $(CLEANING_SHARED_SOURCE_OBJECTS)
+ $(call to_clean_targets,objects/sources/static): $(CLEANING_STATIC_SOURCE_OBJECTS)
+ $(call to_clean_targets,objects/sources): $(call to_clean_targets,objects/sources/shared) \
+                                           $(call to_clean_targets,objects/sources/static)
+
+ .PHONY: $(call to_clean_targets,objects/sources/shared) \
+         $(call to_clean_targets,objects/sources/static) \
+         $(call to_clean_targets,objects/sources)
 else
  ifneq "$(call is_not_empty,$(STATIC_SOURCE_OBJECTS))" "$(FALSE)"
   objects/sources: $(STATIC_SOURCE_OBJECTS)
   .PHONY: objects/sources
   override OBJECTS_REREQUISITES += objects/sources
+
+  $(call to_clean_targets,objects/sources): $(CLEANING_STATIC_SOURCE_OBJECTS)
+  .PHONY: $(call to_clean_targets,objects/sources)
  endif
 endif
 
@@ -1164,11 +1227,25 @@ ifneq "$(call is_not_empty,$(HEADER_OBJECTS))" "$(FALSE)"
  objects/headers: $(HEADER_OBJECTS)
  .PHONY: objects/headers
  override OBJECTS_REREQUISITES += objects/headers
+
+ $(call to_clean_targets,objects/headers): $(CLEANING_HEADER_OBJECTS)
+ .PHONY: $(call to_clean_targets,objects/headers)
 endif
 
 ifneq "$(call is_not_empty,$(OBJECTS_REREQUISITES))" "$(SOFTWARE)"
  objects: $(OBJECTS_REREQUISITES)
  .PHONY: objects
+
+ $(call to_clean_targets,objects): $(call to_clean_targets,$(OBJECTS_REREQUISITES))
+ .PHONY: $(call to_clean_targets,objects)
+ override CLEAN_PREREQUISITES += $(call to_clean_targets,objects)
+endif
+
+# === cleaning rule ========================================================== #
+
+ifneq "$(call is_not_empty,$(CLEAN_PREREQUISITES))" "$(FALSE)"
+ clean: $(CLEAN_PREREQUISITES)
+ .PHONY: clean
 endif
 
 # === all rule =============================================================== #
