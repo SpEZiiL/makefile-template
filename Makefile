@@ -1015,7 +1015,8 @@ override find_cxx_headers = $(foreach \
 
 ifneq "$(and \
 	$(call is_not_equal,$(SRC_MAIN),$(NO_SRC)), \
-	$(call is_not_equal,$(BIN),$(NO_BIN)) \
+	$(call is_not_equal,$(BIN),$(NO_BIN)), \
+	$(call is_not_equal,$(SOFTWARE),$(HLIB_SOFTWARE)) \
 )" "$(FALSE)"
  # all main C/C++ source files
  override MAIN_C_SOURCES   := $(sort $(call find_c_sources,$(SRC_MAIN)))
@@ -1027,15 +1028,16 @@ ifneq "$(and \
   $(call warn,$(warnmsg_no_main_sources))
  endif
 
-
- # shared source objects
- override SHARED_C_SOURCE_OBJECTS   := $(sort $(foreach __main_c_source,$(MAIN_C_SOURCES), \
-	 $(call to_shared_object,$(__main_c_source)) \
- ))
- override SHARED_CXX_SOURCE_OBJECTS := $(sort $(foreach __main_cxx_source,$(MAIN_CXX_SOURCES), \
-	 $(call to_shared_object,$(__main_cxx_source)) \
- ))
- override SHARED_SOURCE_OBJECTS     := $(sort $(SHARED_C_SOURCE_OBJECTS) $(SHARED_CXX_SOURCE_OBJECTS))
+ ifeq "$(SOFTWARE)" "$(LIB_SOFTWARE)"
+  # shared source objects
+  override SHARED_C_SOURCE_OBJECTS   := $(sort $(foreach __main_c_source,$(MAIN_C_SOURCES), \
+	  $(call to_shared_object,$(__main_c_source)) \
+  ))
+  override SHARED_CXX_SOURCE_OBJECTS := $(sort $(foreach __main_cxx_source,$(MAIN_CXX_SOURCES), \
+	  $(call to_shared_object,$(__main_cxx_source)) \
+  ))
+  override SHARED_SOURCE_OBJECTS     := $(sort $(SHARED_C_SOURCE_OBJECTS) $(SHARED_CXX_SOURCE_OBJECTS))
+ endif
 
  # static source objects
  override STATIC_C_SOURCE_OBJECTS   := $(sort $(foreach __main_c_source,$(MAIN_C_SOURCES), \
