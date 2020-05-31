@@ -949,6 +949,11 @@ endif
 
 # === custom aux functions =================================================== #
 
+# pipe commands into this function to color/style them
+# argument should be a style
+override style_pipe = sed -E s/'.*'/'$($(1)_style)\0$(reset_style)'/g
+
+
 # gets the object file from a source file
 override to_shared_object = $(BIN)/$(1).$(shared_object_ext)
 override to_static_object = $(BIN)/$(1).$(static_object_ext)
