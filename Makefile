@@ -1152,6 +1152,18 @@ ifneq "$(call is_not_empty,$(OBJECTS_REREQUISITES))" "$(SOFTWARE)"
  .PHONY: objects
 endif
 
+# === all rule =============================================================== #
+
+override ALL_PREREQUISITES :=
+
+# TODO all rule
+
+ifneq "$(call is_not_empty,$(ALL_PREREQUISITES))" "$(FALSE)"
+ all: $(ALL_PREREQUISITES)
+ .PHONY: all
+ override SET_DEFAULT_GOAL := all
+endif
+
 # === universe rule ========================================================== #
 
 override UNIVERSE_PREREQUISITES :=
