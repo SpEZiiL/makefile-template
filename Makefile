@@ -304,7 +304,11 @@ override warnmsg_useless_link_dirs = The LINK_DIRS variable is unnecessary when 
 
 override errmsg_hookscript_not_exe = The hookscript ('$($(1))' ($(1) variable)) is not executable
 
+
 override errmsg_object_ext_same = The shared object file extension ('$($(1))' ($(1) variable)) and the static object file extension ('$($(2))' ($(2) variable)) are equal
+
+
+override warnmsg_no_main_sources = No main source files were found
 
 # === precondition functions ================================================= #
 
