@@ -1090,6 +1090,7 @@ endif
 .SUFFIXES:
 
 override CLEAN_PREREQUISITES :=
+override ALL_PREREQUISITES :=
 override UNIVERSE_PREREQUISITES :=
 
 # === rule message variables/functions ======================================= #
@@ -1252,10 +1253,6 @@ ifneq "$(call is_not_empty,$(CLEAN_PREREQUISITES))" "$(FALSE)"
 endif
 
 # === all rule =============================================================== #
-
-override ALL_PREREQUISITES :=
-
-# TODO all rule
 
 ifneq "$(call is_not_empty,$(ALL_PREREQUISITES))" "$(FALSE)"
  all: $(ALL_PREREQUISITES)
