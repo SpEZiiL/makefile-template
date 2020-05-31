@@ -943,6 +943,70 @@ ifeq "$(shared_object_ext)" "$(static_object_ext)"
  $(call err,$(call errmsg_object_ext_same,shared_object_ext,static_object_ext))
 endif
 
+# === custom aux functions =================================================== #
+
+# gets the object file from a source file
+override to_shared_object = $(BIN)/$(1).$(shared_object_ext)
+override to_static_object = $(BIN)/$(1).$(static_object_ext)
+
+
+# finds all C language source files in directory of argument 1
+override find_c_sources   = $(foreach \
+	__file, \
+	$(shell find '$(1)' \
+		-type f \
+		-name '*.[ci]' \
+	), \
+	$(__file:$(1)/%=%) \
+)
+# finds all C++ language source files in directory of argument 1
+override find_cxx_sources = $(foreach \
+	__file, \
+	$(shell find '$(1)' \
+		-type f \
+		'(' \
+			-name '*.C'   -o \
+			-name '*.cc'  -o \
+			-name '*.cp'  -o \
+			-name '*.ii'  -o \
+			-name '*.c++' -o \
+			-name '*.cpp' -o \
+			-name '*.CPP' -o \
+			-name '*.cxx'    \
+		')' \
+	), \
+	$(__file:$(1)/%=%) \
+)
+
+# finds all C language header files in directory of argument 1
+override find_c_headers   = $(foreach \
+	__file, \
+	$(shell find '$(1)' \
+		-type f \
+		-name '*.h' \
+	), \
+	$(__file:$(1)/%=%) \
+)
+# finds all C++ language header files in directory of argument 1
+override find_cxx_headers = $(foreach \
+	__file, \
+	$(shell find '$(1)' \
+		-type f \
+		'(' \
+			  -name '*.H'   -o \
+			  -name '*.hh'  -o \
+			  -name '*.hp'  -o \
+			  -name '*.h++' -o \
+			  -name '*.hpp' -o \
+			  -name '*.HPP' -o \
+			  -name '*.hxx' -o \
+			  -name '*.tcc' -o \
+			! -name '*.*'      \
+		')' \
+	), \
+	$(__file:$(1)/%=%) \
+)
+
 # === pre-rule stuff ========================================================= #
 
 # prevent make from automatically building object files from source files
