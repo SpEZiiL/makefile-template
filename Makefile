@@ -1150,6 +1150,12 @@ ifneq "$(call is_not_empty,$(OBJECTS_REREQUISITES))" "$(SOFTWARE)"
  .PHONY: objects
 endif
 
+# === version rule =========================================================== #
+
+_version:
+	@echo 3.0.0
+.PHONY: _version
+
 # === empty rule ============================================================= #
 
 _empty:
@@ -1550,12 +1556,6 @@ else
   .PHONY: clean/tests $(CLEANING_TEST_TARGETS)
  endif
 endif
-
-# === version ================================================================ #
-
-_version:
-	@echo 2.3.0
-.PHONY: _version
 
 # = other.mk ================================================================= #
 
