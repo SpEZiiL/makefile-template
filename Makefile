@@ -1089,6 +1089,19 @@ ifneq "$(and \
  override HEADER_OBJECTS     := $(sort $(C_HEADER_OBJECTS) $(CXX_HEADER_OBJECTS))
 endif
 
+ifneq "$(TARGET)" "$(NO_TARGET)"
+ # target binaries
+
+ ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
+  override EXE_TARGET_BINARY        := $(exe_prefix)$(TARGET)$(exe_suffix)
+ endif
+
+ ifeq "$(SOFTWARE)" "$(LIB_SOFTWARE)"
+  override SHARED_LIB_TARGET_BINARY := $(shared_lib_prefix)$(TARGET)$(shared_lib_suffix)
+  override STATIC_LIB_TARGET_BINARY := $(static_lib_prefix)$(TARGET)$(static_lib_suffix)
+ endif
+endif
+
 # === pre-rule stuff ========================================================= #
 
 # prevent make from automatically building object files from source files
