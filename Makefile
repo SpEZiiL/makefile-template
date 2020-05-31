@@ -1069,6 +1069,10 @@ endif
 # prevent make from automatically building object files from source files
 .SUFFIXES:
 
+# === rule message variables/functions ======================================= #
+
+override act_msg_building_object = Building file '$(1)'...
+
 # === custom functions ======================================================= #
 
 # checks if argument 1 and 2 are equal
