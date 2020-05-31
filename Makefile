@@ -1073,6 +1073,83 @@ endif
 
 override act_msg_building_object = Building file '$(1)'...
 
+# === object building rules ================================================== #
+
+ifneq "$(call is_not_empty,$(SHARED_C_SOURCE_OBJECTS))" "$(FALSE)"
+ $(SHARED_C_SOURCE_OBJECTS):   $(call to_shared_object,%): $(SRC_MAIN)/%
+	@mkdir -p '$(dir $@)'
+	$(info $(call stylemsg,object_build,$(call act_msg_building_object,$@)))
+	@$(CC)  $(CFLAGS)  -c '$<' -o '$@' -fPIC
+endif
+ifneq "$(call is_not_empty,$(SHARED_CXX_SOURCE_OBJECTS))" "$(FALSE)"
+ $(SHARED_CXX_SOURCE_OBJECTS): $(call to_shared_object,%): $(SRC_MAIN)/%
+	@mkdir -p '$(dir $@)'
+	$(info $(call stylemsg,object_build,$(call act_msg_building_object,$@)))
+	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@' -fPIC
+endif
+
+ifneq "$(call is_not_empty,$(STATIC_C_SOURCE_OBJECTS))" "$(FALSE)"
+ $(STATIC_C_SOURCE_OBJECTS):   $(call to_static_object,%): $(SRC_MAIN)/%
+	@mkdir -p '$(dir $@)'
+	$(info $(call stylemsg,object_build,$(call act_msg_building_object,$@)))
+	@$(CC)  $(CFLAGS)  -c '$<' -o '$@'
+endif
+ifneq "$(call is_not_empty,$(STATIC_CXX_SOURCE_OBJECTS))" "$(FALSE)"
+ $(STATIC_CXX_SOURCE_OBJECTS): $(call to_static_object,%): $(SRC_MAIN)/%
+	@mkdir -p '$(dir $@)'
+	$(info $(call stylemsg,object_build,$(call act_msg_building_object,$@)))
+	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
+endif
+
+ifneq "$(call is_not_empty,$(C_HEADER_OBJECTS))" "$(FALSE)"
+ $(C_HEADER_OBJECTS):   $(call to_static_object,%): $(INCLUDE)/%
+	@mkdir -p '$(dir $@)'
+	$(info $(call stylemsg,object_build,$(call act_msg_building_object,$@)))
+	@$(CC)  $(CFLAGS)  -c '$<' -o '$@'
+endif
+ifneq "$(call is_not_empty,$(CXX_HEADER_OBJECTS))" "$(FALSE)"
+ $(CXX_HEADER_OBJECTS): $(call to_static_object,%): $(INCLUDE)/%
+	@mkdir -p '$(dir $@)'
+	$(info $(call stylemsg,object_build,$(call act_msg_building_object,$@)))
+	@$(CXX) $(CXXFLAGS) -c '$<' -o '$@'
+endif
+
+override OBJECTS_REREQUISITES :=
+
+ifneq "$(and \
+	$(call is_not_empty,$(SHARED_SOURCE_OBJECTS)), \
+	$(call is_not_empty,$(STATIC_SOURCE_OBJECTS)) \
+)" "$(FALSE)"
+ objects/sources/shared: $(SHARED_SOURCE_OBJECTS)
+ objects/sources/static: $(STATIC_SOURCE_OBJECTS)
+ objects/source: objects/sources/shared objects/sources/static
+
+ .PHONY: objects/sources/shared \
+         objects/sources/static \
+         objects/source
+
+ override OBJECTS_REREQUISITES += objects/sources/shared \
+                                  objects/sources/static \
+                                  objects/source
+else
+ ifneq "$(call is_not_empty,$(STATIC_SOURCE_OBJECTS))" "$(FALSE)"
+  objects/source: $(STATIC_SOURCE_OBJECTS)
+  .PHONY: objects/source
+  override OBJECTS_REREQUISITES += objects/source
+ endif
+endif
+
+ifneq "$(call is_not_empty,$(HEADER_OBJECTS))" "$(FALSE)"
+ objects/headers: $(HEADER_OBJECTS)
+ .PHONY: objects/headers
+ override OBJECTS_REREQUISITES += objects/headers
+endif
+
+ifneq "$(call is_not_empty,$(OBJECTS_REREQUISITES))" "$(SOFTWARE)"
+ objects: $(OBJECTS_REREQUISITES)
+ .PHONY: objects
+endif
+
 # === custom functions ======================================================= #
 
 # checks if argument 1 and 2 are equal
