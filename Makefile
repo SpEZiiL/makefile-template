@@ -1114,14 +1114,14 @@ override UNIVERSE_PREREQUISITES :=
 
 # === rule message variables/functions ======================================= #
 
-override act_msg_building_object = Building file '$(1)'...
-override act_msg_building_target = Building target '$(1)'...
+override actmsg_building_object = Building file '$(1)'...
+override actmsg_building_target = Building target '$(1)'...
 
 # === object building rules ================================================== #
 
 override define pre_build_object =
 	@mkdir -p '$(dir $@)'
-	$(info $(call stylemsg,object_build,$(call act_msg_building_object,$@)))
+	$(info $(call stylemsg,object_build,$(call actmsg_building_object,$@)))
 endef
 
 override define clean_object =
@@ -1271,7 +1271,7 @@ override define pre_build_target =
 	@if [ -n '$(dir $(1))' ]; then \
 		mkdir -p '$(dir $(1))'; \
 	fi
-	$(info $(call stylemsg,target_build,$(call act_msg_building_target,$(1))))
+	$(info $(call stylemsg,target_build,$(call actmsg_building_target,$(1))))
 endef
 
 override define clean_target =
