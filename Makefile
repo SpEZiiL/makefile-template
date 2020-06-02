@@ -1115,6 +1115,7 @@ override UNIVERSE_PREREQUISITES :=
 # === rule message variables/functions ======================================= #
 
 override act_msg_building_object = Building file '$(1)'...
+override act_msg_building_target = Building target '$(1)'...
 
 # === object building rules ================================================== #
 
