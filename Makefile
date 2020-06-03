@@ -1473,33 +1473,6 @@ override TEST_CXX_TARGETS := $(sort $(foreach __test,$(CXX_TESTS), \
 ))
 override TEST_TARGETS     := $(sort $(TEST_C_TARGETS) $(TEST_CXX_TARGETS))
 
-# === building targets ======================================================= #
-
-ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
- target: $(EXE_TARGET)
- $(EXE_TARGET): $(STATIC_OBJECTS)
-	$(info $(target_build_fx)Building target '$@'...$(reset_fx))
-  ifeq "$(CXX_SOURCES)" ""
-	@$(CC)  $(CFLAGS)   $^ -o '$@' $(LINK_FLAGS)
-  else
-	@$(CXX) $(CXXFLAGS) $^ -o '$@' $(LINK_FLAGS)
-  endif
-  .PHONY: target
-else
- targets: $(SHARED_LIB_TARGET) $(STATIC_LIB_TARGET)
- $(SHARED_LIB_TARGET): $(SHARED_OBJECTS)
-	$(info $(target_build_fx)Building target '$@'...$(reset_fx))
-  ifeq "$(CXX_SOURCES)" ""
-	@$(CC)  $(CFLAGS)   $^ -o '$@' -shared
-  else
-	@$(CXX) $(CXXFLAGS) $^ -o '$@' -shared
-  endif
- $(STATIC_LIB_TARGET): $(STATIC_OBJECTS)
-	$(info $(target_build_fx)Building target '$@'...$(reset_fx))
-	@$(AR) rs '$@' $^ 2>/dev/null
- .PHONY: targets
-endif
-
 # === testing ================================================================ #
 
 ifneq "$(SRC_TEST)" "/dev/null"
