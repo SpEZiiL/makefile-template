@@ -1368,6 +1368,7 @@ else
 
   $(call to_clean_targets,targets): %: $(call to_clean_targets,$(TARGETS_PREREQUISITES))
   .PHONY: $(call to_clean_targets,targets)
+ override CLEAN_PREREQUISITES += $(call to_clean_targets,targets)
 
   override ALL_PREREQUISITES += targets
   override UNIVERSE_PREREQUISITES += targets
