@@ -1299,46 +1299,75 @@ ifneq "$(call is_not_empty,$(EXE_TARGET_BINARY))" "$(FALSE)"
  $(call to_clean_targets,$(EXE_TARGET_BINARY)): %:
 	$(call clean_target,$(call from_clean_target,$@))
  .PHONY: $(call to_clean_targets,$(EXE_TARGET_BINARY))
+endif
 
+ifneq "$(call is_not_empty,$(SHARED_LIB_TARGET_BINARY))" "$(FALSE)"
+  $(SHARED_LIB_TARGET_BINARY): $(SHARED_SOURCE_OBJECTS)
+	$(call pre_build_target,$@)
+	@$(TARGET_COMPILER) -x none $^ -o '$@' -shared
 
- target: $(EXE_TARGET_BINARY)
+  $(call to_clean_targets,$(SHARED_LIB_TARGET_BINARY)): %:
+	$(call clean_target,$(call from_clean_target,$@))
+  .PHONY: $(call to_clean_targets,$(SHARED_LIB_TARGET_BINARY))
+endif
+
+ifneq "$(call is_not_empty,$(STATIC_LIB_TARGET_BINARY))" "$(FALSE)"
+  $(STATIC_LIB_TARGET_BINARY): $(STATIC_SOURCE_OBJECTS)
+	$(call pre_build_target,$@)
+	@$(AR) rs '$@' $^ 2> /dev/null
+
+  $(call to_clean_targets,$(STATIC_LIB_TARGET_BINARY)): %:
+	$(call clean_target,$(call from_clean_target,$@))
+  .PHONY: $(call to_clean_targets,$(STATIC_LIB_TARGET_BINARY))
+endif
+
+ifeq "$(words $(EXE_TARGET_BINARY) $(SHARED_LIB_TARGET_BINARY) $(STATIC_LIB_TARGET_BINARY))" "1"
+ override TARGET_BINARY := $(strip $(EXE_TARGET_BINARY) $(SHARED_LIB_TARGET_BINARY) $(STATIC_LIB_TARGET_BINARY))
+ target: $(TARGET_BINARY)
  .PHONY: target
 
- $(call to_clean_targets,target): $(call to_clean_targets,$(EXE_TARGET_BINARY))
+ $(call to_clean_targets,target): $(call to_clean_targets,$(TARGET_BINARY))
  .PHONY: $(call to_clean_targets,target)
  override CLEAN_PREREQUISITES += $(call to_clean_targets,target)
 
  override ALL_PREREQUISITES += target
  override UNIVERSE_PREREQUISITES += target
 else
- ifneq "$(and \
-	 $(call is_not_empty,$(SHARED_LIB_TARGET_BINARY)), \
-	 $(call is_not_empty,$(STATIC_LIB_TARGET_BINARY)) \
- )" "$(FALSE)"
-  $(SHARED_LIB_TARGET_BINARY): $(SHARED_SOURCE_OBJECTS)
-	$(call pre_build_target,$@)
-	@$(TARGET_COMPILER) -x none $^ -o '$@' -shared
-  $(STATIC_LIB_TARGET_BINARY): $(STATIC_SOURCE_OBJECTS)
-	$(call pre_build_target,$@)
-	@$(AR) rs '$@' $^ 2> /dev/null
+ override TARGETS_PREREQUISITES :=
 
-  $(call to_clean_targets,$(SHARED_LIB_TARGET_BINARY) $(STATIC_LIB_TARGET_BINARY)): %:
-	$(call clean_target,$(call from_clean_target,$@))
-  .PHONY: $(call to_clean_targets,$(SHARED_LIB_TARGET_BINARY) $(STATIC_LIB_TARGET_BINARY))
+ ifneq "$(call is_not_empty,$(EXE_TARGET_BINARY))" "$(FALSE)"
+  targets/exe: $(EXE_TARGET_BINARY)
+  .PHONY: targets/exe
+  override TARGETS_PREREQUISITES += targets/exe
 
+  $(call to_clean_targets,targets/exe): %: $(call to_clean_targets,$(EXE_TARGET_BINARY))
+  .PHONY: $(call to_clean_targets,targets/exe)
+ endif
 
+ ifneq "$(call is_not_empty,$(SHARED_LIB_TARGET_BINARY))" "$(FALSE)"
   targets/shared: $(SHARED_LIB_TARGET_BINARY)
-  targets/static: $(STATIC_LIB_TARGET_BINARY)
-  targets: targets/shared targets/static
-  .PHONY: targets/shared \
-          targets/static \
-          targets
+  .PHONY: targets/shared
+  override TARGETS_PREREQUISITES += targets/shared
 
-  $(call to_clean_targets,targets/shared): $(call to_clean_targets,$(SHARED_LIB_TARGET_BINARY))
-  $(call to_clean_targets,targets/static): $(call to_clean_targets,$(STATIC_LIB_TARGET_BINARY))
-  $(call to_clean_targets,targets): $(call to_clean_targets,targets/shared targets/static)
-  .PHONY: $(call to_clean_targets,targets/shared targets/static targets)
-  override CLEAN_PREREQUISITES += $(call to_clean_targets,targets)
+  $(call to_clean_targets,targets/shared): %: $(call to_clean_targets,$(SHARED_LIB_TARGET_BINARY))
+  .PHONY: $(call to_clean_targets,targets/shared)
+ endif
+
+ ifneq "$(call is_not_empty,$(STATIC_LIB_TARGET_BINARY))" "$(FALSE)"
+  targets/static: $(STATIC_LIB_TARGET_BINARY)
+  .PHONY: targets/static
+  override TARGETS_PREREQUISITES += targets/static
+
+  $(call to_clean_targets,targets/static): %: $(call to_clean_targets,$(STATIC_LIB_TARGET_BINARY))
+  .PHONY: $(call to_clean_targets,targets/static)
+ endif
+
+ ifneq "$(call is_not_empty,$(TARGETS_PREREQUISITES))" "$(FALSE)"
+  targets: $(TARGETS_PREREQUISITES)
+  .PHONY: targets
+
+  $(call to_clean_targets,targets): %: $(call to_clean_targets,$(TARGETS_PREREQUISITES))
+  .PHONY: $(call to_clean_targets,targets)
 
   override ALL_PREREQUISITES += targets
   override UNIVERSE_PREREQUISITES += targets
