@@ -1268,16 +1268,16 @@ endif
 # === target building rules ================================================== #
 
 override define pre_build_target =
-	@if [ -n '$(dir $(1))' ]; then \
-		mkdir -p '$(dir $(1))'; \
+	@if [ -n '$(dir $@)' ]; then \
+		mkdir -p '$(dir $@)'; \
 	fi
-	$(info $(call stylemsg,target_build,$(call actmsg_building_target,$(1))))
+	$(info $(call stylemsg,target_build,$(call actmsg_building_target,$@)))
 endef
 
 override define clean_target =
-	@$(call clean_file,$(1))
-	@if [ -n '$(dir $(1))' ]; then \
-		$(call clean_empty_dir_recursively,$(1)) \
+	@$(call clean_file,$(call from_clean_target,$@))
+	@if [ -n '$(dir $(call from_clean_target,$@))' ]; then \
+		$(call clean_empty_dir_recursively,$(call from_clean_target,$@)) \
 	fi
 endef
 
@@ -1293,31 +1293,31 @@ endif
 
 ifneq "$(call is_not_empty,$(EXE_TARGET_BINARY))" "$(FALSE)"
  $(EXE_TARGET_BINARY): $(STATIC_SOURCE_OBJECTS)
-	$(call pre_build_target,$@)
+	$(pre_build_target)
 	@$(TARGET_COMPILER) -x none $^ -o '$@' $(TARGET_LINK_FLAGS)
 
  $(call to_clean_targets,$(EXE_TARGET_BINARY)): %:
-	$(call clean_target,$(call from_clean_target,$@))
+	$(clean_target)
  .PHONY: $(call to_clean_targets,$(EXE_TARGET_BINARY))
 endif
 
 ifneq "$(call is_not_empty,$(SHARED_LIB_TARGET_BINARY))" "$(FALSE)"
   $(SHARED_LIB_TARGET_BINARY): $(SHARED_SOURCE_OBJECTS)
-	$(call pre_build_target,$@)
+	$(pre_build_target)
 	@$(TARGET_COMPILER) -x none $^ -o '$@' -shared
 
   $(call to_clean_targets,$(SHARED_LIB_TARGET_BINARY)): %:
-	$(call clean_target,$(call from_clean_target,$@))
+	$(clean_target)
   .PHONY: $(call to_clean_targets,$(SHARED_LIB_TARGET_BINARY))
 endif
 
 ifneq "$(call is_not_empty,$(STATIC_LIB_TARGET_BINARY))" "$(FALSE)"
   $(STATIC_LIB_TARGET_BINARY): $(STATIC_SOURCE_OBJECTS)
-	$(call pre_build_target,$@)
+	$(pre_build_target)
 	@$(AR) rs '$@' $^ 2> /dev/null
 
   $(call to_clean_targets,$(STATIC_LIB_TARGET_BINARY)): %:
-	$(call clean_target,$(call from_clean_target,$@))
+	$(clean_target)
   .PHONY: $(call to_clean_targets,$(STATIC_LIB_TARGET_BINARY))
 endif
 
