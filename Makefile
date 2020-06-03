@@ -509,8 +509,6 @@ ifneq "$(SOFTWARE)" "$(HLIB_SOFTWARE)"
  ifneq "$(findstring /,$(TARGET))" "$(FALSE)"
   $(call err,$(call var_errmsg_not_basename,TARGET))
  endif
- override TARGET := $(TARGETDIR)/$(TARGET)
- $(call prep_var_path,TARGET)
 else
  # hlib software
 
@@ -751,52 +749,6 @@ endif # HOOKSCRIPT defined?
 
 
 # making sure that no paths lead to the same location:
-
-# TARGET variable
-ifneq "$(TARGET)" "$(NO_TARGET)"
- # target used
-
- $(call require_vars_not_same_paths,TARGET,ROOT)
- ifneq "$(SRC_MAIN)" "$(NO_SRC)"
-  # target used
-  # src used
-
-  ifneq "$(SRC)" "$(NO_SRC)"
-   # target used
-   # src used
-   # SRC variable used
-
-   $(call require_vars_not_same_paths,TARGET,SRC)
-  else
-   # target used
-   # src used
-   # SRC_MAIN variable used
-
-   $(call require_vars_not_same_paths,TARGET,SRC_MAIN)
-  endif # SRC variable used?
- endif # src used?
-
- ifneq "$(SRC_TEST)" "$(NO_TEST)"
-  # target used
-  # tests enabled
-
-  $(call require_vars_not_same_paths,TARGET,SRC_TEST)
- endif # tests enabled?
-
- ifneq "$(INCLUDE)" "$(NO_INCLUDE)"
-  # target used
-  # include used
-
-  $(call require_vars_not_same_paths,TARGET,INCLUDE)
- endif # include used?
-
- ifneq "$(BIN)" "$(NO_BIN)"
-  # target used
-  # bin used
-
-  $(call require_vars_not_same_paths,TARGET,BIN)
- endif # bin used?
-endif # target used?
 
 # ROOT variable
 ifneq "$(SRC_MAIN)" "$(NO_SRC)"
@@ -1094,12 +1046,15 @@ ifneq "$(TARGET)" "$(NO_TARGET)"
  # target binaries
 
  ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
-  override EXE_TARGET_BINARY        := $(exe_prefix)$(TARGET)$(exe_suffix)
+  override EXE_TARGET_BINARY        := $(TARGETDIR)/$(exe_prefix)$(TARGET)$(exe_suffix)
+  $(call prep_var_path,EXE_TARGET_BINARY)
  endif
 
  ifeq "$(SOFTWARE)" "$(LIB_SOFTWARE)"
-  override SHARED_LIB_TARGET_BINARY := $(shared_lib_prefix)$(TARGET)$(shared_lib_suffix)
-  override STATIC_LIB_TARGET_BINARY := $(static_lib_prefix)$(TARGET)$(static_lib_suffix)
+  override SHARED_LIB_TARGET_BINARY := $(TARGETDIR)/$(shared_lib_prefix)$(TARGET)$(shared_lib_suffix)
+  override STATIC_LIB_TARGET_BINARY := $(TARGETDIR)/$(static_lib_prefix)$(TARGET)$(static_lib_suffix)
+  $(call prep_var_path,SHARED_LIB_TARGET_BINARY)
+  $(call prep_var_path,STATIC_LIB_TARGET_BINARY)
  endif
 endif
 
@@ -1276,9 +1231,7 @@ endef
 
 override define clean_target =
 	@$(call clean_file,$(call from_clean_target,$@))
-	@if [ -n '$(dir $(call from_clean_target,$@))' ]; then \
-		$(call clean_empty_dir_recursively,$(call from_clean_target,$@)) \
-	fi
+	@$(call clean_empty_dir_recursively,$(TARGETDIR))
 endef
 
 
