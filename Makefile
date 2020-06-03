@@ -977,6 +977,9 @@ override find_cxx_headers = $(foreach \
 
 override clean_file = rm -fv '$(1)' | $(call style_pipe,clean)
 
+override clean_empty_dir = if [ -d '$(1)' ]; then \
+	rm -dfv '$(1)' 2>/dev/null | $(call style_pipe,clean) ; \
+fi
 override clean_empty_dir_recursively = if [ -d '$(1)' ]; then \
 	find '$(1)' -depth -type d -exec rm -dfv '{}' ';' 2>/dev/null \
 		| $(call style_pipe,clean) ; \
