@@ -1234,7 +1234,7 @@ endef
 
 override define clean_target =
 	@$(call clean_file,$(call from_clean_target,$@))
-	@$(call clean_empty_dir_recursively,$(TARGETDIR))
+	@$(call clean_empty_dir,$(TARGETDIR))
 endef
 
 
