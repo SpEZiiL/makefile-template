@@ -1125,7 +1125,7 @@ override define pre_build_object =
 endef
 
 override define clean_object =
-	@$(call clean_file,$(call from_clean_target,$(1)))
+	@$(call clean_file,$(call from_clean_target,$@))
 	@$(call clean_empty_dir_recursively,$(BIN))
 endef
 
@@ -1138,7 +1138,7 @@ ifneq "$(call is_not_empty,$(SHARED_C_SOURCE_OBJECTS))" "$(FALSE)"
  override CLEANING_SHARED_C_SOURCE_OBJECTS := $(call to_clean_targets,$(SHARED_C_SOURCE_OBJECTS))
 
  $(CLEANING_SHARED_C_SOURCE_OBJECTS): %:
-	$(call clean_object,$@)
+	$(clean_object)
  .PHONY: $(CLEANING_SHARED_C_SOURCE_OBJECTS)
 endif
 ifneq "$(call is_not_empty,$(SHARED_CXX_SOURCE_OBJECTS))" "$(FALSE)"
@@ -1149,7 +1149,7 @@ ifneq "$(call is_not_empty,$(SHARED_CXX_SOURCE_OBJECTS))" "$(FALSE)"
  override CLEANING_SHARED_CXX_SOURCE_OBJECTS := $(call to_clean_targets,$(SHARED_CXX_SOURCE_OBJECTS))
 
  $(CLEANING_SHARED_CXX_SOURCE_OBJECTS): %:
-	$(call clean_object,$@)
+	$(clean_object)
  .PHONY: $(CLEANING_SHARED_CXX_SOURCE_OBJECTS)
 endif
 
@@ -1161,7 +1161,7 @@ ifneq "$(call is_not_empty,$(STATIC_C_SOURCE_OBJECTS))" "$(FALSE)"
  override CLEANING_STATIC_C_SOURCE_OBJECTS := $(call to_clean_targets,$(STATIC_C_SOURCE_OBJECTS))
 
  $(CLEANING_STATIC_C_SOURCE_OBJECTS): %:
-	$(call clean_object,$@)
+	$(clean_object)
  .PHONY: $(CLEANING_STATIC_C_SOURCE_OBJECTS)
 endif
 ifneq "$(call is_not_empty,$(STATIC_CXX_SOURCE_OBJECTS))" "$(FALSE)"
@@ -1172,7 +1172,7 @@ ifneq "$(call is_not_empty,$(STATIC_CXX_SOURCE_OBJECTS))" "$(FALSE)"
  override CLEANING_STATIC_CXX_SOURCE_OBJECTS := $(call to_clean_targets,$(STATIC_CXX_SOURCE_OBJECTS))
 
  $(CLEANING_STATIC_CXX_SOURCE_OBJECTS): %:
-	$(call clean_object,$@)
+	$(clean_object)
  .PHONY: $(CLEANING_STATIC_CXX_SOURCE_OBJECTS)
 endif
 
@@ -1184,7 +1184,7 @@ ifneq "$(call is_not_empty,$(C_HEADER_OBJECTS))" "$(FALSE)"
  override CLEANING_C_HEADER_OBJECTS := $(call to_clean_targets,$(C_HEADER_OBJECTS))
 
  $(CLEANING_C_HEADER_OBJECTS): %:
-	$(call clean_object,$@)
+	$(clean_object)
  .PHONY: $(CLEANING_C_HEADER_OBJECTS)
 endif
 ifneq "$(call is_not_empty,$(CXX_HEADER_OBJECTS))" "$(FALSE)"
@@ -1195,7 +1195,7 @@ ifneq "$(call is_not_empty,$(CXX_HEADER_OBJECTS))" "$(FALSE)"
  override CLEANING_CXX_HEADER_OBJECTS := $(call to_clean_targets,$(CXX_HEADER_OBJECTS))
 
  $(CLEANING_CXX_HEADER_OBJECTS): %:
-	$(call clean_object,$@)
+	$(clean_object)
  .PHONY: $(CLEANING_CXX_HEADER_OBJECTS)
 endif
 
