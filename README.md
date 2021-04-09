@@ -35,7 +35,18 @@ You can also use `wget` to quickly get it from my **GitHub Pages** site.
 wget https://mfederczuk.github.io/makefile-template/Makefile
 ```
 
+<!--
+```sh
+curl https://mfederczuk.github.io/makefile-template/exe | sh
+curl https://mfederczuk.github.io/makefile-template/hlib | sh
+curl https://mfederczuk.github.io/makefile-template/lib | sh
+```
+-->
+
 ## Configuration ##
+
+Refer to the [CONFIGURATION.md](CONFIGURATION.md) file for how to configure the
+ Makefile.
 
 After you've added the Makefile into your project directory, you will need to
  configure it a little.  
@@ -330,12 +341,16 @@ Read through the [C/C++ Makefile Template Contribution Guidelines](./CONTRIBUTIN
 
 These file extensions were taken from the **GCC** man page.
 
-**C:**
+**C Source:**
 
 * `c`
 * `ii`
 
-**C++:**
+**C Header:**:
+
+* `h`
+
+**C++ Source:**
 
 * `C`
 * `cc`
@@ -345,3 +360,15 @@ These file extensions were taken from the **GCC** man page.
 * `cpp`
 * `CPP`
 * `cxx`
+
+**C++ Header:**:
+
+* `H`
+* `hh`
+* `hp`
+* `h++`
+* `hpp`
+* `HPP`
+* `hxx`
+* `tcc`
+* _(no extension)_

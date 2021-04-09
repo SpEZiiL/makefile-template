@@ -1,0 +1,44 @@
+#!/bin/sh
+# -*- sh -*-
+# vim: set syntax=sh
+# code: language=shellscript
+
+# wget -qO- 'https://mfederczuk.github.io/makefile-template/configure-makefile' | sh
+
+# $1: msg
+# $2: default value
+__prompt() {
+	:
+}
+
+software="$(__prompt software type)"
+
+name=
+package=
+target=
+
+root=
+
+src_main=
+src_test=
+include=
+bin=
+
+link_dirs=
+links=
+clinks=
+cxxlinks=
+
+test_cmd=
+main_source=
+
+flags=
+cflags=
+cxxflags=
+
+hookscript=
+
+# wget -qO- 'https://mfederczuk.github.io/makefile-template/Makefile'
+
+# TODO create project structure
+# TODO create .gitignore

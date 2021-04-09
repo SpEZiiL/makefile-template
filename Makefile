@@ -17,6 +17,11 @@
 
 # === configuration ========================================================== #
 
+# Get started with the configuration by reading this file:
+# <https://github.com/mfederczuk/makefile-template/blob/master/CONFIGURATION.md>
+
+ifneq "" ""
+
 SOFTWARE = exe|lib|hlib
 
 ROOT = .
@@ -47,6 +52,8 @@ CXXFLAGS = -std=c++17
 FLAGS    = -Iinclude -Wall -Wextra
 
 HOOKSCRIPT =
+
+endif
 
 # ============================================================================ #
 
@@ -310,6 +317,7 @@ override errmsg_object_ext_same = The shared object file extension ('$($(1))' ($
 
 
 override warnmsg_no_main_sources = No main source files were found
+override warnmsg_no_test_sources = No test source files were found
 
 # === precondition functions ================================================= #
 
@@ -902,6 +910,12 @@ endif
 
 # === custom aux functions =================================================== #
 
+# gets the target executable name of the test tuple
+override test_target = $(word 1,$(subst :, ,$(1)))
+# gets the source file of the test tuple
+override test_source = $(word 2,$(subst :, ,$(1)))
+
+
 # pipe commands into this function to color/style them
 # argument should be a style
 override style_pipe = sed -E s/'.*'/'$($(1)_style)\0$(reset_style)'/g
@@ -975,6 +989,42 @@ override find_cxx_headers = $(foreach \
 )
 
 
+override find_source = $(firstword $(sort $(foreach \
+	__file, \
+	$(SOURCES), \
+	$(if \
+		$(patsubst $(1).%,,$(notdir $(__file))), \
+		, \
+		$(__file) \
+	) \
+)))
+
+override find_main_source = $(foreach \
+	__main_source, \
+	$(call find_source,main), \
+	$(if \
+		$(call is_not_empty,$(__main_source)), \
+		$(__main_source), \
+		$(if \
+			$(foreach \
+				__main_source, \
+				$(call find_source,$(TARGET)), \
+				$(if \
+					$(call is_not_empty,$(__main_source)), \
+					$(__main_source), \
+					$(AUTO_MAIN_SOURCE_NO_RESULT) \
+				) \
+			) \
+		) \
+	) \
+)
+
+
+# TODO
+override build_pre_hook_args  = pre:$(1)  pre  $(1)
+override build_post_hook_args = post:$(1) post $(1)
+
+
 override clean_file = rm -fv '$(1)' | $(call style_pipe,clean)
 
 override clean_empty_dir = if [ -d '$(1)' ]; then \
@@ -1028,6 +1078,45 @@ ifneq "$(and \
  override STATIC_SOURCE_OBJECTS     := $(sort $(STATIC_C_SOURCE_OBJECTS) $(STATIC_CXX_SOURCE_OBJECTS))
 endif
 
+ifneq "$(SRC_TEST)" "$(NO_TEST)"
+ # all test C/C++ source files
+ override TEST_C_SOURCES   := $(sort $(call find_c_sources,$(SRC_TEST)))
+ override TEST_CXX_SOURCES := $(sort $(call find_cxx_sources,$(SRC_TEST)))
+ override TEST_SOURCES     := $(sort $(TEST_C_SOURCES) $(TEST_CXX_SOURCES))
+
+ # checking if source files were found
+ ifneq "$(call is_empty,$(TEST_SOURCES))" "$(FALSE)"
+  $(call warn,$(warnmsg_no_test_sources))
+ endif
+
+ ifneq "$(MAIN_SOURCE)" "$(NO_MAIN_SOURCE)"
+  override STATIC_C_SOURCE_OBJECTS_FOR_EXE_TEST   := $(sort $(filter-out $(call to_static_object,$(MAIN_SOURCE)),$(STATIC_C_SOURCE_OBJECTS)))
+  override STATIC_CXX_SOURCE_OBJECTS_FOR_EXE_TEST := $(sort $(filter-out $(call to_static_object,$(MAIN_SOURCE)),$(STATIC_CXX_SOURCE_OBJECTS)))
+  override STATIC_SOURCE_OBJECTS_FOR_EXE_TEST     := $(sort $(STATIC_C_SOURCE_OBJECTS_FOR_EXE_TEST) $(STATIC_CXX_SOURCE_OBJECTS_FOR_EXE_TEST))
+ endif
+
+ # TODO
+ # vvvv
+
+ # test tuples
+ # these are in format of <test executable name>:<test source file>
+ # override C_TESTS   := $(sort $(foreach __source_file,$(TEST_C_SOURCES), \
+ #	 $(test_prefix)$(basename $(notdir $(__source_file)))$(test_suffix):$(__source_file) \
+ # ))
+ # override CXX_TESTS := $(sort $(foreach __source_file,$(TEST_CXX_SOURCES), \
+ #	 $(test_prefix)$(basename $(notdir $(__source_file)))$(test_suffix):$(__source_file) \
+ # ))
+ #
+ # # extracts just the targets from the test tuples
+ # override TEST_C_TARGETS   := $(sort $(foreach __test,$(C_TESTS), \
+ #	 $(call _test_target,$(__test)) \
+ # ))
+ # override TEST_CXX_TARGETS := $(sort $(foreach __test,$(CXX_TESTS), \
+ #	 $(call _test_target,$(__test)) \
+ # ))
+ # override TEST_TARGETS     := $(sort $(TEST_C_TARGETS) $(TEST_CXX_TARGETS))
+endif
+
 ifneq "$(and \
 	$(call is_not_equal,$(INCLUDE),$(NO_INCLUDE)), \
 	$(call is_not_equal,$(BIN),$(NO_BIN)) \
@@ -1060,6 +1149,12 @@ ifneq "$(TARGET)" "$(NO_TARGET)"
   $(call prep_var_path,STATIC_LIB_TARGET_BINARY)
  endif
 endif
+
+# === build constants conditions ============================================= #
+
+# TODO check if targets and tests have same name
+
+# TODO hookscript init
 
 # === pre-rule stuff ========================================================= #
 
@@ -1331,6 +1426,62 @@ else
  endif
 endif
 
+# === testing rules ========================================================== #
+
+ifneq "$(SRC_TEST)" "$(NO_TEST)"
+ override define BUILT_IN_TEST_CMD :=
+	 __tmp_test() { \
+		 __tmp_test_final_exc=0; \
+		 \
+		 for __tmp_test_test in "$$@"; do \
+			 printf %s: "$$__tmp_test_test"; \
+			 \
+			 "$$__tmp_test_test" 1> /dev/null 2>&1; \
+			 __tmp_test_exc=$$?; \
+			 \
+			 if [ $$__tmp_test_exc != 0 ]; then \
+				 printf ' failed (%d)\n' $$__tmp_test_exc; \
+				 \
+				 if [ $$__tmp_test_final_exc != 0 ]; then \
+					 __tmp_test_final_exc=1; \
+				 fi; \
+			 else \
+				 printf ' passed\n'; \
+			 fi; \
+		 done; \
+		 \
+		 return $$__tmp_test_final_exc; \
+	 }; \
+	 __tmp_test
+ endef
+endif
+
+# === installing rules ======================================================= #
+
+ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
+ install: install/target
+ install/target: install/$(EXE_TARGET)
+ install/$(EXE_TARGET): install/%: %
+	$(info $(install_fx)Installing target '$(@:install/%=%)' to '$(DESTDIR)$(bindir)'...$(reset_fx))
+	@mkdir -p '$(DESTDIR)$(bindir)'
+	@$(INSTALL) -m755 '$(@:install/%=%)' '$(DESTDIR)$(bindir)'
+ .PHONY: install install/target install/$(EXE_TARGET)
+else
+ install: install/targets install/headers
+ install/targets: install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET)
+ install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET): install/%: %
+	$(info $(install_fx)Installing target '$(@:install/%=%)' to '$(DESTDIR)$(libdir)'...$(reset_fx))
+	@mkdir -p '$(DESTDIR)$(libdir)'
+	@$(INSTALL) -m644 '$(@:install/%=%)' '$(DESTDIR)$(libdir)'
+ install/headers:
+	$(info $(install_fx)Installing headers to '$(DESTDIR)$(includedir)'...$(reset_fx))
+	@mkdir -p '$(DESTDIR)$(includedir)'
+	@cp -r '$(INC)' '$(DESTDIR)$(includedir)'
+ .PHONY: install install/targets \
+         install/$(SHARED_LIB_TARGET) install/$(STATIC_LIB_TARGET) \
+         install/headers
+endif
+
 # === cleaning rule ========================================================== #
 
 ifneq "$(call is_not_empty,$(CLEAN_PREREQUISITES))" "$(FALSE)"
@@ -1368,6 +1519,16 @@ _empty:
 # ============================================================================ #
 
 override .DEFAULT_GOAL := $(SET_DEFAULT_GOAL)
+
+
+
+
+
+
+################################################################################
+##################################### old ######################################
+################################################################################
+ifneq "" ""
 
 # === custom functions ======================================================= #
 
@@ -1652,3 +1813,5 @@ endif
 # = other.mk ================================================================= #
 
 -include other.mk
+
+endif
